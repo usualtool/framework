@@ -310,6 +310,33 @@ class UTTree{
         return $data;
     }
     /**
+     * 样式七：顶级分类下所有记录（含本级和子级）
+     * @param int $id 分类序号
+     * @param string $table 内容表
+     * @param string $catfield 内容表分类字段
+     * @param string $titfield 内容表标题字段
+     * @param int    $querynum 提取最新内容数量
+     * @param string $titlink 内容链接前缀
+     * @return string
+     */
+    public function SubDataList($id='0',$table,$catfield,$titfield,$querynum='5',$titlink=''){
+        if(strpos($titlink,'?')!==false){
+            $titlink=str_replace("&&&","&",str_replace("&&","&",$titlink."&"));
+        }else{
+            $titlink=str_replace("&&&","&",str_replace("&&","&",$titlink."?"));
+        }
+        $cats = $this->GetChild($id);
+        $data="";
+            foreach($cats as $a){
+                    $thedata=UTData::QueryData($table,"",$catfield."=".$a["id"],"id desc","0,".$querynum)["querydata"];
+                    foreach($thedata as $rows){  
+                        $data.="<p id='titlist'><a href='".$titlink."id=".$rows["id"]."'>".$rows[$titfield]."</a></p>";
+                    }
+                    $data.= $this->SubDataList($a["id"],$table,$catfield,$titfield,$querynum,$titlink);
+            }
+        return $data;
+    }
+    /**
      * 判断是否包含某个ID
      * @param string $list 一个ID集合字符串
      * @param string $item 要查询的ID字符串
