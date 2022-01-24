@@ -41,6 +41,12 @@ require UTF_ROOT.'/library/UsualToolLoad.php';
  */
 $config=library\UsualToolInc\UTInc::GetConfig();
 /**
+ * 识别路由
+ */
+foreach(library\UsualToolRoute\UTRoute::Analy(library\UsualToolInc\UTInc::CurPageUrl()) as $key=>$val){
+    $_GET[$key]=$val;
+}
+/**
  * 加载模块
  */
 $m=empty($_GET["m"]) ? $config["DEFAULT_MOD"] : library\UsualToolInc\UTInc::SqlCheck($_GET["m"]);

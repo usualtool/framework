@@ -105,7 +105,7 @@ class UTTemp{
 		'/<\{\s*\/if\s*\}>/i'
         );
         $replacement=array(
-        '<?php if(UTInc::Contain(UTInc::ClearNum($this->tplvars["${2}"]["${3}"]),UTInc::ClearNum($this->tplvars["${1}"]))==true):echo"${4}";endif;?>',
+        '<?php if(library\UsualToolInc\UTInc::Contain(library\UsualToolInc\UTInc::ClearNum($this->tplvars["${2}"]["${3}"]),library\UsualToolInc\UTInc::ClearNum($this->tplvars["${1}"]))==true):echo"${4}";endif;?>',
         '<?php echo"<div class=\"nav-item dropdown\"><a class=\"nav-link dropdown-toggle\" data-toggle=dropdown><i class=\"fa fa-link\"></i> 子栏目</a><div class=\"dropdown-menu\">";$item=explode(",",$this->tplvars["${2}"]);for($i=0;$i<count($item);$i++):echo"<a class=\"dropdown-item\" href=?m=".$this->tplvars["${1}"]."&p=".explode(":",$item[$i])[1].">".explode(":",$item[$i])[0]."</a>";endfor;echo"</div></div>";?>',
 		'<?php if(library\UsualToolInc\UTInc::Contain(",","${1}")):$pluginfile=explode(",","${1}");$HOOKPATH=APP_ROOT."/plugins/$pluginfile[0]/";if(is_dir($HOOKPATH)):if(library\UsualToolInc\UTInc::Contain(".php","$pluginfile[1]")):include_once $HOOKPATH.$pluginfile[1];else:echo"<iframe src=$HOOKPATH.$pluginfile[1] frameborder=0 id=external-frame></iframe><style>iframe{width:100%;margin:0 0 1em;border:0;}</style><script src=assets/js/autoheight.js></script>";endif;endif;else:$HOOKPATH=APP_ROOT."/plugins/${1}/";if(is_dir($HOOKPATH)):include_once $HOOKPATH."index.php";endif;endif;?>',
 		'<?php $split=explode("${2}",$this->tplvars["${1}"]);echo $split[${3}];?>',
@@ -150,12 +150,14 @@ class UTTemp{
             $content
         );
         $content=preg_replace_callback(
-            "/<\{\s*(db|inc)\s*=>\s*(.+?)\s*\}>/i",
+            "/<\{\s*(db|inc|url)\s*=>\s*(.+?)\s*\}>/i",
             function($matches){
                 if(UTInc::Contain("inc",$matches[1])){
                     return $this->StripTags("<?php echo library\UsualToolInc\UTInc::$matches[2];?>");
-                }else{
+                }elseif(UTInc::Contain("db",$matches[1])){
                     return $this->StripTags("<?php echo library\UsualToolData\UTData::$matches[2];?>");
+                }elseif(UTInc::Contain("url",$matches[1])){
+                    return $this->StripTags("<?php echo library\UsualToolRoute\UTRoute::$matches[2];?>");
                 }
             },
             $content

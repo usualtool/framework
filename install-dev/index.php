@@ -199,8 +199,8 @@ if($do=="db-save"){
                         if($zip->open(UTF_ROOT."/update/UT-DEV.zip")===TRUE){ 
                             $zip->extractTo(UTF_ROOT."/update/");
                             $zip->close();
-                            UTInc::movedir(UTF_ROOT."/update/UT-DEV/",UTF_ROOT);
-                            UTInc::deldir(UTF_ROOT."/update/UT-DEV/");
+                            UTInc::MoveDir(UTF_ROOT."/update/UT-DEV/",UTF_ROOT);
+                            UTInc::DelDir(UTF_ROOT."/update/UT-DEV/");
                             unlink(UTF_ROOT."/update/UT-DEV.zip");
                             file_put_contents("./usualtool.lock","lock");
                             echo "<script>alert('UT可视化部署成功!');window.location.href='../app/dev/'</script>";
