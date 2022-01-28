@@ -6,7 +6,16 @@ UT Framework is based on PHP multi-end development framework, class library perf
 
 #### 环境 Environment
 支持PHP5/PHP7/PHP8等已知向上发行的版本
-Support PHP 5/PHP7/PHP8 and other known upward distributions
+Support PHP5/PHP7/PHP8 and other known upward distributions
+
+#### 安全事项 Security
+.ut.config配置包含敏感信息，您必须在配置文件中设置禁止非本地访问.config文件，参考https://frame.usualtool.com/baike/config.php
+.ut.config configuration contains sensitive information. You must set in the configuration file to prohibit non local access Config file, 
+reference http://frame.usualtool.com/baike/config.php
+
+install-dev是开发端可视包安装目录，若无需可视化，请在部署UT后删除该目录
+install-dev is the installation directory of visual package on the development side. 
+If visualization is not required, please delete this directory after deploying UT.
 
 #### 系统结构 System structure
 
@@ -16,7 +25,18 @@ Support PHP 5/PHP7/PHP8 and other known upward distributions
 │    │    ├─css    
 │    │    ├─font  
 │    │    ├─images 
-│    │    └─js   
+│    │    └─js  
+│    ├─--formwork 模板工程 Formwork
+│    │    └─--模板名称 Template Name
+│    │         ├─assets 静态资源 Static Resources
+│    │         ├─move 安装时覆盖的文件 Files overwritten during installation
+│    │         ├─skin 模板目录 Templates directory
+│    │         │   ├─ut-frame 公共模块模板 Common module template
+│    │         │   │    ├─admin 开发端模板 Development end template
+│    │         │   │    ├─cache 缓存 Cache
+│    │         │   │    └─front 客户端模板 Client template
+│    │         │   └─其他模块模板 Other module template
+│    │         └─usualtool.config 配置引导 Configure boot
 │    ├─--modules 模块 Module
 │    │    ├─--UTFrame  UT公共模块 UT Common Module
 │    │    │    ├─admin 后端文件夹 Back end folder
@@ -45,4 +65,3 @@ Support PHP 5/PHP7/PHP8 and other known upward distributions
 ```
 #### 相关开发文档 Development documentation
 http://frame.usualtool.com
-https://www.usualtool.com/UT/

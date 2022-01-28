@@ -1,10 +1,11 @@
-<ifmodule mod_rewrite.c>
+<IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
+    RewriteRule ^index\.php$ - [L]
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     #客户端
     RewriteRule ^((?!app/dev).)*$ index.php?$1
     #开发端
     RewriteRule ^app/dev/(.*)$ app/dev/index.php?$1
-</ifmodule>
+</IfModule>
