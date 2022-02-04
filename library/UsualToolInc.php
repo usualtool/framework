@@ -392,6 +392,53 @@ class UTInc{
         return $plugin;
     }
     /**
+     * 获取模板工程集合
+     * @return array
+     */
+    static function GetTemplate($type=0){
+        $template=array();
+        $config=UTInc::GetConfig();
+        if(empty($type) || $type==0){
+            $temp=scandir(APP_ROOT."/formwork/");
+            foreach($temp as $v){
+                $file=APP_ROOT."/formwork/".$v;
+                if(is_file($file."/usualtool.config")){
+                    $temps=file_get_contents($file."/usualtool.config");
+                    $temptype=UTInc::StrSubstr("<temptype>","</temptype>",$temps);
+                    if($temptype==2){
+                        $tid=UTInc::StrSubstr("<id>","</id>",$temps);
+                        $title=UTInc::StrSubstr("<title>","</title>",$temps);
+                        $auther=UTInc::StrSubstr("<auther>","</auther>",$temps);
+                        $description=UTInc::StrSubstr("<description>","</description>",$temps);
+                        $template[]=array("tid"=>$tid,"title"=>$title,"auther"=>$auther,"description"=>$description);
+                    }
+                }
+            }
+        }elseif($type==1){
+            $temps=UTInc::Auth($config["UTCODE"],$config["UTFURL"],"temp");
+            preg_match_all( "/\<temp\>(.*?)\<\/temp\>/s",$temps,$tempblocks);
+            foreach($tempblocks[1] as $temp){
+                preg_match_all("/\<tid\>(.*?)\<\/tid\>/",$temp,$tid);
+                preg_match_all("/\<title\>(.*?)\<\/title\>/",$temp,$title);
+                preg_match_all("/\<picurl\>(.*?)\<\/picurl\>/",$temp,$picurl);
+                preg_match_all("/\<lang\>(.*?)\<\/lang\>/",$temp,$lang);
+                preg_match_all("/\<isfree\>(.*?)\<\/isfree\>/",$temp,$isfree);
+                $template[]=array("tid"=>$tid[1][0],"title"=>$title[1][0],"picurl"=>$picurl[1][0],"lang"=>$lang[1][0],"isfree"=>$isfree[1][0]);
+            }
+        }elseif($type==2){
+            $temps=UTInc::Auth($config["UTCODE"],$config["UTFURL"],"temporder");
+            preg_match_all("/\<temp\>(.*?)\<\/temp\>/s",$temps,$tempblocks);
+            foreach($tempblocks[1] as $temp){
+                preg_match_all("/\<orderid\>(.*?)\<\/orderid\>/",$temp,$orderid);  
+                preg_match_all("/\<tempid\>(.*?)\<\/tempid\>/",$temp,$tid);  
+                preg_match_all("/\<title\>(.*?)\<\/title\>/",$temp,$title);
+                preg_match_all("/\<ordertime\>(.*?)\<\/ordertime\>/",$temp,$ordertime);
+                $template[]=array("orderid"=>$orderid[1][0],"tid"=>$tid[1][0],"title"=>$title[1][0],"ordertime"=>$ordertime[1][0]);
+            }
+        }
+        return $template;
+    }
+    /**
      * 是否安装UT可视化包
      * @return bool
      */
