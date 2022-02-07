@@ -815,14 +815,14 @@ class UTInc{
      */
     static function MoveDir($oldpath,$newpath){
         $handle=opendir($oldpath);
-        while(false!==($file = readdir($handle)) && $file!=="usualtool.config"){
+        while(false!==($file = readdir($handle))){
             $fileFrom=$oldpath.DIRECTORY_SEPARATOR.$file;
             $fileTo=$newpath.DIRECTORY_SEPARATOR.$file;
                 if($file=='.' || $file=='..'){
                     continue;
                 }
                 if(is_dir($fileFrom)){
-                    mkdir($fileTo,0777);
+                    @mkdir($fileTo,0777);
                     UTInc::MoveDir($fileFrom,$fileTo);
                 }else{
                     @copy($fileFrom,$fileTo);

@@ -51,7 +51,7 @@ CREATE TABLE `cms_plugin` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_search`;
-CREATE TABLE IF NOT EXISTS `cms_search` (
+CREATE TABLE `cms_search` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `hit` int(11) DEFAULT '1',
   `keyword` varchar(100) DEFAULT NULL,
@@ -59,12 +59,22 @@ CREATE TABLE IF NOT EXISTS `cms_search` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_search_set`;
-CREATE TABLE IF NOT EXISTS `cms_search_set` (
+CREATE TABLE `cms_search_set` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `dbs` varchar(50) DEFAULT NULL,
   `fields` varchar(100) DEFAULT NULL,
   `wheres` varchar(200) DEFAULT NULL,
   `pages` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `cms_template`;
+CREATE TABLE `cms_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tid` varchar(50) DEFAULT NULL,
+  `lang` varchar(20) DEFAULT NULL,
+  `title` varchar(50) DEFAULT NULL,
+  `makefront` int(11) DEFAULT '0',
+  `makeadmin` int(11) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_update`;
