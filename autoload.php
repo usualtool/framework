@@ -72,13 +72,13 @@ $isdevelop=library\UsualToolInc\UTInc::Contain("app/dev",library\UsualToolInc\UT
 /**
  * 开发端
  */
-if($config["FORMWORK_ADMIN"]!=0 && $isdevelop):
+if($config["FORMWORK_ADMIN"]!='0' && $isdevelop):
     $skin=$adminwork."/skin/".$m;
     $cache=$skin."/cache";
 /**
  * 客户端
  */
-elseif($config["FORMWORK_FRONT"]!=0 && !$isdevelop):
+elseif($config["FORMWORK_FRONT"]!='0' && !$isdevelop):
     $skin=$frontwork."/skin/".$m;
     $cache=$skin."/cache";
 /**
