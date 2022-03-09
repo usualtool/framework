@@ -15,24 +15,33 @@ use library\UsualToolInc;
 /**
  * 以静态方法操作MongoDB
  */
-class UTMongo {
-    /**
-     * 获取配置
-     */
-    public static function GetConfig(){
-        return UsualToolInc\UTInc::GetConfig();
-    } 
+class UTMongo{
     /**
      * 连接MongoDB
      */
     public static function GetMongo() {
-        $config=UTMongo::GetConfig();
+        $config=UsualToolInc\UTInc::GetConfig();
         if(PHP_VERSION>=7){
             $db=new \MongoDB\Driver\Manager("mongodb://".$config["MONGO_USER"].":".$config["MONGO_PASS"]."@".$config["MONGO_HOST"].":".$config["MONGO_PORT"]."/".$config["MONGO_DB"]);
         }else{
             $db=new \MongoDB\Driver\Manager("mongodb://".$config["MONGO_HOST"].":".$config["MONGO_PORT"]."/".$config["MONGO_DB"]);
         }
         return $db;
+    }
+    /**
+     * 判断文档是否存在
+     * @param string $table
+     * @return bool
+     */
+    public static function ModTable($table){
+        $db=UTMongo::GetMongo();
+        $filter=["name"=>['$regex'=>'\sw\d']];
+        $query=["limit"=>1];
+        if(empty(UTMongo::QueryData($table,$filter,$query))){
+            return false;
+        }else{
+            return true;
+        }
     }
     /**
      * 获取数据
@@ -56,7 +65,7 @@ class UTMongo {
      * @param array  $writeOps  参数
      * @return array
      */
-    public static function InsertData($table,array $documents,array $writeOps=[]) {
+    public static function InsertData($table,array $documents,array $writeOps=[]){
         $cmd = [
             "insert"=> $table,
             "documents"=> $documents,
@@ -108,7 +117,7 @@ class UTMongo {
      * @return array
      */
     public static function Command(array $param) {
-        $config=UTMongo::GetConfig();
+        $config=UsualToolInc\UTInc::GetConfig();
         $db=UTMongo::GetMongo();
         $cmd = new \MongoDB\Driver\Command($param);
         $data=$db->executeCommand($config["MONGO_DB"],$cmd);

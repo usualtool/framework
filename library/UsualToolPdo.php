@@ -35,11 +35,20 @@ class UTPdo{
    * @param string $where 查询条件
    * @param string $order 排序方式，例：id desc/id asc
    * @param string|int $limit 数据显示数目，例：10
+   * @param string $lang 是否开启语言识别
    * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
    */
-  public static function QueryData($table,$field='',$where='',$order='',$limit=''){
+  public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
       $field=empty($field) ? "*" : $field;
-      $where=empty($where) ? "" : "where ".$where;
+      if($lang!="0"):
+          if(is_numeric($lang)):
+              $where=empty($where) ? "where lang='$language'" : "where lang='$language' and ".$where;
+          else:
+              $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where;
+          endif;
+      else:
+          $where=empty($where) ? "" : "where ".$where;
+      endif;
       $order=empty($order) ? "" : "order by ".$order;
       $limit=empty($limit) ? "" : "top ".$limit;
       $sql="select ".$limit." ".$field." from ".$table." ".$where." ".$order;

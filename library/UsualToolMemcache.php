@@ -13,14 +13,13 @@ use library\UsualToolInc;
        * --------------------------------------------------------                
 */
 /**
- * 以实例方法操作Memcache
+ * 以静态方法操作Memcache
  */
 class UTMemcache{
-    public $db='';
-    public function __construct(){
+    public static function GetMemcache(){
         $config=UsualToolInc\UTInc::GetConfig();
-        $memcache=new \Memcached();
-        $memcache->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
+        $db=new \Memcached();
+        $db->setOption(\Memcached::OPT_BINARY_PROTOCOL,true);
         if(strpos($config["MEMCACHE_HOST"],",")!==false){
             $server=array();
             $hosts=explode(',',$config["MEMCACHE_HOST"]);
@@ -29,124 +28,101 @@ class UTMemcache{
             for($i=0;$i<count($hosts);$i++){
                 $server[]=array($hosts[$i],$ports[$i],$you);
             }
-            $memcache->addServers($server);
+            $db->addServers($server);
         }else{
-            $memcache->addServer($config["MEMCACHE_HOST"],$config["MEMCACHE_PORT"]);
+            $db->addServer($config["MEMCACHE_HOST"],$config["MEMCACHE_PORT"]);
         }
         if(!empty($config["MEMCACHE_USER"]) && !empty($config["MEMCACHE_PASS"])){
-            $memcache->setSaslAuthData($config["MEMCACHE_USER"],$config["MEMCACHE_PASS"]);
+            $db->setSaslAuthData($config["MEMCACHE_USER"],$config["MEMCACHE_PASS"]);
         }
-        $this->db=$memcache;
+        return $db;
     }
     /**
-     * 增加一个元素，存在失败，不存在创建
+     * 判断元素是否存在
      * @param string $key 键
-     * @param string $value 值
-     * @param int $time 过期时间
      * @return bool
      */
-    public function Add($key,$value,$time='0'){
-        if($this->db->add($key,$value,$time)){
+    public static function ModTable($key){
+        $db=UTMemcache::GetMemcache();
+        $res=$db->get($key);
+        if(!$res){
+            return false;
+        }else{
             return true;
-        }else{
-            return false;
         }
     }
     /**
-     * 向已存在元素后追加数据
-     * @param string $key 键
-     * @param string $value 值
-     * @return bool
-     */
-    public function Append($key,$value){
-        return $this->db->append($key,$value);
-    }
-    /**
-     * 增加一个元素，存在替换，不存在创建
-     * @param string $key 键
-     * @param string $value 值
-     * @param int $time 过期时间
-     * @return bool
-     */
-    public function Set($key,$value,$time='0'){
-        return $this->db->set($key,$value,$time);
-    }
-    /**
-     * 增加多个元素
-     * @param array $data 键值对数组
-     * @param int $time 过期时间
-     * @return bool
-     */
-    public function SetMulti($data,$time='0'){
-        return $this->db->setMulti($setMulti,$time);
-    }
-    /**
-     * 向存在的元素追加数据
-     * @param string $key 键
-     * @param string $value 追加数据
-     * @return bool
-     */
-    public function Prepend($key,$value){
-        $msg=$this->db->get($key);
-        if(!$msg){
-            return false;
-        }else{
-            return $this->db->prepend($key,$value);
-        }
-    }
-    /**
-     * 替换存在的元素，存在成功，不存在失败
-     * @param string $key 键
-     * @param string $value 值
-     * @param int $time 过期时间
-     * @return bool
-     */
-    public function Replace($key,$value,$time='0'){
-        $msg=$this->db->get($key);
-        if(!$msg){
-            return false;
-        }else{
-            return $this->db->replace($key,$value,$time);
-        }
-    }
-    /**
-     * 获取一个元素
+     * 查询元素
      * @param string $key 键
      * @return bool/string/array
      */
-    public function Get($key){
-        $msg=$this->db->get($key);
+    public static function QueryData($key){
+        $db=UTMemcache::GetMemcache();
+        $msg=$db->get($key);
         if(!$msg){
             return false;
         }
         return $msg;
     }
     /**
-     * 删除一个元素
+     * 创建元素
+     * @param string $key 键
+     * @param string|array $data 值
+     * @param int $time 过期时间，0不设置过期时间，1设置过期时间为DBCACHE_TIME
+     * @return bool
+     */
+    public static function InsertData($key,$data,$time='0'){
+        $config=UsualToolInc\UTInc::GetConfig();
+        $db=UTMemcache::GetMemcache();
+        if($time==0){
+            return $db->set($key,$data,0);
+        }else{
+            return $db->set($key,$data,$config["DBCACHE_TIME"]);
+        }
+    }
+    /**
+     * 更新元素
+     * @param string $key 键
+     * @param string $value 值
+     * @param int $time 过期时间
+     * @return bool
+     */
+    public static function UpdateData($key,$data,$time='0'){
+        $db=UTMemcache::GetMemcache();
+        if(!UTMemcache::ModTable($key)){
+            return false;
+        }else{
+            return $db->replace($key,$data,$time);
+        }
+    }
+    /**
+     * 删除元素
      * @param string $key 键
      * @param int $time 删除等待时间
      * @return bool
      */
-    public function Del($key,$time='0'){
-        $msg=$this->db->get($key);
-        if(!$msg){
+    public static function DelData($key,$time='0'){
+        $db=UTMemcache::GetMemcache();
+        if(!UTMemcache::ModTable($key)){
             return false;
         }else{
-            return $this->db->delete($key,$time);
+            return $db->delete($key,$time);
         }
     }
     /**
-     * 作废缓存中的所有元素
+     * 清空元素
      * @return bool
     */
-    public function DelAll(){
-        return $this->db->flush();
+    public static function Clear(){
+        $db=UTMemcache::GetMemcache();
+        return $db->flush();
     }
     /**
      * 获取服务器池的统计信息
      * @return array
      */
-    public function Status(){
-        return $this->db->getStats();
+    public static function Status(){
+        $db=UTMemcache::GetMemcache();
+        return $db->getStats();
     }
 }
