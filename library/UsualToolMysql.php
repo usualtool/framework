@@ -82,7 +82,7 @@ class UTMysql{
      * @param string $order 排序方式，例：id desc/id asc
      * @param string|int $limit 数据显示数目，例：0,5/1
      * @param string $lang 是否开启语言识别
-     * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+     * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
         global$language;
@@ -102,7 +102,8 @@ class UTMysql{
         if(UTMysql::ModTable($table)):
             $sql="select ".$field." from `".$table."` ".$where." ".$order." ".$limit;
             $query=$db->query($sql);
-            $querynum=mysqli_num_rows($query);
+            $curnum=mysqli_num_rows($query);
+            $querynum=empty($limit) ? $curnum : UTMysql::QueryNum("select ".$field." from ".$table." ".$where." ".$order);
             $querydata=array(); 
             $xu=0;
             while($rows=mysqli_fetch_array($query,MYSQLI_ASSOC)):
@@ -114,9 +115,9 @@ class UTMysql{
                 $rows['xu']=$xu;
                 array_push($querydata,$rows);
             endwhile;
-            return array("querydata"=>$querydata,"querynum"=>$querynum);
+            return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
         else:
-            return array("querydata"=>array(),"querynum"=>0);
+            return array("querydata"=>array(),"curnum"=>0,"querynum"=>0);
         endif;
     }
     /**
@@ -289,5 +290,15 @@ class UTMysql{
             array_push($searchdata,$rows);
         endwhile;
         return array("searchdata"=>$searchdata,"searchnum"=>$searchnum);	
+    }
+    /**
+     * 统计记录数目
+     * @param string $sql SQL语句
+     * @return int
+     */
+    public static function QueryNum($sql){
+        $db=UTMysql::GetMysql();
+        $query=$db->query($sql);
+        return mysqli_num_rows($query);
     }
 }

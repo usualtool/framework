@@ -36,7 +36,7 @@ class UTPdo{
    * @param string $order 排序方式，例：id desc/id asc
    * @param string|int $limit 数据显示数目，例：10
    * @param string $lang 是否开启语言识别
-   * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+   * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
    */
   public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
       $field=empty($field) ? "*" : $field;
@@ -50,17 +50,24 @@ class UTPdo{
           $where=empty($where) ? "" : "where ".$where;
       endif;
       $order=empty($order) ? "" : "order by ".$order;
-      $limit=empty($limit) ? "" : "top ".$limit;
-      $sql="select ".$limit." ".$field." from ".$table." ".$where." ".$order;
+      $config=UsualToolInc\UTInc::GetConfig();
+      if(strpos($config['PDO_DSN'],'sqlsrv')!==false):
+        $limit=empty($limit) ? "" : "top ".$limit;
+        $sql="select ".$limit." ".$field." from ".$table." ".$where." ".$order;
+      else:
+        $limit=empty($limit) ? "" : "limit ".$limit;
+        $sql="select ".$field." from ".$table." ".$where." ".$order." ".$limit;
+      endif;
       $db=UTPdo::GetPdo();
       $array = array();
       $res=$db->query($sql);
-      $i=0;
+      $curnum=0;
       while($rows=$res->fetch()){
-        $i++;
+        $curnum++;
         $array[]=$rows;
       }
-      $data=array("querydata"=>$array,"querynum"=>$i);
+      $querynum=empty($limit) ? $curnum : UTPdo::QueryNum("select count(*) from ".$table." ".$where." ".$order);
+      $data=array("querydata"=>$array,"curnum"=>$curnum,"querynum"=>$querynum);
       return $data;
   }
   /**
@@ -70,9 +77,9 @@ class UTPdo{
    * @return bool 
    */
   public static function InsertData($table,$data){
-      $db=UTPdo::GetPdo();
+    $db=UTPdo::GetPdo();
       $sql="insert into ".$table." (".implode(',',array_keys($data)).") values ('".implode("','",array_values($data))."')";
-      $db->query($sql);
+      $db->exec($sql);
       $query=$db->lastInsertId();
       if($query):
           return $query;
@@ -123,5 +130,15 @@ class UTPdo{
       else:
           return false;
       endif;
+  }
+  /**
+   * 统计记录数目
+   * @param string $sql SQL语句
+   * @return int
+   */
+  public static function QueryNum($sql){
+      $db=UTPdo::GetPdo();
+      $query=$db->query($sql);
+      return $query->fetchColumn();
   }
 }

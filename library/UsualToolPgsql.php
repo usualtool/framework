@@ -65,7 +65,7 @@ class UTPgsql{
      * @param string $order 排序方式，例：id desc/id asc
      * @param string|int $limit 数据显示数目，例：10
      * @param string $lang 是否开启语言识别
-     * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+     * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
         $field=empty($field) ? "*" : $field;
@@ -84,11 +84,12 @@ class UTPgsql{
 		$db=UTPgsql::GetPgsql();
         $array = array();
         $result = @pg_query($db,$sql);
-        $querynum=@pg_num_rows($result);
+        $curnum=@pg_num_rows($result);
+        $querynum=empty($limit) ? $curnum : UTPgsql::QueryNum("select ".$field." from ".$table." ".$where." ".$order);
         while($rows=@pg_fetch_object($result)){
             $array[] = UTPgsql::ObjectToArray($rows);
         }
-        $data=array("querydata"=>$array,"querynum"=>$querynum);
+        $data=array("querydata"=>$array,"curnum"=>$curnum,"querynum"=>$querynum);
         return $data;
     }
     /**
@@ -234,6 +235,16 @@ class UTPgsql{
             }
         }
         return $ret;
+    }
+    /**
+     * 统计记录数目
+     * @param string $sql SQL语句
+     * @return int
+     */
+    public static function QueryNum($sql){
+        $db=UTPgsql::GetPgsql();
+        $query = @pg_query($db,$sql);
+        return @pg_num_rows($query);
     }
     /**
      * 释放查询（pg_query）内存，终止结果

@@ -76,10 +76,9 @@ class UTData{
      * @param string|int $limit 数据显示数目，例：0,5/1
      * @param string $lang 是否开启语言识别，默认0关闭，当需要开启时，该参数填写>0的数字，自动获取全局的语言参数，也可以直接填写语言参数zh/en/ja等
      * @param string $cache 是否开启缓存，默认0关闭，需要开启时，该参数填写key名称
-     * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+     * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0',$cache='0'){
-        $config=UsualToolInc\UTInc::GetConfig();
         if($cache==0){
             if(UTData::GetDb()=="pdo"){
                 $data=UsualToolPdo\UTPdo::QueryData($table,$field,$where,$order,$limit,$lang);
@@ -255,5 +254,26 @@ class UTData{
         else:
             return array();
         endif;
+    }
+    /**
+     * 获取记录数目
+     * @param string $sql SQL语句
+     * @return int 
+     */
+    public static function QueryNum($sql){
+            if(UTData::GetDb()=="pdo"){
+                $data=UsualToolPdo\UTPdo::QueryNum($sql);
+            }elseif(UTData::GetDb()=="mysql"){
+                $data=UsualToolMysql\UTMysql::QueryNum($sql);
+            }elseif(UTData::GetDb()=="mssql"){
+                $data=UsualToolMssql\UTMssql::QueryNum($sql);
+            }elseif(UTData::GetDb()=="pgsql"){
+                $data=UsualToolPgsql\UTPgsql::QueryNum($sql);
+            }elseif(UTData::GetDb()=="sqlite"){
+                $data=UsualToolSqlite\UTSqlite::QueryNum($sql);
+            }else{
+                $data=array();
+            }
+            return $data;
     }
 }

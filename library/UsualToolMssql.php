@@ -67,7 +67,7 @@ class UTMssql{
      * @param string $order 排序方式，例：id desc/id asc
      * @param string|int $limit 数据显示数目，例：10
      * @param string $lang 是否开启语言识别
-     * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+     * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
         $field=empty($field) ? "*" : $field;
@@ -87,9 +87,9 @@ class UTMssql{
             $db=UTMssql::GetMssql();
             $array = array();
             $result = sqlsrv_query($db,$sql);
-            $i=0;
+            $curnum=0;
             while($rows=UTMssql::FetchArray($result)){
-                $i++;
+                $curnum++;
                 if($field!="*"){
                     $key = $r[$field];
                     $array[$key] = $rows;
@@ -97,9 +97,10 @@ class UTMssql{
                     $array[] = UTMssql::ObjectToArray($rows);
                 }
             }
-            return array("querydata"=>$array,"querynum"=>$i);
+            $querynum=empty($limit) ? $curnum : UTMssql::QueryNum("select ".$field." from ".$table." ".$where." ".$order);
+            return array("querydata"=>$array,"curnum"=>$curnum,"querynum"=>$querynum);
         else:
-            return array("querydata"=>array(),"querynum"=>0);
+            return array("querydata"=>array(),"curnum"=>$curnum,"querynum"=>0);
         endif;
     }
     /**
@@ -209,9 +210,9 @@ class UTMssql{
     public static function FigureData($table,$field,$where='',$limit=''){
         $db=UTMssql::GetMssql();
         $where=empty($where) ? "" : "where ".$where;
-        $limit=empty($limit) ? "" : "limit ".$limit;
+        $limit=empty($limit) ? "" : "top ".$limit;
         if(UTMssql::ModTable($table)):
-            $sql="SELECT ".$field." from ".$table." ".$where." ".$limit;
+            $sql="SELECT ".$limit." ".$field." from ".$table." ".$where;
             $query = sqlsrv_query($db,$sql);
             $figuredata=array(); 
             while($rows=UTMssql::FetchArray($query)):
@@ -250,13 +251,26 @@ class UTMssql{
     public static function ObjectToArray($obj){
         $ret = array();
         foreach($obj as $key => $value){
-            if(is_array($value) || is_object($value)){
+            if(is_array($value)){
+                $ret[$key] = UTMssql::ObjectToArray($value);
+            }elseif(is_object($value)){
+                $value=(array)$value;
                 $ret[$key] = UTMssql::ObjectToArray($value);
             }else{
                 $ret[$key] = $value;
             }
         }
         return $ret;
+    }
+    /**
+     * 统计记录数目
+     * @param string $sql SQL语句
+     * @return int
+     */
+    public static function QueryNum($sql){
+        $db=UTMssql::GetMssql();
+        $query=sqlsrv_query($db,$sql,array(),array("Scrollable"=>'static'));
+        return sqlsrv_num_rows($query);
     }
     /**
      * 将GBK转UTF-8
@@ -276,5 +290,12 @@ class UTMssql{
 	public static function Close(){
         $db=UTMssql::GetMssql();
 		sqlsrv_close($db);
-	}
+    }
+    /**
+     * 获取版本号
+     */ 
+	public static function Ver(){
+        $db=UTMssql::GetMssql();
+        return sqlsrv_server_info($db);
+    }
 }
