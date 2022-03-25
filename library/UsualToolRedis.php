@@ -26,6 +26,7 @@ class UTRedis{
         if($config["REDIS_PASS"]!="UT"):
             $db->auth($config["REDIS_PASS"]);
         endif;
+        return $db;
     }
     /**
      * 判断元素是否存在
