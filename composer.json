@@ -11,6 +11,6 @@
         "homepage":     "http://www.usualtool.com"
     }],
     "require": {
-        "php": ">=7.4"
+        "php": ">=5.2"
     }
 }
