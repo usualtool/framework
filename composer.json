@@ -1,0 +1,16 @@
+{
+    "name":             "usualtool/UT",
+    "description":      "PHP development framework.",
+    "keywords":         ["ut", "usualtool", "UT Framework"],
+    "homepage":         "http://frame.usualtool.com",
+    "time":             "2022-03-27",
+    "license":          "Apache2.0",
+    "authors": [{
+        "name":         "HuangDou",
+        "email":        "292951110@qq.com",
+        "homepage":     "http://www.usualtool.com"
+    }],
+    "require": {
+        "php": ">=7.4"
+    }
+}
