@@ -8,7 +8,6 @@
         "email":        "292951110@qq.com"
     }],
     "require": {
-        "usualtool/ut": "dev-master"
     },
     "minimum-stability": "dev"
 }
