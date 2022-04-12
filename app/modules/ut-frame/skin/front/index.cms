@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><{$title}></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="UT" />
+    <meta name="Description" content="UT框架" />
+</head>
+<body>
+<div style='width:400px;padding:10px;'>
+    <p>/**</p> 
+    <p>* 恭喜您已成功运行UT框架。<{if $setup==0}>您未安装UT可视化开发包<{/if}></p> 
+    <p>* --------------------------------------------------------</p>      
+    <p align='center'><span style='font-size:30px;font-weight:bold;color:#2ca090;'>▙▟ ▜▛</p>
+    <p>*   Author:HuangDou   Email:usualtool@qq.com</p>
+    <p>*   QQ-Group:583610949</p>
+    <p>*   WebSite:http://www.UsualTool.com</p>
+    <p>*   UT Framework is suitable for Apache2 protocol.</p>
+    <p>* --------------------------------------------------------</p>
+    <p>*/</p>
+</div>
+</body>
+</html>
