@@ -359,8 +359,35 @@ class UTCli{
         endif;
     }
     /**
-     * 帮助
+     * Swoole命令
      * @param array $array
+     * @return string
+     */
+    public static function Swoole($array){
+        require_once UTF_ROOT.'/'.'vendor/autoload.php';
+        if(count($array)>2):
+            $server=$array[2];
+            $host=$array[3];
+            $port=$array[4];
+            if($server=="http"):
+                $server=new \usualtool\Swoole\Http($host,$port);
+            elseif($server=="proxy"):
+                $server=new \usualtool\Swoole\Proxy($host,$port,$array[5]);
+            elseif($server=="websocket"):
+                $server=new \usualtool\Swoole\Websocket($host,$port);
+            elseif($server=="pool"):
+                $server=new \usualtool\Swoole\Pool($host,$port);
+            elseif($server=="queue"):
+                $server=new \usualtool\Swoole\Queue($host,$port);
+            endif;
+            $server->Run();
+        else:
+            echo"Swoole命令错误\r\n";
+            echo"该命令在安装ut-swoole依赖后生效\r\n";
+        endif;
+    }
+    /**
+     * 帮助
      * @return string
      */
     public static function Help(){
@@ -376,6 +403,7 @@ class UTCli{
         echo"php usualtool install module [name] [1/2/3] 安装模块\r\n";
         echo"php usualtool install plugin [name] [1/2/3] 安装插件\r\n";
         echo"php usualtool install formwork [name] [1/2/3] 安装整站模板工程\r\n";
+        echo"php usualtool swoole [name] [host] [port] ... swoole协程命令\r\n";
     }
     /**
      * 获取当前UT版本号
