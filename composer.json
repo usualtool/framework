@@ -1,0 +1,13 @@
+{
+    "name":             "usualtool/framework",
+    "description":      "UT Framework is based on PHP multi-end development framework, class library perfect, suitable for the development of various types of applications.",
+    "keywords":         ["UT", "usualtool", "UT Framework"],
+    "homepage":         "http://frame.usualtool.com",
+    "license": "Apache-2.0",
+    "authors": [{
+        "name":         "HuangDou",
+        "email":        "292951110@qq.com"
+    }],
+    "require": {
+    }
+}
