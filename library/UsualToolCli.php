@@ -387,6 +387,26 @@ class UTCli{
         endif;
     }
     /**
+     * Workerman命令
+     * @param array $array
+     * @return string
+     */
+    public static function Workerman($array){
+        require_once UTF_ROOT.'/'.'vendor/autoload.php';
+        $server=$array[2];
+            if($server=="start"):
+                if(in_array('-d',$array)):
+                    $server=new \usualtool\Workerman\Start($array[4]);
+                else:
+                    $server=new \usualtool\Workerman\Start($array[3]);
+                endif; 
+            elseif($server=="restart"):
+                $server=new \usualtool\Workerman\Start($array[3]);
+            elseif($server=="stop" || $server=="status" || $server=="reload"):
+                $server=new \usualtool\Workerman\Start();
+            endif;
+    }
+    /**
      * 帮助
      * @return string
      */
@@ -404,6 +424,8 @@ class UTCli{
         echo"php usualtool install plugin [name] [1/2/3] 安装插件\r\n";
         echo"php usualtool install formwork [name] [1/2/3] 安装整站模板工程\r\n";
         echo"php usualtool swoole [name] [host] [port] ... swoole协程命令\r\n";
+        echo"php usualtool kafka [host] [topic] kafka命令\r\n";
+        echo"php usualtool workerman start ... workerman命令\r\n";
     }
     /**
      * 获取当前UT版本号
