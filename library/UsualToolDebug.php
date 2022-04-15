@@ -17,19 +17,19 @@ class UTDebug{
         $file=str_replace(UTF_ROOT,"",$debug["file"]);
         $line=$debug["line"];
         if($type==1 || $type==16 || $type==64 || $type==256 || $type==4096){
-            $typetext="致命错误";
+            $typetext="Fatal";
         }elseif($type==2|| $type==32 || $type==128 || $type==512){
-            $typetext="运行警告";
+            $typetext="Warning";
         }elseif($type==4){
-            $typetext="解析错误";
+            $typetext="Error";
         }elseif($type==8){
-            $typetext="运行通知";
+            $typetext="Notice";
         }else{
-            $typetext="其他错误";
+            $typetext="Other";
         }
         if($mode==1){
             echo"<div class='pt-2 pb-2 bg-dark text-white text-center' style='width:100%;position:fixed;left:0px;z-index:105;bottom:0px;'>";
-            echo"调试结果：".$file." 第".$line."行".$typetext."：".$message;
+            echo"Result:".$file." ".$line." line ".$typetext.":".$message;
             echo"</div>";
         }
         $thisbug=array(
@@ -38,7 +38,7 @@ class UTDebug{
             "file"=>$file,
             "line"=>$line,
             "message"=>$message);
-        $old=file_get_contents(PUB_PATH."/debug/app_debug.log");
+        $old=file_get_contents(APP_ROOT."/log/debug.log");
         if(!empty($old)){
             $arr[]=$thisbug;
             $old_data=json_decode($old,true);
@@ -49,6 +49,6 @@ class UTDebug{
         }else{
             $string=json_encode(array($thisbug),JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
         }
-        file_put_contents(PUB_PATH."/debug/app_debug.log",$string);
+        file_put_contents(APP_ROOT."/log/debug.log",$string);
     }
 }

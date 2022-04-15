@@ -12,7 +12,7 @@
 */
 require_once dirname(dirname(__FILE__)).'/'.'autoload.php';
 use library\UsualToolInc\UTInc;
-use library\UsualToolData\UTData;
+use library\UsualToolMysql\UTMysql;
 if(UTInc::SearchFile(UTF_ROOT."/install-dev/usualtool.lock")):
    header("location:../");
    exit();
@@ -22,7 +22,7 @@ $sysinfo=UTInc::GetSystemInfo();
 $do=UTInc::SqlCheck($_GET["do"]);
 if($do=="db-test"){
    $data=array();
-   $db=UTData::TestDataBase($_POST["DBHOST"],$_POST["DBPORT"],$_POST["DBUSER"],$_POST["DBPASS"],$_POST["DBNAME"]);
+   $db=UTMysql::TestDataBase($_POST["DBHOST"],$_POST["DBPORT"],$_POST["DBUSER"],$_POST["DBPASS"],$_POST["DBNAME"]);
    if(!$db){
       echo"UT-NO";
    }else{
@@ -44,10 +44,10 @@ if($do=="db-save"){
     <title>UT框架可视化</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="<?php echo$config["APPURL"];?>/app/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo$config["APPURL"];?>/app/assets/css/fontawesome.min.css">
-    <script src="<?php echo$config["APPURL"];?>/app/assets/js/jquery.min.js"></script>
-    <script src="<?php echo$config["APPURL"];?>/app/assets/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="//cdn.staticfile.org/bootstrap/4.6.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="//cdn.staticfile.org/jquery/3.1.0/jquery.min.js"></script>
+    <script src="//cdn.staticfile.org/bootstrap/4.5.3/js/bootstrap.min.js"></script>
     <style>p {margin-bottom:0rem;font-size:14px;}.fontsmall{font-size:12px;}#license p{font-size:11px;}</style>
 </head>
 <body>
@@ -75,27 +75,27 @@ if($do=="db-save"){
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">数据库服务器:</label>
-                     <input class="form-control" name="DBHOST" id="DBHOST" value="localhost">
+                     <input class="form-control" name="MYSQL_HOST" id="MYSQL_HOST" value="localhost">
                   </div>
                   <div class="form-group col-md-6">
                      <label for="email">端口:</label>
-                     <input class="form-control" name="DBPORT" id="DBPORT" value="3306">
+                     <input class="form-control" name="MYSQL_PORT" id="MYSQL_PORT" value="3306">
                   </div>
                </div>
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">数据库用户:</label>
-                     <input class="form-control" name="DBUSER" id="DBUSER">
+                     <input class="form-control" name="MYSQL_USER" id="MYSQL_USER">
                   </div>
                   <div class="form-group col-md-6">
                      <label for="email">数据库密码:</label>
-                     <input class="form-control" name="DBPASS" id="DBPASS">
+                     <input class="form-control" name="MYSQL_PASS" id="MYSQL_PASS">
                   </div>
                </div>
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">数据库名称:</label>
-                     <input class="form-control" name="DBNAME" id="DBNAME">
+                     <input class="form-control" name="MYSQL_DB" id="MYSQL_DB">
                   </div>
                </div>
                <div class="row">
@@ -111,11 +111,11 @@ if($do=="db-save"){
                    url:'?do=db-test',
                    type:"post",
                    data:{
-                        'DBHOST':$("#DBHOST").val(),
-                        'DBPORT':$("#DBPORT").val(),
-                        'DBNAME':$("#DBNAME").val(),
-                        'DBUSER':$("#DBUSER").val(),
-                      'DBPASS':$("#DBPASS").val()
+                        'DBHOST':$("#MYSQL_HOST").val(),
+                        'DBPORT':$("#MYSQL_PORT").val(),
+                        'DBNAME':$("#MYSQL_DB").val(),
+                        'DBUSER':$("#MYSQL_USER").val(),
+                        'DBPASS':$("#MYSQL_PASS").val()
                     },
                     dataType: "text",
                    success: function(data){
@@ -139,13 +139,13 @@ if($do=="db-save"){
                   <hr/>
                   <?php
                   if($_GET["t"]=="db-sql"){
-                     $sql=file_get_contents("./UT.sql");
+                     $sql=file_get_contents("./UTDev.sql");
                      $arr=explode(';',$sql);
                      $total=count($arr)-1;
                      $c=0;
                      for($i=0;$i<$total;$i++){
                         $k=$i+1;
-                        $result=UTData::RunSql($arr[$i]);
+                        $result=UTMysql::RunSql($arr[$i]);
                         if($result){
                            echo"<p class='fontsmall'>第".$k."条SQL执行成功!</p>";
                         }else{
@@ -193,15 +193,15 @@ if($do=="db-save"){
                   echo"<p>请再次检查文件夹权限!</p>";
                }else{
                   if($_GET["t"]=="db-dev"){
-                     $res=UTInc::SaveFile("http://frame.usualtool.com/down/UT-DEV.zip",UTF_ROOT."/update","UT-DEV.zip",1);
+                     $res=UTInc::SaveFile("http://frame.usualtool.com/down/UTDev.zip",UTF_ROOT."/update","UTDev.zip",1);
                      if(!empty($res)){
                         $zip=new ZipArchive;
-                        if($zip->open(UTF_ROOT."/update/UT-DEV.zip")===TRUE){ 
+                        if($zip->open(UTF_ROOT."/update/UTDev.zip")===TRUE){ 
                             $zip->extractTo(UTF_ROOT."/update/");
                             $zip->close();
-                            UTInc::MoveDir(UTF_ROOT."/update/UT-DEV/",UTF_ROOT);
-                            UTInc::DelDir(UTF_ROOT."/update/UT-DEV/");
-                            unlink(UTF_ROOT."/update/UT-DEV.zip");
+                            UTInc::MoveDir(UTF_ROOT."/update/UTDev/",UTF_ROOT);
+                            UTInc::DelDir(UTF_ROOT."/update/UTDev/");
+                            unlink(UTF_ROOT."/update/UTDev.zip");
                             file_put_contents("./usualtool.lock","lock");
                             echo "<script>alert('UT可视化部署成功!');window.location.href='../app/dev/'</script>";
                         }else{

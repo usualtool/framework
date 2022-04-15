@@ -9,7 +9,7 @@
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------  
-       后端控制示例结构，权限控制文件需自行编写，可参考可视化包。
+       后端控制器示例结构，权限控制文件需自行编写，可参考可视化包。
 */
 require dirname(dirname(__FILE__)).'/'.'config.php';
 use library\UsualToolInc\UTInc;
