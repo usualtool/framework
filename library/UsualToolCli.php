@@ -411,8 +411,17 @@ class UTCli{
      * @return string
      */
     public static function Help(){
+        echo"* --------------------------------------------------\r\n";  
+        echo"*  |              ___   ___   ___ __ ___          |\r\n";           
+        echo"*  |             /  /  /  /  /___   ___/          |\r\n";       
+        echo"*  |            /  /__/  /      /  /              |\r\n";      
+        echo"*  |           /___ ___ /      /__/               |\r\n";      
+        echo"*  |                                              |\r\n";     
+        echo"*  |         @huangdou 292951110@qq.com           |\r\n";    
+        echo"* --------------------------------------------------\r\n";        
         echo"usualtool命令列表\r\n";
         echo"1个中括号代表整1个参数，实际命令中不需要加中括号\r\n";
+        echo"参考地址:http://frame.usualtool.com/baike/function.php?do=PHP-Cli\r\n";
         echo"php usualtool 命令帮助\r\n";
         echo"php usualtool help 命令帮助\r\n";
         echo"php usualtool key 验证UT令牌的合法性\r\n";
@@ -425,7 +434,7 @@ class UTCli{
         echo"php usualtool install formwork [name] [1/2/3] 安装整站模板工程\r\n";
         echo"php usualtool swoole [name] [host] [port] ... swoole协程命令\r\n";
         echo"php usualtool kafka [host] [topic] kafka命令\r\n";
-        echo"php usualtool workerman start ... workerman命令\r\n";
+        echo"php usualtool workerman [start/reload/stop/restart] [host] ... workerman命令\r\n";
     }
     /**
      * 获取当前UT版本号
