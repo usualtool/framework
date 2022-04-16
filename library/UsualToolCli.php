@@ -27,9 +27,14 @@ class UTCli{
         if(count($array)>1):
             $cli=ucwords($array[1]);
         else:
-            $cli="help";
+            $cli="Help";
         endif;
-        UTCli::$cli($array);
+        if(method_exists(UTCli::class,$cli)):
+            UTCli::$cli($array);
+        else:
+            $cli=str_replace("/","\\",$array[1]);
+            $cli();
+        endif;
     }
     /**
      * 打印参数
@@ -427,6 +432,7 @@ class UTCli{
         echo"php usualtool key 验证UT令牌的合法性\r\n";
         echo"php usualtool version 获取当前UT框架版本号\r\n";
         echo"php usualtool print [param] [param] ... 打印参数\r\n";
+        echo"php usualtool [path/class::function] 自定义命令行\r\n";
         echo"php usualtool module [name] 创建模块\r\n";
         echo"php usualtool plugin [name] 创建插件\r\n";
         echo"php usualtool install module [name] [1/2/3] 安装模块\r\n";
