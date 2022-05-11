@@ -304,7 +304,7 @@ class UTCli{
                         echo"插件安装失败\r\n";
                     endif;   
                 endif;
-            elseif($type=="formwork"):
+            elseif($type=="template"):
                 echo"整站模板工程安装中...\r\n";
                 if($number!="-2"):
                     if($number=="-1"):
@@ -314,16 +314,16 @@ class UTCli{
                     endif;
                     $downurl=UsualToolInc\UTInc::StrSubstr("<downurl>","</downurl>",$down);
                     $filename=basename($downurl);
-                    $res=UsualToolInc\UTInc::SaveFile($downurl,APP_ROOT."/formwork",$filename,1);
+                    $res=UsualToolInc\UTInc::SaveFile($downurl,APP_ROOT."/template",$filename,1);
                     if(!empty($res)):
                         UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"tempdel_".str_replace(".zip","",$filename)."");
                         $zip=new \ZipArchive;
-                        if($zip->open(APP_ROOT."/formwork/".$filename)===TRUE): 
-                            $zip->extractTo(APP_ROOT."/formwork/");
+                        if($zip->open(APP_ROOT."/template/".$filename)===TRUE): 
+                            $zip->extractTo(APP_ROOT."/template/");
                             $zip->close();
-                            unlink(APP_ROOT."/formwork/".$filename);
+                            unlink(APP_ROOT."/template/".$filename);
                         else:
-                           echo "formwork目录775权限不足\r\n";
+                           echo "template目录775权限不足\r\n";
                            exit();
                         endif;
                     else:
@@ -331,17 +331,17 @@ class UTCli{
                         exit();
                     endif;
                 endif;
-                UsualToolInc\UTInc::MoveDir(APP_ROOT."/formwork/".$name."/move",UTF_ROOT);
-                $pconfig=APP_ROOT."/formwork/".$name."/usualtool.config";
-                $formwork=file_get_contents($pconfig);
-                $id=UsualToolInc\UTInc::StrSubstr("<id>","</id>",$formwork);
-                $type=UsualToolInc\UTInc::StrSubstr("<type>","</type>",$formwork);
-                $lang=UsualToolInc\UTInc::StrSubstr("<lang>","</lang>",$formwork);
-                $auther=UsualToolInc\UTInc::StrSubstr("<auther>","</auther>",$formwork);
-                $title=UsualToolInc\UTInc::StrSubstr("<title>","</title>",$formwork);
-                $ver=UsualToolInc\UTInc::StrSubstr("<ver>","</ver>",$formwork);
-                $description=UsualToolInc\UTInc::StrSubstr("<description>","</description>",$formwork);
-                $installsql=UsualToolInc\UTInc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$formwork);
+                UsualToolInc\UTInc::MoveDir(APP_ROOT."/template/".$name."/move",UTF_ROOT);
+                $pconfig=APP_ROOT."/template/".$name."/usualtool.config";
+                $template=file_get_contents($pconfig);
+                $id=UsualToolInc\UTInc::StrSubstr("<id>","</id>",$template);
+                $type=UsualToolInc\UTInc::StrSubstr("<type>","</type>",$template);
+                $lang=UsualToolInc\UTInc::StrSubstr("<lang>","</lang>",$template);
+                $auther=UsualToolInc\UTInc::StrSubstr("<auther>","</auther>",$template);
+                $title=UsualToolInc\UTInc::StrSubstr("<title>","</title>",$template);
+                $ver=UsualToolInc\UTInc::StrSubstr("<ver>","</ver>",$template);
+                $description=UsualToolInc\UTInc::StrSubstr("<description>","</description>",$template);
+                $installsql=UsualToolInc\UTInc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$template);
                 if(UsualToolData\UTData::ModTable("cms_template")):
                     if(UsualToolData\UTData::QueryData("cms_template","","tid='$name'","","1")["querynum"]>0):
                         UsualToolData\UTData::UpdateData("cms_template",array("tid"=>$name,"lang"=>$lang,"title"=>$title),"tid='$name'");
@@ -437,7 +437,7 @@ class UTCli{
         echo"php usualtool plugin [name] 创建插件\r\n";
         echo"php usualtool install module [name] [1/2/3] 安装模块\r\n";
         echo"php usualtool install plugin [name] [1/2/3] 安装插件\r\n";
-        echo"php usualtool install formwork [name] [1/2/3] 安装整站模板工程\r\n";
+        echo"php usualtool install template [name] [1/2/3] 安装整站模板工程\r\n";
         echo"php usualtool swoole [name] [host] [port] ... swoole协程命令\r\n";
         echo"php usualtool kafka [host] [topic] kafka命令\r\n";
         echo"php usualtool workerman [start/reload/stop/restart] [host] ... workerman命令\r\n";

@@ -18,7 +18,7 @@ $app->Runin("pubtemp",PUB_TEMP."/front");
 /**
  * 写入模板工程前端公共路径
  */
-$app->Runin("formwork",$frontwork."/skin/ut-frame/front");
+$app->Runin("template",$frontwork."/skin/".$config["DEFAULT_MOD"]."/front");
 /**
  * 拼接当前文件
  */

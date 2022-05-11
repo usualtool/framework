@@ -21,64 +21,66 @@ define('UTF_ROOT', dirname(__FILE__));
  */
 define('APP_ROOT', dirname(__FILE__).'/app');
 /**
- * 应用公共模块
- */
-define('PUB_PATH', APP_ROOT.'/modules/ut-frame');
-/**
- * 应用公共模板
- */
-define('PUB_TEMP', PUB_PATH.'/skin');
-/**
- * 开启session
+ * 开启SESSION
  */
 session_start();
 /**
  * 类自动加载
  */
 require UTF_ROOT.'/library/UsualToolLoad.php';
+use library\UsualToolInc\UTInc;
+use library\UsualToolTemp\UTTemp;
+use library\UsualToolRoute\UTRoute;
 /**
  * 加载配置
  */
-$config=library\UsualToolInc\UTInc::GetConfig();
+$config=UTInc::GetConfig();
+/**
+ * 公共模块
+ */
+define('PUB_PATH', APP_ROOT.'/modules/'.$config["DEFAULT_MOD"]);
+/**
+ * 公共模板
+ */
+define('PUB_TEMP', PUB_PATH.'/skin');
 /**
  * 识别路由
  */
-foreach(library\UsualToolRoute\UTRoute::Analy(library\UsualToolInc\UTInc::CurPageUrl()) as $key=>$val){
+foreach(UTRoute::Analy(UTInc::CurPageUrl()) as $key=>$val){
     $_GET[$key]=$val;
 }
 /**
  * 加载模块
  */
-$m=empty($_GET["m"]) ? $config["DEFAULT_MOD"] : library\UsualToolInc\UTInc::SqlCheck($_GET["m"]);
+$m=empty($_GET["m"]) ? $config["DEFAULT_MOD"] : UTInc::SqlCheck($_GET["m"]);
 /**
  * 加载页面
  */
-$p=empty($_GET["p"]) ? $config["DEFAULT_PAGE"] : library\UsualToolInc\UTInc::SqlCheck(str_replace(".php","",$_GET["p"]));
+$p=empty($_GET["p"]) ? $config["DEFAULT_PAGE"] : UTInc::SqlCheck(str_replace(".php","",$_GET["p"]));
 /**
- * 获取当前模块目录
+ * 当前模块
  */
 $modpath=APP_ROOT."/modules/".$m;
 /**
- * 获取模板末尾节点路径
+ * 模板节点
  */
-$endpath=library\UsualToolInc\UTInc::TempEndPath();
+$endpath=UTInc::TempEndPath();
 /**
- * 配置应用模板引擎
- * 拼接模板工程路径
+ * 配置模块化模板及模板工程模板
  */ 
-$frontwork=APP_ROOT."/formwork/".$config["FORMWORK_FRONT"];
-$adminwork=APP_ROOT."/formwork/".$config["FORMWORK_ADMIN"];
-$isdevelop=library\UsualToolInc\UTInc::Contain("app/dev",library\UsualToolInc\UTInc::CurPageUrl());
+$frontwork=APP_ROOT."/template/".$config["TEMPFRONT"];
+$adminwork=APP_ROOT."/template/".$config["TEMPADMIN"];
+$isdevelop=UTInc::Contain("app/dev",UTInc::CurPageUrl());
 /**
  * 开发端
  */
-if($config["FORMWORK_ADMIN"]!='0' && $isdevelop):
+if($config["TEMPADMIN"]!='0' && $isdevelop):
     $skin=$adminwork."/skin/".$m;
     $cache=$skin."/cache";
 /**
  * 客户端
  */
-elseif($config["FORMWORK_FRONT"]!='0' && !$isdevelop):
+elseif($config["TEMPFRONT"]!='0' && !$isdevelop):
     $skin=$frontwork."/skin/".$m;
     $cache=$skin."/cache";
 /**
@@ -88,21 +90,17 @@ else:
     $skin=$modpath."/skin";
     $cache=$modpath."/cache";
 endif;
-$app=new library\UsualToolTemp\UTTemp(
-    $config["TEMPCACHE"],
-    $skin."/".$endpath,
-    $cache."/".$endpath
-);
+$app=new UTTemp($config["TEMPCACHE"],$skin."/".$endpath,$cache."/".$endpath);
 /**
- * 绑定应用名称、地址、模块及页面
+ * 基础绑定
  */
-$app->Runin(array("appname","appurl","module","page"),array($config["APPNAME"],$config["APPURL"],$m,$p));
+$app->Runin(array("appname","appurl","module","page","editor"),array($config["APPNAME"],$config["APPURL"],$m,$p,$config["EDITOR"]));
 /**
- * 获取应用语言
+ * 语言配置
  */
 $app->Runin(array("lang","thelang"),array(explode(",",$config["LANG_OPTION"]),$config["LANG"]));
 if(!empty($_COOKIE['Language'])):
-    $language=library\UsualToolInc\UTInc::SqlCheck($_COOKIE['Language']);
+    $language=UTInc::SqlCheck($_COOKIE['Language']);
 else:
     if($config["LANG"]=="big5"):
         $language="zh";
@@ -114,7 +112,3 @@ else:
         setcookie("chinaspeak","");
     endif;
 endif;
-/**
- * 其他可选设置
-*/
-$app->Runin(array("editor"),array($config["EDITOR"]));

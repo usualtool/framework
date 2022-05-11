@@ -24,7 +24,7 @@ $app->Runin("pubtemp",PUB_TEMP."/admin");
 /**
  * 写入模板工程后端公共路径
  */
-$app->Runin("formwork",$adminwork."/skin/ut-frame/admin");
+$app->Runin("template",$adminwork."/skin/".$config["DEFAULT_MOD"]."/admin");
 /**
  * 权限验证机制
  * 排除不需要验证的页面
