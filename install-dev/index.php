@@ -65,37 +65,37 @@ if($do=="db-save"){
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">应用域名/IP:</label>
-                     <input class="form-control" name="APPURL" id="APPURL">
+                     <input class="form-control" name="APPURL" id="APPURL" value="<?php echo$config["APPURL"];?>">
                   </div>
                   <div class="form-group col-md-6">
                      <label for="email">UT令牌:</label>
-                     <input class="form-control" name="UTCODE" id="UTCODE" value="0">
+                     <input class="form-control" name="UTCODE" id="UTCODE" value="<?php echo$config["UTCODE"];?>">
                   </div>
                </div>
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">数据库服务器:</label>
-                     <input class="form-control" name="MYSQL_HOST" id="MYSQL_HOST" value="localhost">
+                     <input class="form-control" name="MYSQL_HOST" id="MYSQL_HOST" value="<?php echo$config["MYSQL_HOST"];?>">
                   </div>
                   <div class="form-group col-md-6">
                      <label for="email">端口:</label>
-                     <input class="form-control" name="MYSQL_PORT" id="MYSQL_PORT" value="3306">
+                     <input class="form-control" name="MYSQL_PORT" id="MYSQL_PORT" value="<?php echo$config["MYSQL_PORT"];?>">
                   </div>
                </div>
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">数据库用户:</label>
-                     <input class="form-control" name="MYSQL_USER" id="MYSQL_USER">
+                     <input class="form-control" name="MYSQL_USER" id="MYSQL_USER" value="<?php echo$config["MYSQL_USER"];?>">
                   </div>
                   <div class="form-group col-md-6">
                      <label for="email">数据库密码:</label>
-                     <input class="form-control" name="MYSQL_PASS" id="MYSQL_PASS">
+                     <input class="form-control" name="MYSQL_PASS" id="MYSQL_PASS" value="<?php echo$config["MYSQL_PASS"];?>">
                   </div>
                </div>
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">数据库名称:</label>
-                     <input class="form-control" name="MYSQL_DB" id="MYSQL_DB">
+                     <input class="form-control" name="MYSQL_DB" id="MYSQL_DB" value="<?php echo$config["MYSQL_DB"];?>">
                   </div>
                </div>
                <div class="row">

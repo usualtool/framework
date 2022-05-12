@@ -22,11 +22,17 @@ class UTRoute{
      * @return array
      */
     static function Analy($url){
-        if(empty($url)){
-            $url=CurPageUrl();
-        }
         $config=UsualToolInc\UTInc::GetConfig();
         $rule=$config["REWRITE"];
+        if($rule==0){
+            $url=$_SERVER["HTTP_HOST"].$_SERVER["PHP_SELF"]."?".$_SERVER["QUERY_STRING"];
+        }else{
+            if(empty($url)){
+                $url=UsualToolInc\UTInc::CurPageUrl();
+            }else{
+                $url=$url;
+            }
+        }
         $url=str_replace("//","/",str_replace("app/dev","",str_replace($config["APPURL"],"",$url)));
         $url=substr($url,1);
         $param=array();
