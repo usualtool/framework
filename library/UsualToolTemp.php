@@ -4,6 +4,7 @@ use library\UsualToolInc\UTInc;
 use library\UsualToolData\UTData;
 use library\UsualToolLang\UTLang;
 use library\UsualToolTree\UTTree;
+use library\UsualToolDebug\UTDebug;
 /**
        * --------------------------------------------------------       
        *  |    ░░░░░░░░░     █   █░▀▀█▀▀░    ░░░░░░░░░      |           
@@ -50,7 +51,7 @@ class UTTemp{
     function Open($filename){
         $tplfile=$this->tempdir.$filename;
         if(!file_exists($tplfile)){
-            exit('模板文件'.$filename.'无法访问');
+            UTDebug::Error("view",str_replace(APP_ROOT."/modules","",$this->tempdir).$filename);
         }
         UTInc::MakeDir($this->cachedir);
         $comfilename=$this->cachedir."cache_".basename($tplfile);

@@ -241,6 +241,24 @@ class UTInc{
         }
     }
     /**
+     * B数组是否包含A数组
+     * @param array $a 
+     * @param array $b 
+     * @return bool
+     */
+    static function InArray($a,$b){
+        sort($a);
+        sort($b);
+        $same=array_intersect($a,$b);
+        $str_s=implode(",",$same);
+        $str_a=implode(",",$a);
+        if($str_a==$str_s){
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+    /**
      * 合并两个数组
      * @param array $a 
      * @param array $b 
@@ -796,7 +814,31 @@ class UTInc{
     static function FileMode($path){
         $result=is_writable($path);
         return $result;
-     }    
+    }
+    /**
+     * 文件夹列表
+     * @param string $dir 文件夹路径名称
+     * @param int $mode 模式 0当前 1递归
+     * @return array
+     */
+    static function DirList($dir,$mode='0'){
+        $list=array();
+        if($dir_handle = @opendir($dir)){
+            while($filename = readdir($dir_handle)){
+                if($filename != "." && $filename != ".."){
+                    $subFile = $dir."/".$filename;
+                    if(is_dir($subFile)){
+                        $list[]=$filename;
+                        if($mod!=0):
+                            DirList($subFile);
+                        endif;
+                    }
+                }
+            }
+            closedir($dir_handle);
+        }
+        return $list;
+    }
     /**
      * 创建文件夹
      * @param string $dir 文件夹路径名称
