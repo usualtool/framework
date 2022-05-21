@@ -28,7 +28,8 @@ class UTMysql{
      */    
     public static function GetMysql(){
         $config=UTMysql::GetConfig();
-        $db=new \mysqli($config["MYSQL_HOST"].":".$config["MYSQL_PORT"],$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
+        $host=empty($config["MYSQL_PORT"]) ? $config["MYSQL_HOST"] : $config["MYSQL_HOST"].":".$config["MYSQL_PORT"];
+        $db=new \mysqli($host,$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
         if(!$db):
             return "Mysqli connection error.";
         else:

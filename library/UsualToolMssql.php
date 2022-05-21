@@ -21,7 +21,8 @@ class UTMssql{
      */    
     public static function GetMssql(){
         $config=UsualToolInc\UTInc::GetConfig();
-        $db=@sqlsrv_connect($config["MSSQL_HOST"].",".$config["MSSQL_PORT"],array(
+        $host=empty($config["MSSQL_PORT"]) ? $config["MSSQL_HOST"] : $config["MSSQL_HOST"].",".$config["MSSQL_PORT"];
+        $db=@sqlsrv_connect($host,array(
             'UID'=>$config["MSSQL_USER"],
             'PWD'=>$config["MSSQL_PASS"],
             'Database'=>$config["MSSQL_DB"])
