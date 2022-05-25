@@ -120,7 +120,13 @@ class UTRoute{
                 $link=substr($m.$p.$r,0,-1).".html";
             }
         }
-        return $link;
+        $d=parse_url($config["APPURL"])["host"];
+        $e=str_replace("/","",explode($d,$config["APPURL"])[1]);
+        if(!empty($e)){
+            return $config["APPURL"].$link;
+        }else{
+            return $link;
+        }
     }
     /**
      * 解析URL
