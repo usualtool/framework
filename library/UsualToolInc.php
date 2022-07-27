@@ -481,9 +481,7 @@ class UTInc{
         $config=UTInc::GetConfig();
         if(is_dir(APP_ROOT."/plugins/".$pluginname."")):
             if(empty($pluginroot)||UTInc::Contain(".php",$pluginroot)):
-                echo"\r\n<!--ut-plugin-start:".$pluginname."-->\r\n";
                 include_once(APP_ROOT."/plugins/".$pluginname."/".$pluginroot."");
-                echo"\r\n<!--ut-plugin-end:".$pluginname."-->\r\n";
             else:
                 $getpost="<iframe src=".$config["APPURL"]."/app/plugins/".$pluginname."/".$pluginroot." frameborder=0 id=external-frame></iframe><style>iframe{width:100%;margin:0 0 1em;border:0;}</style><script src=images/js/autoheight.js></script>";
                 echo$getpost;

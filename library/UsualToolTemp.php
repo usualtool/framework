@@ -108,7 +108,7 @@ class UTTemp{
         $replacement=array(
         '<?php if("${1}"=="null"):if(rtrim(library\UsualToolInc\UTInc::CurPageUrl(),"/")==rtrim($GLOBALS["config"]["APPURL"],"/")):echo"${2}";endif;else:if(library\UsualToolInc\UTInc::Contain("${1}",library\UsualToolInc\UTInc::CurPageUrl())):echo"${2}";endif;endif;?>',
         '<?php echo"<div class=\"nav-item dropdown\"><a class=\"nav-link dropdown-toggle\" data-toggle=dropdown><i class=\"fa fa-link\"></i> 子栏目</a><div class=\"dropdown-menu\">";$item=explode(",",$this->tplvars["${2}"]);for($i=0;$i<count($item);$i++):echo"<a class=\"dropdown-item\" href=?m=".$this->tplvars["${1}"]."&p=".explode(":",$item[$i])[1].">".explode(":",$item[$i])[0]."</a>";endfor;echo"</div></div>";?>',
-		'<?php if(library\UsualToolInc\UTInc::Contain(",","${1}")):$pluginfile=explode(",","${1}");$HOOKPATH=APP_ROOT."/plugins/$pluginfile[0]/";if(is_dir($HOOKPATH)):if(library\UsualToolInc\UTInc::Contain(".php","$pluginfile[1]")):echo"\r\n<!--ut-plugin-start:".$pluginfile[0]."-->\r\n";include_once $HOOKPATH.$pluginfile[1];echo"\r\n<!--ut-plugin-end:".$pluginfile[0]."-->\r\n";else:echo"<iframe src=$HOOKPATH.$pluginfile[1] frameborder=0 id=external-frame></iframe><style>iframe{width:100%;margin:0 0 1em;border:0;}</style><script src=assets/js/autoheight.js></script>";endif;endif;else:$HOOKPATH=APP_ROOT."/plugins/${1}/";if(is_dir($HOOKPATH)):echo"\r\n<!--ut-plugin-start:${1}-->\r\n";include_once $HOOKPATH."index.php";echo"\r\n<!--ut-plugin-end:${1}-->\r\n";endif;endif;?>',
+		'<?php if(library\UsualToolInc\UTInc::Contain(",","${1}")):$pluginfile=explode(",","${1}");$HOOKPATH=APP_ROOT."/plugins/$pluginfile[0]/";if(is_dir($HOOKPATH)):if(library\UsualToolInc\UTInc::Contain(".php","$pluginfile[1]")):include_once $HOOKPATH.$pluginfile[1];else:echo"<iframe src=$HOOKPATH.$pluginfile[1] frameborder=0 id=external-frame></iframe><style>iframe{width:100%;margin:0 0 1em;border:0;}</style><script src=assets/js/autoheight.js></script>";endif;endif;else:$HOOKPATH=APP_ROOT."/plugins/${1}/";if(is_dir($HOOKPATH)):include_once $HOOKPATH."index.php";endif;endif;?>',
 		'<?php $split=explode("${2}",$this->tplvars["${1}"]);echo $split[${3}];?>',
 		'<?php $${1}=explode("${2}",$this->tplvars["${1}"]);for($i=0;$i<count($${1});$i++){?>${3}<?php }?>',
         '<?php $split=explode("${3}",$this->tplvars["${1}"]["${2}"]);echo $split[${4}];?>',
@@ -189,13 +189,12 @@ class UTTemp{
      */
     function Hstring($repcontent){
         $hex="3c2f626f64793e";
-        $hel="3c646976207374796c653d22646973706";
-        $hel.="c61793a6e6f6e653b223ee5ba94e794a";
-        $hel.="8e794b1203c61207461726765743d225";
-        $hel.="f626c616e6b2220687265663d2268747";
-        $hel.="4703a2f2f7777772e757375616c746f6";
-        $hel.="f6c2e636f6d223e5554e6a186e69eb63";
-        $hel.="c2f613e20e69eb6e69e843c2f6469763e";
+        $hel ="3c61207461726765743d275f626c616e";
+        $hel.="6b2720687265663d27687474703a2f2f";
+        $hel.="6672616d652e757375616c746f6f6c2e";
+        $hel.="636f6d27207374796c653d2764697370";
+        $hel.="6c61793a6e6f6e653b273e557375616c54";
+        $hel.="6f6f6c204672616d65776f726b3c2f613e";
         $string="";
         $strings="";
         for($i=0; $i < strlen($hel)-1; $i+=2):
