@@ -138,7 +138,9 @@ class UTPdo{
    */
   public static function QueryNum($sql){
       $db=UTPdo::GetPdo();
-      $query=$db->query($sql);
-      return $query->fetchColumn();
+      $query=$db->prepare($sql);
+      $query->execute();
+      $querynum=$query->fetchColumn();
+      return $querynum;
   }
 }
