@@ -79,9 +79,7 @@ class UTRoute{
             }
         }else{
             $urls=explode("?",$url);
-            $param["m"]=UsualToolInc\UTInc::Contain("m=",$url) ? UTRoute::GetUrlVal($url,"m") : $config["DEFAULT_MOD"];
-            $param["p"]=UsualToolInc\UTInc::Contain("p=",$url) ? UTRoute::GetUrlVal($url,"p") : $config["DEFAULT_PAGE"];
-            $surl=preg_replace("/&p=([a-zA-Z0-9_]*)/","",preg_replace("/&m=([a-zA-Z0-9_]*)/","",$urls[1]));
+            $surl=$urls[1];
             $qs= explode("&",$surl);
             for($i=0;$i<count($qs);$i++){
                 $qx=explode("=",str_replace("amp;","",$qs[$i]));
