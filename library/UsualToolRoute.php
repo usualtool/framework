@@ -17,6 +17,25 @@ use library\UsualToolInc;
  */
 class UTRoute{
     /**
+     * URL易错特殊参数转义
+     * @param string $url
+     * @return array
+     */
+    static function ConverUrl($url){
+        $o=array(
+            "&times","&cent","&pound","&yen","&shy",
+            "&thorn","&sect","&micro","&uml","&reg",
+            "&laquo","&para","&acute","&deg","&eth",
+            "&raquo","&copy","&aquo","&not","&curren");
+        $n=array(
+            "&amp;times","&amp;cent","&amp;pound","&amp;yen","&amp;shy",
+            "&amp;thorn","&amp;sect","&amp;micro","&amp;uml","&amp;reg",
+            "&amp;laquo","&amp;para","&amp;acute","&amp;deg","&amp;eth",
+            "&amp;raquo","&amp;copy","&amp;aquo","&amp;not","&amp;curren");
+        $url=str_replace($o,$n,$url);
+        return $url;
+    }
+    /**
      * 解析路由
      * @param string $url
      * @return array
@@ -33,10 +52,10 @@ class UTRoute{
                 $url=$url;
             }
         }
+        $url=UTRoute::ConverUrl($url);
         $url=str_replace("//","/",str_replace("app/dev","",str_replace($config["APPURL"],"",$url)));
         $url=substr($url,1);
         $param=array();
-        print_r(UsualToolInc\UTInc::Contain($url,array("m=","p=")));
         if(!UsualToolInc\UTInc::Contain("m=",$url) && !UsualToolInc\UTInc::Contain("p=",$url) && $rule==1){
             $urls=explode("/",$url);
             $param["m"]=$urls[0];
@@ -62,11 +81,10 @@ class UTRoute{
             $urls=explode("?",$url);
             $param["m"]=UsualToolInc\UTInc::Contain("m=",$url) ? UTRoute::GetUrlVal($url,"m") : $config["DEFAULT_MOD"];
             $param["p"]=UsualToolInc\UTInc::Contain("p=",$url) ? UTRoute::GetUrlVal($url,"p") : $config["DEFAULT_PAGE"];
-            $surl=preg_replace("/p=([a-zA-Z0-9_]*)/","",preg_replace("/m=([a-zA-Z0-9_]*)/","",$urls[1]));
-            $surl=substr(str_replace("&&","&",$surl),1);
+            $surl=preg_replace("/&p=([a-zA-Z0-9_]*)/","",preg_replace("/&m=([a-zA-Z0-9_]*)/","",$urls[1]));
             $qs= explode("&",$surl);
             for($i=0;$i<count($qs);$i++){
-                $qx=explode("=",$qs[$i]);
+                $qx=explode("=",str_replace("amp;","",$qs[$i]));
                 $param[$qx[0]]=$qx[1];
             }
         }
