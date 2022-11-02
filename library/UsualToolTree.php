@@ -87,11 +87,12 @@ class UTTree{
      * @param int $id 序号
      * @param string $str 树代码样式
      * @param int $sid 被选中的序号
+     * @param int $did 被选中的序号
      * @param string $adds 修饰前缀
      * @param string $str_group 间隔
      * @return array
      */
-    public function GetTree($id,$str,$sid=0,$adds='',$str_group=''){
+    public function GetTree($id,$str,$sid=0,$did=0,$adds='',$str_group=''){
         $number=1;
         $child = $this->GetChild($id);
         if(is_array($child)){
@@ -107,11 +108,12 @@ class UTTree{
                 }
                 $spacer = $adds ? $adds.$j : '';
                 $selected = $tid==$sid ? 'selected' : '';
+                $disabled = $tid==$did ? 'disabled' : '';
                 @extract($value);
                 $bid == 0 && $str_group ? eval("\$nstr = \"$str_group\";") : eval("\$nstr = \"$str\";");
                 $this->ret .= $nstr;
                 $nbsp = $this->nbsp;
-                $this->GetTree($tid, $str, $sid, $adds.$k.$nbsp,$str_group);
+                $this->GetTree($tid,$str,$sid,$did,$adds.$k.$nbsp,$str_group);
                 $number++;
             }
         }
