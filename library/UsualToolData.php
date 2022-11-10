@@ -37,7 +37,9 @@ class UTData{
      * @return bool
      */
     public static function ModTable($table){
-        if(UTData::GetDb()=="mysql"){
+        if(UTData::GetDb()=="pdo"){
+            return UsualToolPdo\UTPdo::ModTable($table);
+        }elseif(UTData::GetDb()=="mysql"){
             return UsualToolMysql\UTMysql::ModTable($table);
         }elseif(UTData::GetDb()=="mssql"){
             return UsualToolMssql\UTMssql::ModTable($table);
@@ -55,7 +57,9 @@ class UTData{
      * @return bool
      */
     public static function RunSql($sql){
-        if(UTData::GetDb()=="mysql"){
+        if(UTData::GetDb()=="pdo"){
+            return UsualToolPdo\UTPdo::RunSql($sql);
+        }elseif(UTData::GetDb()=="mysql"){
             return UsualToolMysql\UTMysql::RunSql($sql);
         }elseif(UTData::GetDb()=="mssql"){
             return UsualToolMysql\UTMssql::RunSql($sql);
