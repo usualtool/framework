@@ -29,6 +29,34 @@ class UTPdo{
     return $db;
   }
   /**
+   * 判断表是否存在
+   * @param string $table
+   * @return bool
+   */
+  public static function ModTable($table){
+    $db=UTPdo::GetPdo();
+    try{
+        $query=$db->query("SELECT 1 FROM $table LIMIT 1");
+    }catch(Exception $e){
+        return false;
+    }
+    return true;
+  }
+  /**
+   * 执行语句
+     * @param string $sql SQL语句
+     * @return bool
+   */    
+  public static function RunSql($sql){
+    $db=UTPdo::GetPdo();
+    $query=$db->exec($sql);
+    if($query):
+        return true;
+    else:
+        return false;
+    endif;
+  }
+  /**
    * 查询数据
    * @param string $table 被表名
    * @param string $field 查询字段，多个字段以‘,’分割
