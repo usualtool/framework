@@ -12,12 +12,12 @@ use library\UsualToolDebug\UTDebug;
        *  |                                                 |            
        *  | Author:HuangDou   Email:292951110@qq.com        |            
        *  | QQ-Group:583610949                              |           
-       *  | WebSite:http://www.UsualToolInc.com             |            
+       *  | WebSite:http://www.UsualTool.com             |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 以实例方法操作模板
+ * 实例化模板引擎
  */
 class UTTemp{
     var $mode;
