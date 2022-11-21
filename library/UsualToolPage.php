@@ -10,50 +10,21 @@ namespace library\UsualToolPage;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 示例:
- * $Page=new UTPage($totalpage,$page,$pagenum,$pagelink);
- * echo $Page->ShowPager();
+ * 实例化分页
+ * 示例:$Page=new UTPage($totalpage,$page,$pagenum,$pagelink);echo $Page->ShowPager();
  * 默认支持bootstrap样式
  */
 class UTPage{
-    /**
-     * 总数目
-     */
     var $nums;
-    /**
-     * 当前页数
-     */ 
-    var $current_page; 
-    /**
-     * 每页显示数
-     */
+    var $current_page;
     var $sub_pages;
-    /**
-     * 总页数
-     */ 
-    var $pagenums; 
-    /**
-     * 分页数目
-     * 如：12345
-     */ 
-    var $each_num; 
-    /**
-     * 用来构造分页的数组
-     */
+    var $pagenums;
+    var $each_num;
     var $page_array = array();
-    /**
-     * 每个分页的链接
-     */
     var $subpage_link;
-    /**
-     * 显示分页的类型
-     */
     var $subpage_type;
-    /**
-     * 分页语言包
-     */
     var $_lang = array( 
         'index_page' => '<ut data-localize="l.firstpage">首页</ut>', 
         'pre_page' => '<ut data-localize="l.previouspage">上页</ut>', 
