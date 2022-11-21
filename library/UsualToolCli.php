@@ -12,10 +12,10 @@ use library\UsualToolData;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
-    /**
-     * 以静态方法执行Cli命令
-     */
+ */
+/**
+ * 执行Cli命令
+ */
 class UTCli{
     public static $cli;
     /**
