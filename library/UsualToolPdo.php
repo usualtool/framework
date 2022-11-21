@@ -11,10 +11,13 @@ use library\UsualToolInc;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
+/**
+* 以PDO方法操作数据库
+*/   
 class UTPdo{
   /**
-   * PDO连接
+   * PDO连接数据库
    */    
   public static function GetPdo(){
     $config=UsualToolInc\UTInc::GetConfig();
