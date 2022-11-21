@@ -10,7 +10,10 @@ namespace library\UsualToolSockets;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
+/**
+ * 实例化websockets通信
+ */
 class UTSockets{
     const LISTEN_SOCKET_NUM = 9;
     private $sockets=[];
