@@ -9,11 +9,11 @@
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
-* Compatible with PSR0
-* 
-*/
+ * Compatible with PSR0
+ * 
+ */
 class Loader{
     public static function AutoLoad($class){
         $class=preg_replace('/(.*)\\\{1}([^\\\]*)/i','$1',$class);
@@ -30,9 +30,9 @@ class Loader{
 }
 spl_autoload_register("Loader::AutoLoad");
 /**
-* Compatible with PSR4
-* Composer dependency Library
-*/
+ * Compatible with PSR4
+ * Composer dependency Library
+ */
 if(library\UsualToolInc\UTInc::SearchFile(UTF_ROOT."/vendor/autoload.php")):
     require_once UTF_ROOT.'/vendor/autoload.php';
 endif;
