@@ -11,10 +11,10 @@ use library\UsualToolData\UTData;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
-* 通用树型结构UT改良版本
-*/
+ * 实例化树型结构
+ */
 class UTTree{
     public $arr = array();
     public $icon = array('&nbsp;&nbsp;<span style="color:#A9A9A9;">┊</span> ','&nbsp;&nbsp;┣┈┈ ','&nbsp;&nbsp;┗┈┈ ','&nbsp;&nbsp;┞┈┈ ');
