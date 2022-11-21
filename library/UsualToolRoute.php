@@ -11,9 +11,9 @@ use library\UsualToolInc;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 以静态方法操作路由
+ * 操作路由
  */
 class UTRoute{
     /**
@@ -21,7 +21,7 @@ class UTRoute{
      * @param string $url
      * @return array
      */
-    static function ConverUrl($url){
+    public static function ConverUrl($url){
         $o=array(
             "&times","&cent","&pound","&yen","&shy",
             "&thorn","&sect","&micro","&uml","&reg",
@@ -40,7 +40,7 @@ class UTRoute{
      * @param string $url
      * @return array
      */
-    static function Analy($url){
+    public static function Analy($url){
         $config=UsualToolInc\UTInc::GetConfig();
         $rule=$config["REWRITE"];
         if($rule==0){
@@ -96,7 +96,7 @@ class UTRoute{
      * @param string $param
      * @return string
      */
-    static function Link($module="",$page="",$param=""){
+    public static function Link($module="",$page="",$param=""){
         $config=UsualToolInc\UTInc::GetConfig();
         $rule=$config["REWRITE"];
         if($rule==0){
@@ -149,7 +149,7 @@ class UTRoute{
      * @param string $url
      * @return array
      */
-    static function UrlToArray($url){
+    public static function UrlToArray($url){
       $query = explode('&',$url);
       $params = array();
       foreach ($query as $param) {
@@ -164,7 +164,7 @@ class UTRoute{
      * @param string $key
      * @return string
      */
-    static function GetUrlVal($url,$key){
+    public static function GetUrlVal($url,$key){
         $res = '';
         $a = strpos($url,'?');
         if($a!==false){
