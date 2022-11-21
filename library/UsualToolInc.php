@@ -676,8 +676,9 @@ class UTInc{
      * POST方式提交数据
      * @param string $url 提交地址
      * @param string $data 数据
+     * @param int $gzip 默认为0，返回数据是否进行gzip解压
      */
-    public static function HttpPost($url,$data){
+    public static function HttpPost($url,$data,$gzip='0'){
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -687,6 +688,9 @@ class UTInc{
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+        if($gzip):
+            curl_setopt($curl, CURLOPT_ENCODING, "gzip" );
+        endif;
         $output = curl_exec($curl);
         curl_close($curl);
         return $output;
@@ -694,27 +698,24 @@ class UTInc{
     /**
      * GET方式提交数据
      * @param string $url 提交地址
-     * @param string $timeout 超时时间
-     * @param int $chart 默认为1，是否将结果转换至UTF-8编码
+     * @param int $gzip 默认为0，返回数据是否进行gzip解压
      */
-    public static function HttpGet($url,$timeout='10',$chart='1'){
+    public static function HttpGet($url,$gzip='0'){
         if(function_exists("curl_init")){
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            $info = curl_exec($ch);
-            curl_close($ch);
-            return $info;
-        }
-        else{
-            $info=file_get_contents($url);
-            if($chart==1):
-                return $info;
-            else:
-                return mb_convert_encoding($info, 'UTF-8', 'UTF-8,GBK,GB2312,BIG5');
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 90);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_HEADER, 0);
+            if($gzip):
+                curl_setopt($curl, CURLOPT_ENCODING, "gzip" );
             endif;
+            $output = curl_exec($curl);
+            curl_close($curl);
+            return $output;
+        }else{
+            $output=file_get_contents($url);
+            return mb_convert_encoding($output, 'UTF-8', 'UTF-8,GBK,GB2312,BIG5');
         }
     }
     /**
