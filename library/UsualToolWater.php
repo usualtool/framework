@@ -10,9 +10,9 @@ namespace library\UsualToolWater;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 示例：
+ * 水印示例：
  * UTWater::MarkWater("text","1.jpg","usualtool.com",5,"#B5B5B5","14");
  * UTWater::MarkWater("image","1.jpg","water.png",8);
 */
@@ -25,7 +25,7 @@ class UTWater{
      * @param string $fontcolor 文字颜色,图片水印忽略
      * @param int $fontsize 文字大小,图片水印忽略
     */
-    static function MarkWater($type,$photo,$content,$waterpos,$fontcolor='#B5B5B5',$fontsize='14'){
+    public static function MarkWater($type,$photo,$content,$waterpos,$fontcolor='#B5B5B5',$fontsize='14'){
         $fontcolor=UTWater::Hex2Rgb($fontcolor);
         $typeerroMsg = "Only support for jpg/png/gif format."; 
         if($type=="image" && file_exists($content)): 
@@ -95,7 +95,7 @@ class UTWater{
             imagedestroy($water);
         endif;
     }
-    static function Hex2Rgb($hex){
+    public static function Hex2Rgb($hex){
         $hex = str_replace("#", "", $hex);
         if(strlen($hex) == 3):
             $r = hexdec(substr($hex,0,1).substr($hex,0,1));
