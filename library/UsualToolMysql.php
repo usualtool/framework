@@ -12,9 +12,9 @@ use library\UsualToolRedis;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 以静态方法操作Mysqli
+ * 以mysqli方法操作Mysql
  */
 class UTMysql{
     /**
