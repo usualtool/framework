@@ -11,9 +11,9 @@ use library\UsualToolInc;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 以静态方法操作Sqlserver
+ * 以sqlsrv方法操作Sqlserver
  */
 class UTMssql{
     /**
@@ -111,13 +111,19 @@ class UTMssql{
      * @return bool 
      */
     public static function InsertData($table,$data){
-        $db=UTMssql::GetMssql();
-        $sql="insert into ".$table." (".implode(',',array_keys($data)).") values ('".implode("','",array_values($data))."')";
-        $query=UTMssql::RunSql($sql);
-        if($query):
-            return true;
-        else:
+        $db=UTMssqlTest::GetMssql();
+        $sql="insert into ".$table." (".implode(',',array_keys($data)).") values ('".implode("','",array_values($data))."');SELECT SCOPE_IDENTITY();";
+        $query=sqlsrv_query($db,$sql);
+        sqlsrv_next_result($query);
+        $result=sqlsrv_fetch_array($query);
+        if(!$query):
             return false;
+        else:
+            if($result[0]):
+                return $result[0];
+            else:
+                return true;
+            endif;
         endif;
     }
     /**
@@ -272,6 +278,38 @@ class UTMssql{
         $db=UTMssql::GetMssql();
         $query=sqlsrv_query($db,$sql,array(),array("Scrollable"=>'static'));
         return sqlsrv_num_rows($query);
+    }
+    /**
+     * 按字段及条件检索最小值
+     * @param string $table 表名
+     * @param string $field 检索字段，数字类型且只能为1个
+     * @param string $where 条件
+     */  
+	public static function Min($table,$field,$where=''){
+        $db=UTMssqlTest::GetMssql();
+        $min="";
+        $where=empty($where) ? "" : "where ".$where;
+		$query=sqlsrv_query($db,"select min($field) as value from $table $where");
+		while($rows=UTMssqlTest::FetchArray($query)):
+		     $min=$rows["value"];
+		endwhile;
+		return $min;
+    }
+    /**
+     * 按字段及条件检索最大值
+     * @param string $table 表名
+     * @param string $field 检索字段，数字类型且只能为1个
+     * @param string $where 条件
+     */  
+	public static function Max($table,$field,$where=''){
+        $db=UTMssqlTest::GetMssql();
+        $max="";
+        $where=empty($where) ? "" : "where ".$where;
+		$query=sqlsrv_query($db,"select max($field) as value from $table $where");
+		while($rows=UTMssqlTest::FetchArray($query)):
+		     $max=$rows["value"];
+		endwhile;
+		return $max;
     }
     /**
      * 将GBK转UTF-8
