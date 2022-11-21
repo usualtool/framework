@@ -11,9 +11,9 @@ use library\UsualToolInc;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 以静态方法操作Sqlite
+ * 操作Sqlite
  */
 class UTSqlite{
     /**
