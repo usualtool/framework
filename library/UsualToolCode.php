@@ -10,7 +10,10 @@ namespace library\UsualToolCode;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
+/**
+ * 实例化验证码
+ */
 class UTCode{
     /**
      * 随机因子设置
