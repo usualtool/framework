@@ -10,9 +10,9 @@ namespace library\UsualToolMail;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 以实例方法发送SMTP邮件
+ * 实例化SMTP发送邮件
  */
 class UTMail{
     public $port;
