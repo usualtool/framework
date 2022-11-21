@@ -10,7 +10,10 @@ namespace library\UsualToolAliopen;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
+/**
+ * 支付宝接口
+ */
 class UTAliopen{
     var $appid;
     var $appkey;
