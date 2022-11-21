@@ -11,16 +11,16 @@ use library\UsualToolInc\UTInc;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 以静态方法操作语言包
+ * 解析本地化语言包
  */
 class UTLang{
     /**
      * 获取语言文件列表
      * @return array
      */
-    static function GetLang(){
+    public static function GetLang(){
         $lang=array();
         $path = UTF_ROOT."/lang/";
         $current_dir = opendir($path);
@@ -42,7 +42,7 @@ class UTLang{
      * @param string $type 语言
      * @return string
      */
-    static function LangData($word,$type=''){
+    public static function LangData($word,$type=''){
         global$language;
         if(!empty($type)):
             $langdata=json_decode(file_get_contents(UTF_ROOT."/lang/lg-".$type.".json"),true);
@@ -61,7 +61,7 @@ class UTLang{
      * @param string $word 单词
      * @return string
      */
-    static function ModLangData($word,$module=''){
+    public static function ModLangData($word,$module=''){
         global$language;
         global$modpath;
         if(!empty($module)){
@@ -82,7 +82,7 @@ class UTLang{
      * @param string $type 语言
      * @return string
      */
-    static function LangSet($word,$type=''){
+    public static function LangSet($word,$type=''){
         global$language;
         if(!empty($type)):
             $langdata=json_decode(file_get_contents(UTF_ROOT."/lang/lg-".$type.".json"),true);
@@ -97,7 +97,7 @@ class UTLang{
      * @param string $path 语言包路径
      * @return array
      */
-    static function Lang($path = UTF_ROOT.'/lang/'){
+    public static function Lang($path = UTF_ROOT.'/lang/'){
         $current_dir = opendir($path);
         while(($file = readdir($current_dir)) !== false) {
             if(UsualToolCMS::contain(".json",$file)!==false):
