@@ -19,9 +19,9 @@ use library\UsualToolMemcache;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 以静态方法操作数据
+ * 统一操作数据
  */
 class UTData{
     /**
