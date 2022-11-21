@@ -11,7 +11,10 @@ use library\UsualToolData\UTData;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
+/**
+ * 微信接口
+ */
 class UTWechat{
     var $appline;
     var $appid;
