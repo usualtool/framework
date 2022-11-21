@@ -10,9 +10,9 @@ namespace library\UsualToolInc;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
 /**
- * 以静态方法操作基础函数
+ * 基础函数库
  */
 class UTInc{
     /**
@@ -20,7 +20,7 @@ class UTInc{
      * 其他格式注释(\/\/.(\s|.*))
      * @return array
      */
-    static function GetConfig(){
+    public static function GetConfig(){
         $string = file_get_contents(UTF_ROOT."/.ut.config");
         $string = preg_replace("/(\/\*(\s|.)*?\*\/)|(#(\s*)?(.*))/",'',$string);
         $string = preg_replace('#\s+#',PHP_EOL,$string);
@@ -39,7 +39,7 @@ class UTInc{
      * @param string $text 跳转弹出文本，该参数为空时直接跳转地址
      * @return array
      */
-    static function GoUrl($url,$text=''){
+    public static function GoUrl($url,$text=''){
         if(!empty($text)){
             if(!empty($url)){
                 if(is_numeric(str_replace("+","",str_replace("-","",$url)))){
@@ -63,7 +63,7 @@ class UTInc{
      * @param string $str
      * @return string
      */
-    static function SqlCheck($str){
+    public static function SqlCheck($str){
         $str=UTInc::SqlChecks($str);
         if(PHP_VERSION>=6 || !get_magic_quotes_gpc()):
             $str=addslashes($str);
@@ -76,7 +76,7 @@ class UTInc{
      * @param string $str
      * @return string
      */
-    static function DeSqlCheck($str){
+    public static function DeSqlCheck($str){
         $str=str_replace("’","'",$str);
         $str=str_replace('“','"',$str);
         $str=str_replace("（","(",$str);
@@ -92,7 +92,7 @@ class UTInc{
      * @param string $str
      * @return string
      */
-    static function SqlChecks($str){
+    public static function SqlChecks($str){
         $str=str_replace("'","’",$str);
         $str=str_replace('"','“',$str);
         $str=str_replace("(","（",$str);
@@ -107,7 +107,7 @@ class UTInc{
      * @param string $str
      * @return string
      */
-    static function SqlCheckv($str){
+    public static function SqlCheckv($str){
         $str=str_ireplace("eval","",$str);
         $str=str_ireplace("assert","",$str);
         $str=str_ireplace("create_function","",$str);
@@ -131,7 +131,7 @@ class UTInc{
      * @param string $str
      * @return int
      */
-    static function SqlCheckx($str){
+    public static function SqlCheckx($str){
         $result = false;
         if($str !== '' && !is_null($str)){
         $var = UTInc::SqlChecks($str);
@@ -152,7 +152,7 @@ class UTInc{
      * @param string $str
      * @return string
      */
-    static function ClearNum($str){
+    public static function ClearNum($str){
         $str=str_replace("s.php","",$str);
         $str=str_replace("s.html","",$str);
         $str=str_replace("-","",$str);
@@ -175,7 +175,7 @@ class UTInc{
      * @param string $str
      * @return string
      */
-    static function DeleteHtml($str){
+    public static function DeleteHtml($str){
         global$language;
         $str=htmlspecialchars_decode($str);
         $str = strip_tags($str,"");
@@ -192,7 +192,7 @@ class UTInc{
      * @param string $str
      * @return array
      */
-    static function FindImage($str){
+    public static function FindImage($str){
         $pattern="/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.bmp|\.png]))[\'|\"].*?[\/]?>/";
         preg_match_all($pattern,$str,$match);
         return $match[1];
@@ -203,7 +203,7 @@ class UTInc{
      * @param string $url
      * @return string
      */
-    static function ClearParam($param,$url){
+    public static function ClearParam($param,$url){
         if(is_string($param)) {
             $param = array($param);
         }
@@ -230,7 +230,7 @@ class UTInc{
      * @param string|array $string 字符串或数组
      * @return bool
      */
-    static function Contain($split,$string){
+    public static function Contain($split,$string){
         if(is_array($string)){
             if(in_array($split,$string))return true;
             else return false;
@@ -246,7 +246,7 @@ class UTInc{
      * @param array $b 
      * @return bool
      */
-    static function InArray($a,$b){
+    public static function InArray($a,$b){
         sort($a);
         sort($b);
         $same=array_intersect($a,$b);
@@ -264,7 +264,7 @@ class UTInc{
      * @param array $b 
      * @return array
      */
-    static function ArrayMerge(&$a,$b){
+    public static function ArrayMerge(&$a,$b){
         foreach($a as $key=>&$val){
             if(is_array($val) && array_key_exists($key, $b) && is_array($b[$key])){
                 UTInc::ArrayMerge($val,$b[$key]);
@@ -281,7 +281,7 @@ class UTInc{
      * @param array $mod 模块名
      * @return bool
      */
-    static function ModSearch($page,$mod){
+    public static function ModSearch($page,$mod){
         $json=file_get_contents(APP_ROOT."/modules/module.config");
         $array=json_decode($json,true);
         if(array_key_exists($mod,$array)){
@@ -301,7 +301,7 @@ class UTInc{
      * @param string $key 模块标识名称
      * @return array 返回新的UT模块集合
      */
-    static function DelModArray($arr,$key){
+    public static function DelModArray($arr,$key){
         if(!is_array($arr)){
             return $arr;
         }
@@ -316,7 +316,7 @@ class UTInc{
      * 获取模块集合
      * @return array
      */
-    static function GetMod($type=0){
+    public static function GetMod($type=0){
         $mod=array();
         $config=UTInc::GetConfig();
         if(empty($type) || $type==0){
@@ -364,7 +364,7 @@ class UTInc{
      * 获取插件集合
      * @return array
      */
-    static function GetPlugin($type=0){
+    public static function GetPlugin($type=0){
         $plugin=array();
         $config=UTInc::GetConfig();
         if(empty($type) || $type==0){
@@ -413,7 +413,7 @@ class UTInc{
      * 获取模板工程集合
      * @return array
      */
-    static function GetTemplate($type=0){
+    public static function GetTemplate($type=0){
         $template=array();
         $config=UTInc::GetConfig();
         if(empty($type) || $type==0){
@@ -460,7 +460,7 @@ class UTInc{
      * 是否安装UT可视化包
      * @return bool
      */
-    static function InstallDev(){
+    public static function InstallDev(){
         if(is_dir('install-dev')){
             if(file_exists(UTF_ROOT."/install-dev/usualtool.lock")){
                 return true;
@@ -477,7 +477,7 @@ class UTInc{
      * @param string $pluginroot 引用插件页面
      * @return string include_once引用页面或者iframe调用
      */
-    static function Plugin($pluginname,$pluginroot='index.php'){
+    public static function Plugin($pluginname,$pluginroot='index.php'){
         $config=UTInc::GetConfig();
         if(is_dir(APP_ROOT."/plugins/".$pluginname."")):
             if(empty($pluginroot)||UTInc::Contain(".php",$pluginroot)):
@@ -495,7 +495,7 @@ class UTInc{
      * @param string $apitype API接口类型
      * @return string 获得一个XML文件
      */
-    static function Auth($authcode,$authurl,$apitype){
+    public static function Auth($authcode,$authurl,$apitype){
         $fromurl=UTInc::CurPageUrl();
         $url="".$authurl."?AuthCode=".$authcode."&FromUrl=".$fromurl."&Type=".$apitype."";
         $content=UTInc::HttpGet($url);
@@ -507,7 +507,7 @@ class UTInc{
      * @param string $chars 随机因子
      * @return string
      */
-    static function GetRandomString($length,$chars=null){
+    public static function GetRandomString($length,$chars=null){
         if (is_null($chars)){
             $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         }  
@@ -521,7 +521,7 @@ class UTInc{
      * 获取IP地址
      * @return string
      */
-    static function GetIp(){
+    public static function GetIp(){
         $unknown = 'unknown';
         if(isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'] && strcasecmp($_SERVER['HTTP_X_FORWARDED_FOR'], $unknown) ){
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
@@ -536,7 +536,7 @@ class UTInc{
      * 判断是否为移动端
      * @return bool
      */
-    static function IsApp(){
+    public static function IsApp(){
         if(isset($_SERVER['HTTP_X_WAP_PROFILE'])){
             return true;
         }
@@ -560,7 +560,7 @@ class UTInc{
      * 字节单位格式化
      * @param string $size 字节长度
      */
-    static function ForBytes($size) { 
+    public static function ForBytes($size) { 
         $units = array('B','KB','MB','GB','TB'); 
         for ($i = 0; $size >= 1024 && $i < 4; $i++) $size /= 1024; 
         return round($size, 0).$units[$i]; 
@@ -574,7 +574,7 @@ class UTInc{
      * @param bool $suffix 是否加省略号
      * @return string
      */
-    static function CutSubstr($str,$start=0,$length=0,$charset="utf-8",$suffix=true){
+    public static function CutSubstr($str,$start=0,$length=0,$charset="utf-8",$suffix=true){
         if(function_exists("mb_substr"))
             return mb_substr($str, $start, $length, $charset);
         elseif(function_exists('iconv_substr')) {
@@ -595,7 +595,7 @@ class UTInc{
      * @param int $type 1取年份，2取月份，3取日期
      * @return int
      */
-    static function OpenDate($thisdate,$type){
+    public static function OpenDate($thisdate,$type){
         if($type==1):
             return date('y',$thisdate);
         elseif($type==2):
@@ -610,7 +610,7 @@ class UTInc{
      * @param int $length长度
      * @return string
      */
-    static function CnSubStr($string,$length='0'){
+    public static function CnSubStr($string,$length='0'){
         preg_match_all("#[\x{4e00}-\x{9fa5}]#u",$string,$match);
         if($length==0):
             return implode("",$match[0]);
@@ -624,7 +624,7 @@ class UTInc{
      * @param string $end 结束字符
      * @param string $str 字符串
      */
-    static function PregSubstr($start,$end,$str){
+    public static function PregSubstr($start,$end,$str){
         $temp = preg_split($start, $str);
         $content = preg_split($end, $temp[1]);
         return $content[0];
@@ -635,7 +635,7 @@ class UTInc{
      * @param string $end 结束字符
      * @param string $str 字符串
      */
-    static function StrSubstr($start,$end,$str){
+    public static function StrSubstr($start,$end,$str){
         $temp = explode($start, $str, 2);
         $content = explode($end, $temp[1], 2);
         return $content[0];
@@ -647,7 +647,7 @@ class UTInc{
      * @param int $len 长度
      * @param string $enc 编码
      */
-    static function SubKey($str,$key,$len=100,$enc='utf-8'){
+    public static function SubKey($str,$key,$len=100,$enc='utf-8'){
         $strlen = mb_strlen($str,$enc);
         $keylen = mb_strlen($key,$enc);
         $keypos = mb_strpos($str,$key,0,$enc);
@@ -677,7 +677,7 @@ class UTInc{
      * @param string $url 提交地址
      * @param string $data 数据
      */
-    static function HttpPost($url,$data){
+    public static function HttpPost($url,$data){
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -697,7 +697,7 @@ class UTInc{
      * @param string $timeout 超时时间
      * @param int $chart 默认为1，是否将结果转换至UTF-8编码
      */
-    static function HttpGet($url,$timeout='10',$chart='1'){
+    public static function HttpGet($url,$timeout='10',$chart='1'){
         if(function_exists("curl_init")){
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -722,7 +722,7 @@ class UTInc{
      * @param string $url 地址
      * @return int 获得地址状态码
      */
-    static function HttpCode($url){
+    public static function HttpCode($url){
         $ch = curl_init();
         $timeout =10;
         curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);
@@ -737,7 +737,7 @@ class UTInc{
     /**
      * 获取当前页面地址
      */
-    static function CurPageUrl(){
+    public static function CurPageUrl(){
         $pageURL = 'http';
         if(isset($_SERVER["HTTPS"]) && strtolower($_SERVER["HTTPS"])=="on"){
             $pageURL .= "s";
@@ -750,7 +750,7 @@ class UTInc{
      * 获取模板末尾节点路径，通过判断当前路径是否在app目录打开
      * @return string admin即后端，front即前端
      */
-    static function TempEndPath(){
+    public static function TempEndPath(){
         $thispage=UTInc::CurPageUrl();
         if(strpos($thispage,'/app/')!==false){
             return "admin/";
@@ -766,7 +766,7 @@ class UTInc{
      * @param int $type 默认为0 readfile数据流方式获取，否则为curl
      * @return array 返回文件信息集合
      */
-    static function SaveFile($url,$save_dir='',$filename='',$type=0){  
+    public static function SaveFile($url,$save_dir='',$filename='',$type=0){  
         if(trim($url) == ''){
             return false;
         }  
@@ -811,7 +811,7 @@ class UTInc{
      * @param string $path 文件夹路径
      * @return bool
      */
-    static function FileMode($path){
+    public static function FileMode($path){
         $result=is_writable($path);
         return $result;
     }
@@ -821,7 +821,7 @@ class UTInc{
      * @param int $mode 模式 0当前 1递归
      * @return array
      */
-    static function DirList($dir,$mode='0'){
+    public static function DirList($dir,$mode='0'){
         $list=array();
         if($dir_handle = @opendir($dir)){
             while($filename = readdir($dir_handle)){
@@ -845,7 +845,7 @@ class UTInc{
      * @param int $mode 文件夹权限
      * @return bool
      */
-    static function MakeDir($dir,$mode=0777){
+    public static function MakeDir($dir,$mode=0777){
         if(is_dir($dir) || @mkdir($dir, $mode)) return TRUE;
         if(!mkdirs(dirname($dir), $mode)) return FALSE;
         return @mkdir($dir, $mode);
@@ -855,7 +855,7 @@ class UTInc{
      * @param string $oldpath 原来的文件夹路径
      * @param string $newpath 现在的文件夹路径
      */
-    static function MoveDir($oldpath,$newpath){
+    public static function MoveDir($oldpath,$newpath){
         $handle=opendir($oldpath);
         while(false!==($file = readdir($handle))){
             $fileFrom=$oldpath.DIRECTORY_SEPARATOR.$file;
@@ -877,7 +877,7 @@ class UTInc{
      * @param string $newpath 现在的文件夹路径
      * @return bool
      */
-    static function EditDir($oldpath,$newpath){
+    public static function EditDir($oldpath,$newpath){
         $_path = iconv('utf-8', 'gb2312', $oldpath);
         $__path = iconv('utf-8', 'gb2312',$newpath);
         if(is_dir($_path)){
@@ -899,7 +899,7 @@ class UTInc{
      * @param string $path 文件夹路径
      * @return array
      */
-    static function GetDir($path){
+    public static function GetDir($path){
         if(!is_dir($path)){
               return false;
         }
@@ -917,7 +917,7 @@ class UTInc{
      * @param string $file 文件路径名称
      * @return bool
      */
-    static function UnlinkFile($file){
+    public static function UnlinkFile($file){
         if (file_exists($file)){
             unlink($file);
             return true;
@@ -930,7 +930,7 @@ class UTInc{
      * @param string $directory 文件夹路径名称
      * @return bool
      */
-    static function DelDir($directory){
+    public static function DelDir($directory){
         if(file_exists($directory)){
             if($dir_handle = @opendir($directory)){
                 while($filename = readdir($dir_handle)){
@@ -953,7 +953,7 @@ class UTInc{
      * @param string $dir 文件夹路径名称
      * @return bool
      */
-    static function SearchDir($dir){
+    public static function SearchDir($dir){
         if(is_dir($dir)){
             return true;
         }else{
@@ -965,7 +965,7 @@ class UTInc{
      * @param string $file 文件夹路径名称
      * @return bool
      */
-    static function SearchFile($file){
+    public static function SearchFile($file){
         if(is_file($file)){
             return true;
         }else{
@@ -976,7 +976,7 @@ class UTInc{
      * 获取服务器信息
      * @return array
      */
-    static function GetSystemInfo(){
+    public static function GetSystemInfo(){
         $os=PHP_OS;
         $server = $_SERVER["SERVER_SOFTWARE"];
         $phpver = PHP_VERSION;
@@ -988,7 +988,7 @@ class UTInc{
      * 检测文件编码
      * @param string $file 文件
      */
-    static function DetectEncoding($file) {
+    public static function DetectEncoding($file) {
         $list = array('GBK', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'ISO-8859-1');
         $str = file_get_contents($file);
         foreach ($list as $item) {
@@ -1003,7 +1003,7 @@ class UTInc{
      * 图片转为Base64编码
      * @param string $img 图片
      */
-    static function ImgToBase64($img=''){
+    public static function ImgToBase64($img=''){
         $imageInfo = getimagesize($img);
         $base64 = "" . chunk_split(base64_encode(file_get_contents($img)));
         return 'data:' . $imageInfo['mime'] . ';base64,' . chunk_split(base64_encode(file_get_contents($img)));
@@ -1013,7 +1013,7 @@ class UTInc{
      * @param string $base64 图片Base64编码
      * @param string $path 保存路径
      */
-    static function Base64ToImg($base64,$path){
+    public static function Base64ToImg($base64,$path){
         if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64, $result)){
             $type = $result[2];
             $newfile = $path."/".time().".{$type}";
@@ -1030,7 +1030,7 @@ class UTInc{
      * 向浏览器推送下载文件
      * @param string $file 文件路径
      */
-    static function Download($file){
+    public static function Download($file){
         $filename=iconv('utf-8','gb2312',basename($file));
         if(!file_exists($file)){
             Header("HTTP/1.1 404 Not Found");
@@ -1050,7 +1050,7 @@ class UTInc{
      * each7.x版本替代方法
      * @param array $array 数组
      */    
-    static function NewEach(&$array){
+    public static function NewEach(&$array){
         $res = array();
         $key = key($array);
         if($key !== null){
