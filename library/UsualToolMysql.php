@@ -1,7 +1,6 @@
 <?php
 namespace library\UsualToolMysql;
 use library\UsualToolInc;
-use library\UsualToolRedis;
 /**
        * --------------------------------------------------------       
        *  |    ░░░░░░░░░     █   █░▀▀█▀▀░    ░░░░░░░░░      |           
