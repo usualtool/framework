@@ -149,11 +149,11 @@ class UTMysql{
         $updatestr='';
         if(!empty($data)):
             foreach($data as $k=>$v):
-			    if(preg_match('/\+\d/is',$v)):
-			        $updatestr.=$k."=".$v.",";
-			    else:
+                if(preg_match('/\+\d/is',$v)):
+                    $updatestr.=$k."=".$v.",";
+                else:
                     $updatestr.=$k."='".$v."',";
-		        endif;
+                endif;
             endforeach;
             $updatestr=rtrim($updatestr,',');
         endif;
