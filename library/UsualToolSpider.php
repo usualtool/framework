@@ -10,7 +10,10 @@ namespace library\UsualToolSpider;
        *  | WebSite:http://www.UsualTool.com                |            
        *  | UT Framework is suitable for Apache2 protocol.  |            
        * --------------------------------------------------------                
-*/
+ */
+/**
+ * 实例化批量任务
+ */
 class UTSpider{
     protected $http_data = array();
     protected $agent;
