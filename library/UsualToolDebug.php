@@ -2,16 +2,27 @@
 namespace library\UsualToolDebug;
 use library\UsualToolInc;
 /**
- * 以静态方法执行Debug捕获错误及调试
+       * --------------------------------------------------------       
+       *  |    ░░░░░░░░░     █   █░▀▀█▀▀░    ░░░░░░░░░      |           
+       *  |  ░░░░░░░         █▄▄▄█   █                      |            
+       *  |                                                 |            
+       *  | Author:HuangDou   Email:292951110@qq.com        |            
+       *  | QQ-Group:583610949                              |           
+       *  | WebSite:http://www.UsualTool.com                |            
+       *  | UT Framework is suitable for Apache2 protocol.  |            
+       * --------------------------------------------------------                
+ */
+/**
+ * 执行Debug捕获错误及调试
  */
 class UTDebug{
-    static function Debug($mode='0'){
+    public static function Debug($mode='0'){
         $debug=error_get_last();
         if(isset($debug)){
             UTDebug::WriteDebug($mode,$debug);
         }
     }
-    static function WriteDebug($mode,$debug){
+    public static function WriteDebug($mode,$debug){
         $type=$debug["type"];
         $message=$debug["message"];
         $file=str_replace(UTF_ROOT,"",$debug["file"]);
@@ -51,7 +62,7 @@ class UTDebug{
         }
         file_put_contents(APP_ROOT."/log/debug.log",$string);
     }
-    static function Error($type='',$path=''){
+    public static function Error($type='',$path=''){
         echo"<p style='margin-top:5%;'>";
         echo"<strong><span style='font-size:20px;'>~( ´•︵•` )~ Don't hit me 404</span></strong><br/>";
         echo"</p>";
