@@ -12,9 +12,9 @@ namespace library\UsualToolWater;
        * --------------------------------------------------------                
  */
 /**
- * 水印示例：
- * UTWater::MarkWater("text","1.jpg","usualtool.com",5,"#B5B5B5","14");
- * UTWater::MarkWater("image","1.jpg","water.png",8);
+ * 水印
+ * 文字:UTWater::MarkWater("text","1.jpg","usualtool.com",5,"#B5B5B5","14");
+ * 图片:UTWater::MarkWater("image","1.jpg","water.png",8);
 */
 class UTWater{
     /**
