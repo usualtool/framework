@@ -111,7 +111,7 @@ class UTMssql{
      * @return bool 
      */
     public static function InsertData($table,$data){
-        $db=UTMssqlTest::GetMssql();
+        $db=UTMssql::GetMssql();
         $sql="insert into ".$table." (".implode(',',array_keys($data)).") values ('".implode("','",array_values($data))."');SELECT SCOPE_IDENTITY();";
         $query=sqlsrv_query($db,$sql);
         sqlsrv_next_result($query);
@@ -286,11 +286,11 @@ class UTMssql{
      * @param string $where 条件
      */  
 	public static function Min($table,$field,$where=''){
-        $db=UTMssqlTest::GetMssql();
+        $db=UTMssql::GetMssql();
         $min="";
         $where=empty($where) ? "" : "where ".$where;
 		$query=sqlsrv_query($db,"select min($field) as value from $table $where");
-		while($rows=UTMssqlTest::FetchArray($query)):
+		while($rows=UTMssql::FetchArray($query)):
 		     $min=$rows["value"];
 		endwhile;
 		return $min;
@@ -300,13 +300,13 @@ class UTMssql{
      * @param string $table 表名
      * @param string $field 检索字段，数字类型且只能为1个
      * @param string $where 条件
-     */  
+     */
 	public static function Max($table,$field,$where=''){
-        $db=UTMssqlTest::GetMssql();
+        $db=UTMssql::GetMssql();
         $max="";
         $where=empty($where) ? "" : "where ".$where;
 		$query=sqlsrv_query($db,"select max($field) as value from $table $where");
-		while($rows=UTMssqlTest::FetchArray($query)):
+		while($rows=UTMssql::FetchArray($query)):
 		     $max=$rows["value"];
 		endwhile;
 		return $max;
