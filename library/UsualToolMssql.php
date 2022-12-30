@@ -105,6 +105,21 @@ class UTMssql{
         endif;
     }
     /**
+     * 执行SQL并返回结果集
+     * @param string $sql SQL语句
+     * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+     */
+    public static function JoinQuery($sql){
+        $db=UTMssql::GetMssql();
+        $array = array();
+        $result = sqlsrv_query($db,$sql);
+		while($rows=sqlsrv_fetch_array($result,SQLSRV_FETCH_ASSOC)){
+			$array[] = UTMssql::ObjectToArray($rows);
+		}
+	    $querynum=UTMssql::QueryNum($sql);
+        return array("querydata"=>$array,"querynum"=>$querynum);
+    }
+    /**
      * 新增数据
      * @param string $table 被表名
      * @param string $data 字段及值的数组，例：array("字段1"=>"值1","字段2"=>"值2")
@@ -300,7 +315,7 @@ class UTMssql{
      * @param string $table 表名
      * @param string $field 检索字段，数字类型且只能为1个
      * @param string $where 条件
-     */
+     */  
 	public static function Max($table,$field,$where=''){
         $db=UTMssql::GetMssql();
         $max="";
