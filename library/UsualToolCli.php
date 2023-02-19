@@ -379,7 +379,7 @@ class UTCli{
             elseif($server=="proxy"):
                 $server=new \usualtool\Swoole\Proxy($host,$port,$array[5]);
             elseif($server=="websocket"):
-                $server=new \usualtool\Swoole\Websocket($host,$port);
+                $server=new \usualtool\Swoole\Websocket($host,$port,$array[5]);
             elseif($server=="pool"):
                 $server=new \usualtool\Swoole\Pool($host,$port);
             elseif($server=="queue"):
