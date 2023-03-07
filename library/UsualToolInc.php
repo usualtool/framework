@@ -907,9 +907,10 @@ class UTInc{
         $arr = array();
         $data = scandir($path);
         foreach ($data as $value){
-              if($value != '.' && $value != '..'){
-                  $arr[] = $value;
-              }
+            if($value != '.' && $value != '..'){
+                $filetime = date('Y-m-d H:i:s',filemtime($path."/".$value));
+                $arr[$filetime] = $value;
+            }
         }
         return $arr;
     }
