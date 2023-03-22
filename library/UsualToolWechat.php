@@ -205,7 +205,6 @@ class UTWechat{
      * @return string
      */
     public function ResponseMsg(){
-		$config=UTInc::GetConfig();
         //接收事件内容
         $data = file_get_contents("php://input");
         if(!empty($data)){
@@ -213,54 +212,64 @@ class UTWechat{
             $obj = simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA);
             $type = trim($obj->MsgType);
             $openid=$obj->FromUserName;
-            //解析事件内容
-            if($type=="event"):
-                if($obj->Event=="subscribe"):
-                    $content="已关注公众号。";
+            //判断是否是扫码事件
+            if($obj->Ticket){
+                $ticket=$obj->Ticket;
+                $eventkey=$obj->EventKey;
+                UTInc::MakeDir(APP_ROOT."/log/wechat/ticket/");
+                $jsonurl=APP_ROOT."/log/wechat/ticket/".$ticket.".json";
+                $data=json_encode(array("openid"=>$openid,"eventkey"=>$eventkey));
+                file_put_contents($jsonurl,$data);
+            }else{
+                //解析事件内容
+                if($type=="event"):
+                    if($obj->Event=="subscribe"):
+                        $content="已关注公众号。";
+                    endif;
+                elseif($type=="text"):
+                    $content=$obj->Content;
+                elseif($type=="image"):
+                    $content=$obj->PicUrl;
+                elseif($type=="voice"):
+                    $content=$obj->MediaId;
+                    $this->GetLocal("voice",$content);
+                elseif($type=="video"):
+                    $content=$obj->MediaId;
+                    $this->GetLocal("video",$content);
+                elseif($type=="location"):
+                    $content="纬度：".$obj->Location_X."，经度：".$obj->Location_Y."，缩放级别：".$obj->Scale."，位置：".$obj->Label."";
+                elseif($type=="link"):
+                    $content="<a href='".$obj->Url."'><b>".$obj->Title."</b><br>".$obj->Description."</a>";
                 endif;
-            elseif($type=="text"):
-                $content=$obj->Content;
-            elseif($type=="image"):
-                $content=$obj->PicUrl;
-            elseif($type=="voice"):
-                $content=$obj->MediaId;
-                $this->GetLocal("voice",$content);
-            elseif($type=="video"):
-                $content=$obj->MediaId;
-                $this->GetLocal("video",$content);
-            elseif($type=="location"):
-                $content="纬度：".$obj->Location_X."，经度：".$obj->Location_Y."，缩放级别：".$obj->Scale."，位置：".$obj->Label."";
-            elseif($type=="link"):
-                $content="<a href='".$obj->Url."'><b>".$obj->Title."</b><br>".$obj->Description."</a>";
-            endif;
-            $time=$obj->CreateTime;
-            UTInc::MakeDir(APP_ROOT."/log/wechat/");
-            $jsonurl=APP_ROOT."/log/wechat/".$openid.".json";
-            //存放事件日志
-            //重复消息过滤
-            if(!empty($content) && $content!="null"){
-                $msg=array("type"=>$type,"openid"=>$openid,"content"=>$content,"time"=>$time);
-                if(file_exists($jsonurl)){
-                    $jsonstr=file_get_contents($jsonurl);
-                    $jsondata = json_decode($jsonstr,true);
-                    array_unshift($jsondata,$msg);
-                }else{
-                    $jsondata=array();
-                    $jsondata[]=$msg;
+                $time=$obj->CreateTime;
+                UTInc::MakeDir(APP_ROOT."/log/wechat/");
+                $jsonurl=APP_ROOT."/log/wechat/".$openid.".json";
+                //存放事件日志
+                //重复消息过滤
+                if(!empty($content) && $content!="null"){
+                    $msg=array("type"=>$type,"openid"=>$openid,"content"=>$content,"time"=>$time);
+                    if(file_exists($jsonurl)){
+                        $jsonstr=file_get_contents($jsonurl);
+                        $jsondata = json_decode($jsonstr,true);
+                        array_unshift($jsondata,$msg);
+                    }else{
+                        $jsondata=array();
+                        $jsondata[]=$msg;
+                    }
+                    $jsonstrs=json_encode($jsondata,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
+                    file_put_contents($jsonurl,$jsonstrs);
                 }
-                $jsonstrs=json_encode($jsondata,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
-                file_put_contents($jsonurl,$jsonstrs);
-            }
-            //事件自动回复
-            if($type=="event"){
-                if($obj->Event=="subscribe"){
-                    $receive="感谢您的关注，授权并绑定账号可以解锁更多功能。".$config["APPURL"]."/?m=public&p=login";
-                    $result=$this->ReceiveMsg($obj,$receive);
+                //事件自动回复
+                if($type=="event"){
+                    if($obj->Event=="subscribe"){
+                        $receive="感谢您的关注，授权并绑定账号可以解锁更多功能。".$config["APPURL"]."/?m=public&p=login";
+                        $result=$this->ReceiveMsg($obj,$receive);
+                    }else{
+                        echo"success";
+                    }
                 }else{
                     echo"success";
                 }
-            }else{
-                echo"success";
             }
         }else{
             exit("未接收到有效的数据");
@@ -562,6 +571,25 @@ class UTWechat{
         }else{
             return false;
         }
+    }
+    /**
+     * 获取带参数的二维码（1800秒有效期）
+     * @param string $eventkey 事件标记
+     * @return array
+     */
+    public function CreatQrcode($eventkey){
+        $url = "https://{$this->appline}/cgi-bin/qrcode/create?access_token={$this->GetToken()}";
+        $data='{
+            "expire_seconds": 1800,
+            "action_name": "QR_STR_SCENE",
+            "action_info": {
+                "scene": {
+                    "scene_str": "'.$eventkey.'"
+                }
+            }
+        }';
+        $res = $this->PostData($url,$data);
+        return $res;
     }
     /**
      * GET数据到微信并返回数据
