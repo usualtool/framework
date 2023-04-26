@@ -439,9 +439,10 @@ class UTInc{
                 preg_match_all("/\<tid\>(.*?)\<\/tid\>/",$temp,$tid);
                 preg_match_all("/\<title\>(.*?)\<\/title\>/",$temp,$title);
                 preg_match_all("/\<picurl\>(.*?)\<\/picurl\>/",$temp,$picurl);
+                preg_match_all("/\<module\>(.*?)\<\/module\>/",$temp,$module);
                 preg_match_all("/\<lang\>(.*?)\<\/lang\>/",$temp,$lang);
                 preg_match_all("/\<isfree\>(.*?)\<\/isfree\>/",$temp,$isfree);
-                $template[]=array("tid"=>$tid[1][0],"title"=>$title[1][0],"picurl"=>$picurl[1][0],"lang"=>$lang[1][0],"isfree"=>$isfree[1][0]);
+                $template[]=array("tid"=>$tid[1][0],"title"=>$title[1][0],"picurl"=>$picurl[1][0],"module"=>$module[1][0],"lang"=>$lang[1][0],"isfree"=>$isfree[1][0]);
             }
         }elseif($type==2){
             $temps=UTInc::Auth($config["UTCODE"],$config["UTFURL"],"temporder");
