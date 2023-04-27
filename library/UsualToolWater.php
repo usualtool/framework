@@ -12,7 +12,7 @@ namespace library\UsualToolWater;
        * --------------------------------------------------------                
  */
 /**
- * 水印接口
+ * 水印
  * 文字:UTWater::MarkWater("text","1.jpg","usualtool.com",5,"#B5B5B5","14");
  * 图片:UTWater::MarkWater("image","1.jpg","water.png",8);
 */

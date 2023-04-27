@@ -32,6 +32,24 @@ class UTData{
         return $config["DBTYPE"];
     }
     /**
+     * 连接数据库
+     */
+    public static function GetDatabase(){
+        if(UTData::GetDb()=="pdo"){
+            return UsualToolPdo\UTPdo::GetPdo();
+        }elseif(UTData::GetDb()=="mysql"){
+            return UsualToolMysql\UTMysql::GetMysql();
+        }elseif(UTData::GetDb()=="mssql"){
+            return UsualToolMssql\UTMssql::GetMssql();
+        }elseif(UTData::GetDb()=="pgsql"){
+            return UsualToolPgsql\UTPgsql::GetPgsql();
+        }elseif(UTData::GetDb()=="sqlite"){
+            return UsualToolSqlite\UTSqlite::GetSqlite();
+        }else{
+            return false;
+        }
+    }
+    /**
      * 判断表是否存在
      * @param string $table
      * @return bool

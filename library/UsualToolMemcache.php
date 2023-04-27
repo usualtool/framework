@@ -1,5 +1,5 @@
 <?php
-namespace library\UsualToolMongo;
+namespace library\UsualToolMemcache;
 use library\UsualToolInc;
 /**
        * --------------------------------------------------------       
@@ -13,122 +13,116 @@ use library\UsualToolInc;
        * --------------------------------------------------------                
  */
 /**
- * 操作MongoDB
+ * 操作Memcache
  */
-class UTMongo{
-    /**
-     * 连接MongoDB
-     */
-    public static function GetMongo() {
+class UTMemcache{
+    public static function GetMemcache(){
         $config=UsualToolInc\UTInc::GetConfig();
-        if(PHP_VERSION>=7){
-            $db=new \MongoDB\Driver\Manager("mongodb://".$config["MONGO_USER"].":".$config["MONGO_PASS"]."@".$config["MONGO_HOST"].":".$config["MONGO_PORT"]."/".$config["MONGO_DB"]);
+        $db=new \Memcached();
+        $db->setOption(\Memcached::OPT_BINARY_PROTOCOL,true);
+        if(strpos($config["MEMCACHE_HOST"],",")!==false){
+            $server=array();
+            $hosts=explode(',',$config["MEMCACHE_HOST"]);
+            $ports=explode(',',$config["MEMCACHE_PORT"]);
+            $you=round(1/count($hosts)*100);
+            for($i=0;$i<count($hosts);$i++){
+                $server[]=array($hosts[$i],$ports[$i],$you);
+            }
+            $db->addServers($server);
         }else{
-            $db=new \MongoDB\Driver\Manager("mongodb://".$config["MONGO_HOST"].":".$config["MONGO_PORT"]."/".$config["MONGO_DB"]);
+            $db->addServer($config["MEMCACHE_HOST"],$config["MEMCACHE_PORT"]);
+        }
+        if(!empty($config["MEMCACHE_USER"]) && !empty($config["MEMCACHE_PASS"])){
+            $db->setSaslAuthData($config["MEMCACHE_USER"],$config["MEMCACHE_PASS"]);
         }
         return $db;
     }
     /**
-     * 判断文档是否存在
-     * @param string $table
+     * 判断元素是否存在
+     * @param string $key 键
      * @return bool
      */
-    public static function ModTable($table){
-        $db=UTMongo::GetMongo();
-        $filter=["name"=>['$regex'=>'\sw\d']];
-        $query=["limit"=>1];
-        if(empty(UTMongo::QueryData($table,$filter,$query))){
+    public static function ModTable($key){
+        $db=UTMemcache::GetMemcache();
+        $res=$db->get($key);
+        if(!$res){
             return false;
         }else{
             return true;
         }
     }
     /**
-     * 获取数据
-     * @param  string $table 表
-     * @param  array  $filter 条件
-     * @param  array  $writeOps 参数
-     * @return array
+     * 查询元素
+     * @param string $key 键
+     * @return bool/string/array
      */
-    public static function QueryData($table,array $filter,array $writeOps=[]){
-        $cmd = [
-            "find"=> $table,
-            "filter"=> $filter
-        ];
-        $cmd += $writeOps;
-        return UTMongo::Command($cmd);
-    }
-    /**
-     * 插入数据
-     * @param string $table 表
-     * @param array  $documents 文档数据
-     * @param array  $writeOps  参数
-     * @return array
-     */
-    public static function InsertData($table,array $documents,array $writeOps=[]){
-        $cmd = [
-            "insert"=> $table,
-            "documents"=> $documents,
-        ];
-        $cmd += $writeOps;
-        return UTMongo::Command($cmd);
-    }
-    /**
-     * 删除数据
-     * @param  string $table
-     * @param  array  $deletes 删除条件
-     * @param  array  $writeOps 参数
-     * @return array
-     */
-    public static function DelData($table,array $deletes,array $writeOps=[]) {
-        foreach($deletes as &$_){
-            if(isset($_["q"]) && !$_["q"]){
-                $_["q"] = (Object)[];
-            }
-            if(isset($_["limit"]) && !$_["limit"]){
-                $_["limit"] = 0;
-            }
+    public static function QueryData($key){
+        $db=UTMemcache::GetMemcache();
+        $msg=$db->get($key);
+        if(!$msg){
+            return false;
         }
-        $cmd = [
-            "delete"=> $table,
-            "deletes"=> $deletes,
-        ];
-        $cmd += $writeOps;
-        return UTMongo::Command($cmd);
+        return $msg;
     }
     /**
-     * 更新数据
-     * @param  string $table writeOps
-     * @param  array  $updates 条件
-     * @param  array  $writeOps 参数
-     * @return array
+     * 创建元素
+     * @param string $key 键
+     * @param string|array $data 值
+     * @param int $time 过期时间，0不设置过期时间，1设置过期时间为DBCACHE_TIME
+     * @return bool
      */
-    public static function UpdateData($table,array $updates,array $writeOps=[]) {
-        $cmd = [
-            "update"=> $table,
-            "updates"=> $updates,
-        ];
-        $cmd += $writeOps;
-        return UTMongo::Command($cmd);
-    }
-    /**
-     * 执行MongoDB命令
-     * @param array $param 命令
-     * @return array
-     */
-    public static function Command(array $param) {
+    public static function InsertData($key,$data,$time='0'){
         $config=UsualToolInc\UTInc::GetConfig();
-        $db=UTMongo::GetMongo();
-        $cmd = new \MongoDB\Driver\Command($param);
-        $data=$db->executeCommand($config["MONGO_DB"],$cmd);
-        return $data->toArray();
+        $db=UTMemcache::GetMemcache();
+        if($time==0){
+            return $db->set($key,$data,0);
+        }else{
+            return $db->set($key,$data,$config["DBCACHE_TIME"]);
+        }
     }
     /**
-     * 获取当前连接信息
+     * 更新元素
+     * @param string $key 键
+     * @param string $value 值
+     * @param int $time 过期时间
+     * @return bool
+     */
+    public static function UpdateData($key,$data,$time='0'){
+        $db=UTMemcache::GetMemcache();
+        if(!UTMemcache::ModTable($key)){
+            return false;
+        }else{
+            return $db->replace($key,$data,$time);
+        }
+    }
+    /**
+     * 删除元素
+     * @param string $key 键
+     * @param int $time 删除等待时间
+     * @return bool
+     */
+    public static function DelData($key,$time='0'){
+        $db=UTMemcache::GetMemcache();
+        if(!UTMemcache::ModTable($key)){
+            return false;
+        }else{
+            return $db->delete($key,$time);
+        }
+    }
+    /**
+     * 清空元素
+     * @return bool
+    */
+    public static function Clear(){
+        $db=UTMemcache::GetMemcache();
+        return $db->flush();
+    }
+    /**
+     * 获取服务器池的统计信息
      * @return array
      */
-    public static function getMongoManager() {
-        $db=UTMongo::GetMongo();
-        return $db;
+    public static function Status(){
+        $db=UTMemcache::GetMemcache();
+        return $db->getStats();
     }
 }
