@@ -36,6 +36,12 @@ use library\UsualToolRoute\UTRoute;
  */
 $config=UTInc::GetConfig();
 /**
+ * 禁止配置联网
+ */
+if(!empty($config["APPURL"]) && UTInc::HttpCode($config["APPURL"]."/.ut.config")=="200"):
+    UTInc::GoUrl("-1","Error:The configuration must be disconnected from the network.");
+endif;
+/**
  * 公共模块
  */
 define('PUB_PATH', APP_ROOT.'/modules/'.$config["DEFAULT_MOD"]);
