@@ -98,13 +98,14 @@ class UTRoute{
      */
     public static function Link($module="",$page="",$param=""){
         $config=UsualToolInc\UTInc::GetConfig();
+        $appurl=rtrim($config["APPURL"],"/");
         $rule=$config["REWRITE"];
         if($rule==0){
             /**m={m}&p={p}&id={id}*/
             $m=empty($module) ? "" : "m=".$module."&";
             $p=empty($page) ? "" : "p=".$page."&";
             $r=empty($param) ? "" : $param."&";
-            $link=substr("?".$m.$p.$r,0,-1);
+            $link="/".substr("?".$m.$p.$r,0,-1);
         }elseif($rule==1){
             /**{m}/{p}/id-{id}.html*/
             $m=empty($module) ? "/".$config["DEFAULT_MOD"]."/" : "/".$module."/";
@@ -139,7 +140,7 @@ class UTRoute{
         $d=parse_url($config["APPURL"])["host"];
         $e=str_replace("/","",explode($d,$config["APPURL"])[1]);
         if(!empty($e)){
-            return $config["APPURL"].$link;
+            return $appurl.$link;
         }else{
             return $link;
         }
