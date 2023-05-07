@@ -108,42 +108,43 @@ class UTInc{
      * @return string
      */
     public static function SqlCheckv($str){
-        $str=str_ireplace("eval","",$str);
-        $str=str_ireplace("assert","",$str);
-        $str=str_ireplace("create_function","",$str);
-        $str=str_ireplace("call_user_func","",$str);
-        $str=str_ireplace("call_user_func_array","",$str);
-        $str=str_ireplace("array_map","",$str);
-        $str=str_ireplace("system","",$str);
-        $str=str_ireplace("shell_exec","",$str);
-        $str=str_ireplace("passthru","",$str);
-        $str=str_ireplace("exec","",$str);
-        $str=str_ireplace("popen","",$str);
-        $str=str_ireplace("proc_open","",$str);
-        $str=str_ireplace("ob_start","",$str);
-        $str=str_ireplace("putenv","",$str);
-        $str=str_ireplace("ini_set","",$str);
-        $str=str_ireplace("preg_match","",$str);
+        $replace=array(
+            "eval",
+            "assert",
+            "create_function",
+            "call_user_func",
+            "call_user_func_array",
+            "array_map",
+            "system",
+            "shell_exec",
+            "passthru",
+            "exec",
+            "popen",
+            "proc_open",
+            "ob_start",
+            "putenv",
+            "putenv",
+            "ini_set",
+            "preg_match"
+        );
+        $str=str_ireplace($replace,"",$str);
         return $str;
     }
     /**
-     * 过滤字符为数字并返回数字
+     * 过滤并验证数字
      * @param string $str
      * @return int
      */
     public static function SqlCheckx($str){
-        $result = false;
-        if($str !== '' && !is_null($str)){
-        $var = UTInc::SqlChecks($str);
-        $var=str_replace("+","",$var);
-        $var=str_replace("-","",$var);
-        $var=str_replace("%","",$var);
-        $var=str_replace("*","",$var);
-        if($var !== ''&& !is_null($var) && (is_numeric($var)||is_float($var))){
-            $result = $var;
-        }else{
-            $result = false;
-        }
+        $result=false;
+        if($str!=='' && !is_null($str)){
+            $var=UTInc::SqlChecks($str);
+            $var=str_replace(array("+","-","%","*"),array("","","",""),$var);
+            if($var!=='' && !is_null($var) && (is_numeric($var) || is_float($var))){
+                $result=$var;
+            }else{
+                $result=false;
+            }
         }
         return $result;
     }
@@ -153,21 +154,7 @@ class UTInc{
      * @return string
      */
     public static function ClearNum($str){
-        $str=str_replace("s.php","",$str);
-        $str=str_replace("s.html","",$str);
-        $str=str_replace("-","",$str);
-        $str=str_replace("0","",$str);
-        $str=str_replace("1","",$str);
-        $str=str_replace("2","",$str);
-        $str=str_replace("3","",$str);
-        $str=str_replace("4","",$str);
-        $str=str_replace("5","",$str);
-        $str=str_replace("6","",$str);
-        $str=str_replace("7","",$str);
-        $str=str_replace("8","",$str);
-        $str=str_replace("9","",$str);
-        $str=str_replace(".php","",$str);
-        $str=str_replace(".html","",$str);
+        $str=preg_replace('/[0-9]/','',$str);
         return $str;
     }
     /**
