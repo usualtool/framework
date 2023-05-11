@@ -127,7 +127,7 @@ class UTMongo{
      * 获取当前连接信息
      * @return array
      */
-    public static function getMongoManager() {
+    public static function GetMongoManager() {
         $db=UTMongo::GetMongo();
         return $db;
     }
