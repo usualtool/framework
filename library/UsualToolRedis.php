@@ -102,12 +102,16 @@ class UTRedis{
         $db->del($key);
     }
     /**
-     * 查询所有键
+     * 查询所有键及键前缀模糊查询
      * @return array
      */
-    public static function QueryKey(){
+    public static function QueryKey($key=''){
         $db=UTRedis::GetRedis();
-        return $db->keys("*");
+        if(!empty($key)){
+            return $db->keys($key."*");
+        }else{
+            return $db->keys("*");
+        }
     }
     /**
      * 创建队列任务
