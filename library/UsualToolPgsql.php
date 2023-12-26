@@ -93,6 +93,22 @@ class UTPgsql{
         return $data;
     }
     /**
+     * 执行SQL并返回结果集
+     * @param string $sql SQL语句
+     * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+     */
+    public static function JoinQuery($sql){
+		$db=UTPgsql::GetPgsql();
+        $array = array();
+        $result = @pg_query($db,$sql);
+        $curnum=@pg_num_rows($result);
+        $querynum=UTPgsql::QueryNum($sql);
+        while($rows=@pg_fetch_object($result)){
+            $array[] = UTPgsql::ObjectToArray($rows);
+        }
+        return array("querydata"=>$array,"curnum"=>$curnum,"querynum"=>$querynum);
+    }
+    /**
      * 新增数据
      * @param string $table 被表名
      * @param string $data 字段及值的数组，例：array("字段1"=>"值1","字段2"=>"值2")

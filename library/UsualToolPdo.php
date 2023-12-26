@@ -101,6 +101,23 @@ class UTPdo{
       $data=array("querydata"=>$array,"curnum"=>$curnum,"querynum"=>$querynum);
       return $data;
   }
+    /**
+     * 执行SQL并返回结果集
+     * @param string $sql SQL语句
+     * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+     */
+    public static function JoinQuery($sql){
+      $db=UTPdo::GetPdo();
+      $array = array();
+      $res=$db->query($sql);
+      $curnum=0;
+      while($rows=$res->fetch()){
+        $curnum++;
+        $array[]=$rows;
+      }
+      $querynum=UTPdo::QueryNum($sql);
+      return array("querydata"=>$array,"curnum"=>$curnum,"querynum"=>$querynum);
+    }
   /**
    * 创建数据
    * @param string $table 被表名

@@ -82,9 +82,9 @@ class UTData{
         }elseif(UTData::GetDb()=="mssql"){
             return UsualToolMysql\UTMssql::RunSql($sql);
         }elseif(UTData::GetDb()=="pgsql"){
-            return UsualToolPgsql\UTPgsql::RunSql($table);
+            return UsualToolPgsql\UTPgsql::RunSql($sql);
         }elseif(UTData::GetDb()=="sqlite"){
-            return UsualToolSqlite\UTSqlite::RunSql($table);
+            return UsualToolSqlite\UTSqlite::RunSql($sql);
         }else{
             return false;
         }
@@ -118,6 +118,26 @@ class UTData{
             return $data;
         }else{
             UTData::GetCache($table,$field,$where,$order,$limit,$lang,$cache);
+        }
+    }
+    /**
+     * 执行SQL并返回数据集
+     * @param string $sql SQL语句/命令
+     * @return bool
+     */
+    public static function JoinQuery($sql){
+        if(UTData::GetDb()=="pdo"){
+            return UsualToolPdo\UTPdo::JoinQuery($sql);
+        }elseif(UTData::GetDb()=="mysql"){
+            return UsualToolMysql\UTMysql::JoinQuery($sql);
+        }elseif(UTData::GetDb()=="mssql"){
+            return UsualToolMysql\UTMssql::JoinQuery($sql);
+        }elseif(UTData::GetDb()=="pgsql"){
+            return UsualToolPgsql\UTPgsql::JoinQuery($sql);
+        }elseif(UTData::GetDb()=="sqlite"){
+            return UsualToolSqlite\UTSqlite::JoinQuery($sql);
+        }else{
+            return false;
         }
     }
     /**

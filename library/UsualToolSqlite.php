@@ -103,6 +103,23 @@ class UTSqlite{
         endif;
     }
     /**
+     * 执行SQL并返回结果集
+     * @param string $sql SQL语句
+     * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+     */
+    public static function JoinQuery($sql){
+		$db=UTSqlite::GetSqlite();
+		$query=$db->query($sql);
+        $querydata=array(); 
+		$curnum=0;
+        while($rows=$query->fetchArray(SQLITE3_ASSOC)):
+		    $curnum++;
+            array_push($querydata,$rows);
+        endwhile;
+		$querynum=UTSqlite::QueryNum($sql);
+        return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
+    }
+    /**
      * 新增数据
      * @param string $table 被表名
      * @param string $data 字段及值的数组，例：array("字段1"=>"值1","字段2"=>"值2")

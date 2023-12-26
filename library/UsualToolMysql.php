@@ -121,6 +121,22 @@ class UTMysql{
         endif;
     }
     /**
+     * 执行SQL并返回结果集
+     * @param string $sql SQL语句
+     * @return array 返回数组，例：array("querydata"=>array(),"querynum"=>0)
+     */
+    public static function JoinQuery($sql){
+        $db=UTMysql::GetMysql();
+        $query=$db->query($sql);
+        $curnum=mysqli_num_rows($query);
+        $querynum=UTMysql::QueryNum($sql);
+        $querydata=array(); 
+        while($rows=mysqli_fetch_array($query,MYSQLI_ASSOC)):
+            array_push($querydata,$rows);
+        endwhile;
+        return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
+    }
+    /**
      * 添加数据
      * @param string $table 表名
      * @param array $data 字段及值的数组，例：array("字段1"=>"值1","字段2"=>"值2")

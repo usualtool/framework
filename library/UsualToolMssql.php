@@ -113,11 +113,13 @@ class UTMssql{
         $db=UTMssql::GetMssql();
         $array = array();
         $result = sqlsrv_query($db,$sql);
+		$curnum=0;
 		while($rows=sqlsrv_fetch_array($result,SQLSRV_FETCH_ASSOC)){
+			$curnum++;
 			$array[] = UTMssql::ObjectToArray($rows);
 		}
 	    $querynum=UTMssql::QueryNum($sql);
-        return array("querydata"=>$array,"querynum"=>$querynum);
+        return array("querydata"=>$array,"curnum"=>$curnum,"querynum"=>$querynum);
     }
     /**
      * 新增数据
