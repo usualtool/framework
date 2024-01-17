@@ -102,6 +102,22 @@ class UTRedis{
         $db->del($key);
     }
     /**
+     * 批量删除指定前缀的键
+     * @param string $pix 前缀
+     */
+    public static function DelKeys($pix){
+        $db=UTRedis::GetRedis();
+        $keys=$db->keys($pix.'*');
+        if(!empty($keys)):
+            foreach($keys as $key):
+                $db->del($key);
+            endforeach;
+            return true;
+        else:
+            return false;
+        endif;
+    }
+    /**
      * 查询所有键及键前缀模糊查询
      * @return array
      */
