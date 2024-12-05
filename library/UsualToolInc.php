@@ -42,7 +42,7 @@ class UTInc{
     public static function GoUrl($url,$text=''){
         if(!empty($text)){
             if(!empty($url)){
-                if(is_numeric(str_replace("+","",str_replace("-","",$url)))){
+                if(is_numeric($url)){
                     echo'<script>alert("'.$text.'");window.history.go('.$url.');</script>';
                     exit();
                 }else{
@@ -54,8 +54,13 @@ class UTInc{
                 exit();
             }
         }else{
-            echo'<script>window.location.href="'.$url.'"</script>';
-            exit();
+            if(is_numeric($url) || $url===0):
+                echo'<script>window.location.reload();</script>';
+                exit();
+            else:
+                echo'<script>window.location.href="'.$url.'"</script>';
+                exit();
+            endif;
         }
     }
     /**

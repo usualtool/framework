@@ -197,6 +197,28 @@ class UTMysql{
         endif;
     }
     /**
+     * 复制数据
+     * @param string $table 表名
+     * @param string $where 条件
+     * @param string $autokey 自动编号字段
+     * @return bool
+     */
+    public static function CopyData($table,$where,$autokey='id'){
+        $db=UTMysql::GetMysql();
+        $sql = "SELECT * FROM `".$table."` where ".$where;
+        $query=$db->query($sql);
+        $rows=mysqli_fetch_array($query,MYSQLI_ASSOC);
+        unset($rows[$autokey]);
+        $csql="insert into `".$table."` (".implode(',',array_keys($rows)).") values ('".implode("','",array_values($rows))."')";
+        $cquery=$db->query($csql);
+        if($cquery):
+            return mysqli_insert_id($db);
+        else:
+            return false;
+        endif;
+        $db->close();
+    }
+    /**
      * 获取数据标签
      * @param string $table 表名
      * @param string $field 标签字段，只能为1个

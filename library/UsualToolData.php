@@ -205,6 +205,20 @@ class UTData{
         }
     }
     /**
+     * 复制数据
+     * @param string $table 表名
+     * @param array $where 条件
+	 * @param string autokey 自动编号字段
+     * @return bool 当结果为真时返回最新添加的记录id
+     */
+    public static function CopyData($table,$where,$autokey='id'){
+        if(UTData::GetDb()=="mysql"){
+            return UsualToolMysql\UTMysql::CopyData($table,$where,$autokey);
+        }else{
+            return false;
+        }
+    }
+    /**
      * 获取数据标签
      * @param string $table 表名
      * @param string $field 标签字段，只能为1个
