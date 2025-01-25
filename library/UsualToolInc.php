@@ -185,9 +185,13 @@ class UTInc{
      * @return array
      */
     public static function FindImage($str){
-        $pattern="/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.bmp|\.png]))[\'|\"].*?[\/]?>/";
-        preg_match_all($pattern,$str,$match);
-        return $match[1];
+        $pattern='/<img\s+[^>]*src=["\']([^"\']+)["\'][^>]*>/i';
+        $matches=array();
+        if(preg_match_all($pattern,$str,$matches)){
+            return $matches[1];
+        }else{
+            return array();
+        }
     }
     /**
      * 去除URL中的指定参数
