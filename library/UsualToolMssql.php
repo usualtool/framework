@@ -287,6 +287,23 @@ class UTMssql{
         return $ret;
     }
     /**
+     * 计算某字段总和
+     * @param string $table 表名
+     * @param string $field 检索字段，数字类型且只能为1个
+     * @param string $where 条件
+     * @return int
+     */
+    public static function Sum($table,$field,$where=''){
+        $db=UTMssql::GetMssql();
+        $num="";
+        $where=empty($where) ? "" : "where ".$where;
+		$query=sqlsrv_query($db,"select sum($field) as value from $table $where");
+		while($rows=UTMssql::FetchArray($query)):
+		     $num=$rows["value"];
+		endwhile;
+		return $num;
+    }
+    /**
      * 统计记录数目
      * @param string $sql SQL语句
      * @return int
