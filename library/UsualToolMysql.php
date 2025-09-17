@@ -131,10 +131,18 @@ class UTMysql{
         $curnum=mysqli_num_rows($query);
         $querynum=UTMysql::QueryNum($sql);
         $querydata=array(); 
+        $xu=0;
         while($rows=mysqli_fetch_array($query,MYSQLI_ASSOC)):
+            $xu=$xu+1;
+            $count=count($rows);
+            for($i=0;$i<$count;$i++):
+                unset($rows[$i]);
+            endfor;
+            $rows['xu']=$xu;
             array_push($querydata,$rows);
         endwhile;
         return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
+        $db->close();
     }
     /**
      * 添加数据
