@@ -23,15 +23,15 @@ install-dev is the installation directory of visual package on the development s
 ├────├─── 📁modules /*Module*/
 ├────├─── 📁plugins /*Plugin*/
 ├────├─── 📁template /*Template engineering*/
-├────├─── index.php /*Client controller*/
-├────└─── config.php /*Application configuration*/
+├────├─── 📄index.php /*Client controller*/
+├────└─── 📄config.php /*Application configuration*/
 ├─── 📁lang /*Language package*/
 ├─── 📁library /*Class library*/
 ├────📁log /*Framework log*/
 ├─── 📁update /*Update temporary directory*/
 ├─── 📁vendor /*Composer dependency*/
 ├─── .ut.config /*Global configuration*/
-├─── autoload.php /*Bootloader*/
+├─── 📄autoload.php /*Bootloader*/
 ├─── usualtool /*Command line*/
 └─── UTVer.ini /*Version*/
 ```
