@@ -17,43 +17,22 @@ You must set in the configuration file to prohibit non local access Config file.
 install-dev is the installation directory of visual package on the development side. If visualization is not required, please delete this directory after deploying UT.
 #### system architecture
 ```
-┌─── app /*Application*/
-├────├─── assets /*Resource*/
-├────├─── admin /*Admin example*/
-├────├────└───index.php  /*Admin controller*/
-├────├─── log /*Log*/
-├────├─── modules /*Module*/
-├────├────└───ut-frame
-├────├────├────├─admin /*Admin model*/
-├────├────├────├─cache
-├────├────├────├─skin
-├────├────├────├────├─admin /*Admin view*/
-├────├────├────├────└─front /*Client view*/
-├────├────├────├─front /*Client model*/
-├────├────├────├────├─error.php
-├────├────├────├────└─index.php
-├────├─────────└─usualtool.config
-├────├─── plugins /*Plugin*/
-├────├─── template /*Template engineering*/
-├────├────└───Template name
-├────├─────────├─assets
-├────├─────────├─move
-├────├─────────├─skin /*Module view*/
-├────├─────────├───├─ut-frame
-├────├─────────├───├────├─admin
-├────├─────────├───├────├─cache
-├────├─────────├───├────└─front
-├────├─────────├───└─Other module view
-├────├─────────└─usualtool.config
+┌─── 📁app /*Application running*/
+├────├─── 📁assets /*Resource*/
+├────├─── 📁admin /*Admin example*/
+├────├─── 📁modules /*Module*/
+├────├─── 📁plugins /*Plugin*/
+├────├─── 📁template /*Template engineering*/
+├────├─── index.php /*Client controller*/
 ├────└─── config.php /*Application configuration*/
-├─── lang /*Language package*/
-├─── library /*Class library*/
-├─── update
-├─── vendor /*Composer dependency*/
+├─── 📁lang /*Language package*/
+├─── 📁library /*Class library*/
+├────📁log /*Framework log*/
+├─── 📁update /*Update temporary directory*/
+├─── 📁vendor /*Composer dependency*/
 ├─── .ut.config /*Global configuration*/
 ├─── autoload.php /*Bootloader*/
-├─── index.php /*Client controller*/
 ├─── usualtool /*Command line*/
-└─── UTVER.ini /*Version*/
+└─── UTVer.ini /*Version*/
 ```
 #### [Development documentation](http://frame.usualtool.com/baike)
