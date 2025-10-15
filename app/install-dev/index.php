@@ -203,6 +203,9 @@ if($do=="db-save"){
                             UTInc::DelDir(UTF_ROOT."/update/UTDev/");
                             unlink(UTF_ROOT."/update/UTDev.zip");
                             file_put_contents("./usualtool.lock","lock");
+                            $info=file_get_contents(UTF_ROOT."/.ut.config"); 
+                            $info=preg_replace("/MANAGE=(.*)/","MANAGE=/dev",$info); 
+                            file_put_contents(UTF_ROOT."/.ut.config",$info);
                             echo "<script>alert('UT可视化部署成功!');window.location.href='../dev/'</script>";
                         }else{
                             echo "<script>alert('文件夹权限不足!');window.location.href='?do=dev'</script>";
