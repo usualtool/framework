@@ -1,0 +1,11 @@
+{
+    "s": {
+        "language": "en",
+        "charset": "utf-8",
+        "speak": "English",
+        "web": "UT"
+    },
+    "l": {
+        "test": "Test"
+    }
+}

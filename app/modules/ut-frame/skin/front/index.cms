@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <title><{$title}></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="UT Framework"/>
+    <meta name="Description" content="UsualTool Framework"/>
+    <style>
+        h1,h2,h3{
+            font-weight:normal;
+        }
+        .container {
+            width: 100%;
+            background-color: #f0f0f0;
+        }
+        .framework{
+            width:60%;
+            margin: 10% auto 0;
+            padding: 2% 5%;
+            border-radius: 10px
+        }
+        ul {
+            padding-left: 20px;
+        }
+        ul li {
+            line-height: 2.3
+        }
+        a {
+            color: #20a53a
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="framework">
+            <h2>UsualTool Framework successful installation.</h2>
+            <h2><img src="/assets/logo.png"></h2>
+            <{if $setup==0}><h3>Visual development package not installed.</h3><{/if}>
+            <ul>
+                <li>Author:HuangDou  Email:usualtool@qq.com  QQ-Group:583610949</li>
+                <li>UsualTool Framework is suitable for Apache2 protocol.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

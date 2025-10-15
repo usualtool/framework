@@ -1,0 +1,11 @@
+{
+    "s": {
+        "language": "zh",
+        "charset": "utf-8",
+        "speak": "中文简体",
+        "web": "UT"
+    },
+    "l": {
+        "test": "测试"
+    }
+}
