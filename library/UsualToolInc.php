@@ -459,7 +459,7 @@ class UTInc{
      */
     public static function InstallDev(){
         if(is_dir('install-dev')){
-            if(file_exists(UTF_ROOT."/install-dev/usualtool.lock")){
+            if(file_exists(APP_ROOT."/install-dev/usualtool.lock")){
                 return true;
             }else{
                 return false;
