@@ -2,7 +2,8 @@
     RewriteEngine On
     RewriteBase /
     RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_URI} !/(dev|admin)(/|$) [NC]
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^((?!app/dev).)*$ index.php?$1
+    RewriteRule ^(.*)$ index.php?$1 [QSA,L]
 </IfModule>
