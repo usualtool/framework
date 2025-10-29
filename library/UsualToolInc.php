@@ -733,6 +733,22 @@ class UTInc{
         curl_close($ch);
     }
     /**
+     * 获取当前域名（协议+域名+端口）
+     * @return string
+     */
+    public static function GetDomain(){
+        $protocol = 'http';
+        if(
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+            (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
+            (!empty($_SERVER['HTTP_CF_VISITOR']) && strpos($_SERVER['HTTP_CF_VISITOR'], 'https') !== false)
+        ){
+            $protocol = 'https';
+        }
+        $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+        return $protocol . '://' . $host;
+    }
+    /**
      * 获取当前页面地址
      */
     public static function CurPageUrl(){
