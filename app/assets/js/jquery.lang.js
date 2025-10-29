@@ -51,8 +51,8 @@ function jsonstr(word){
 	});
 }
 function getcookie(cookiename){
-var arr = document.cookie.match(new RegExp("(^| )"+cookiename+"=([^;]*)(;|$)"));
-if(arr != null) return unescape(arr[2]); return null
+    var arr = document.cookie.match(new RegExp("(^| )"+cookiename+"=([^;]*)(;|$)"));
+    if(arr != null) return unescape(arr[2]); return null
 }
 (function($,undefined){
 	$(document).ready(function(){
