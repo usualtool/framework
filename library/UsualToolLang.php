@@ -22,7 +22,7 @@ class UTLang{
      */
     public static function GetLang(){
         $lang=array();
-        $path = UTF_ROOT."/lang/";
+        $path = APP_ROOT."/lang/";
         $current_dir = opendir($path);
         while(($file = readdir($current_dir)) !== false) {
             $sub_dir = "".$path."/".$file."";
@@ -45,9 +45,9 @@ class UTLang{
     public static function LangData($word,$type=''){
         global$language;
         if(!empty($type)):
-            $langdata=json_decode(file_get_contents(UTF_ROOT."/lang/lg-".$type.".json"),true);
+            $langdata=json_decode(file_get_contents(APP_ROOT."/lang/lg-".$type.".json"),true);
         else:
-            $langdata=json_decode(file_get_contents(UTF_ROOT."/lang/lg-".$language.".json"),true);
+            $langdata=json_decode(file_get_contents(APP_ROOT."/lang/lg-".$language.".json"),true);
         endif;
         if(array_key_exists($word,$langdata["l"])){
         $langword=$langdata["l"]["".$word.""];
@@ -85,9 +85,9 @@ class UTLang{
     public static function LangSet($word,$type=''){
         global$language;
         if(!empty($type)):
-            $langdata=json_decode(file_get_contents(UTF_ROOT."/lang/lg-".$type.".json"),true);
+            $langdata=json_decode(file_get_contents(APP_ROOT."/lang/lg-".$type.".json"),true);
         else:
-            $langdata=json_decode(file_get_contents(UTF_ROOT."/lang/lg-".$language.".json"),true);
+            $langdata=json_decode(file_get_contents(APP_ROOT."/lang/lg-".$language.".json"),true);
         endif;
         $langword=$langdata["s"]["".$word.""];
         return $langword;
@@ -97,7 +97,7 @@ class UTLang{
      * @param string $path 语言包路径
      * @return array
      */
-    public static function Lang($path = UTF_ROOT.'/lang/'){
+    public static function Lang($path = APP_ROOT.'/lang/'){
         $current_dir = opendir($path);
         while(($file = readdir($current_dir)) !== false) {
             if(UsualToolCMS::contain(".json",$file)!==false):
