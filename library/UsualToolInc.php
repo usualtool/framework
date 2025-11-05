@@ -413,9 +413,9 @@ class UTInc{
         $template=array();
         $config=UTInc::GetConfig();
         if(empty($type) || $type==0){
-            $temp=scandir(APP_ROOT."/formwork/");
+            $temp=scandir(APP_ROOT."/template/");
             foreach($temp as $v){
-                $file=APP_ROOT."/formwork/".$v;
+                $file=APP_ROOT."/template/".$v;
                 if(is_file($file."/usualtool.config")){
                     $temps=file_get_contents($file."/usualtool.config");
                     $temptype=UTInc::StrSubstr("<temptype>","</temptype>",$temps);
