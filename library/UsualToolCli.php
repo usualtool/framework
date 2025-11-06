@@ -234,12 +234,12 @@ class UTCli{
                     endif;
                 endif;
                 if($installsql=='0'):
-                    echo"成功安装模块\r\n";
+                    echo"成功安装".$name."模块\r\n";
                 else:
                     if(UsualToolData\UTData::RunSql($installsql)):
-                        echo"成功安装模块\r\n";
+                        echo"成功安装".$name."模块\r\n";
                     else:
-                        echo"模块安装失败\r\n";
+                        echo"模块".$name."安装失败\r\n";
                     endif;   
                 endif;
             elseif($type=="plugin"):
@@ -296,12 +296,12 @@ class UTCli{
                     endif;
                 endif;
                 if($installsql=='0'):
-                    echo"成功安装插件\r\n";
+                    echo"成功安装".$name."插件\r\n";
                 else:
                     if(UsualToolData\UTData::RunSql($installsql)):
-                        echo"成功安装插件\r\n";
+                        echo"成功安装".$name."插件\r\n";
                     else:
-                        echo"插件安装失败\r\n";
+                        echo"插件".$name."安装失败\r\n";
                     endif;   
                 endif;
             elseif($type=="template"):
@@ -342,6 +342,7 @@ class UTCli{
                 $ver=UsualToolInc\UTInc::StrSubstr("<ver>","</ver>",$template);
                 $description=UsualToolInc\UTInc::StrSubstr("<description>","</description>",$template);
                 $installsql=UsualToolInc\UTInc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$template);
+                $module=UsualToolInc\UTInc::StrSubstr("<module>","</module>",$template);
                 if(UsualToolData\UTData::ModTable("cms_template")):
                     if(UsualToolData\UTData::QueryData("cms_template","","tid='$name'","","1")["querynum"]>0):
                         UsualToolData\UTData::UpdateData("cms_template",array("tid"=>$name,"lang"=>$lang,"title"=>$title),"tid='$name'");
@@ -350,12 +351,18 @@ class UTCli{
                     endif;
                 endif;
                 if($installsql=='0'):
-                    echo"成功安装模板\r\n";
+                    if(!empty($module)):
+                        $mod=explode(",",$module);
+                        for($i=0;$i<count($mod);$i++):
+                            UTCli::Install(array("usualtool","install","module",$mod[$i],"-1"));
+                        endfor;
+                    endif;
+                    echo"成功安装".$name."模板\r\n";
                 else:
                     if(UsualToolData\UTData::RunSql($installsql)):
-                        echo"成功安装模板\r\n";
+                        echo"成功安装".$name."模板\r\n";
                     else:
-                        echo"模板安装失败\r\n";
+                        echo"模板".$name."安装失败\r\n";
                     endif;   
                 endif;
             endif;
@@ -422,11 +429,12 @@ class UTCli{
         echo"*  |            /  /__/  /      /  /              |\r\n";      
         echo"*  |           /___ ___ /      /__/               |\r\n";      
         echo"*  |                                              |\r\n";     
-        echo"*  |         @huangdou 292951110@qq.com           |\r\n";    
+        echo"*  |      作者：黄豆   邮件：292951110@qq.com     |\r\n";    
         echo"* --------------------------------------------------\r\n";        
         echo"usualtool命令列表\r\n";
         echo"1个中括号代表整1个参数，实际命令中不需要加中括号\r\n";
         echo"参考地址:http://frame.usualtool.com/baike/function.php?do=PHP-Cli\r\n";
+        echo"命令安装成功后请注意文件夹所有者及权限，如Linux下默认所有者为root，权限便需更改为777，否则请更改所有者为www\r\n";
         echo"php usualtool 命令帮助\r\n";
         echo"php usualtool help 命令帮助\r\n";
         echo"php usualtool key 验证UT令牌的合法性\r\n";
@@ -447,6 +455,6 @@ class UTCli{
      * @return int
      */
     public static function Version(){
-        echo file_get_contents(UTF_ROOT."/UTVER.ini")."\r\n";
+        echo file_get_contents(UTF_ROOT."/UTVer.ini")."\r\n";
     }
 }
