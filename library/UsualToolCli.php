@@ -350,13 +350,13 @@ class UTCli{
                         UsualToolData\UTData::InsertData("cms_template",array("tid"=>$name,"lang"=>$lang,"title"=>$title));
                     endif;
                 endif;
+                if(!empty($module)):
+                    $mod=explode(",",$module);
+                    for($i=0;$i<count($mod);$i++):
+                        UTCli::Install(array("usualtool","install","module",$mod[$i],"-1"));
+                    endfor;
+                endif;
                 if($installsql=='0'):
-                    if(!empty($module)):
-                        $mod=explode(",",$module);
-                        for($i=0;$i<count($mod);$i++):
-                            UTCli::Install(array("usualtool","install","module",$mod[$i],"-1"));
-                        endfor;
-                    endif;
                     echo"成功安装".$name."模板\r\n";
                 else:
                     if(UsualToolData\UTData::RunSql($installsql)):
