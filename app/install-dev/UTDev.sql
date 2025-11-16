@@ -105,4 +105,4 @@ INSERT INTO `cms_module` VALUES (5, 3, 'ut-cac', 'CAC', 'index.php', 1, 95, 0, '
 INSERT INTO `cms_module` VALUES (6, 3, 'ut-system', '配置', 'index.php', 1, 96, 1, '', '', '系统:index.php,语言:lang.php,搜索:search.php');
 INSERT INTO `cms_module` VALUES (7, 3, 'ut-data', '数据', 'index.php', 1, 97, 1, '', '', '表管理:index.php,SQL查询:sql.php,备份还原:backup.php');
 INSERT INTO `cms_module` VALUES (8, 3, 'ut-api', '接口', 'index.php', 1, 98, 1, '', '', '接口列表:index.php,在线调试:test.php');
-INSERT INTO `cms_module` VALUES (9, 3, 'ut-power', '权限', 'admin.php', 1, 99, 1, '', '', '角色:role.php,管理员:admin.php,登陆日志:log.php');
+INSERT INTO `cms_module` VALUES (9, 3, 'ut-power', '权限', 'index.php', 1, 99, 1, '', '', '角色:role.php,管理员:index.php,登陆日志:log.php');
