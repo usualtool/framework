@@ -8,6 +8,9 @@
         "name":         "HuangDou",
         "email":        "292951110@qq.com"
     }],
-    "require": {
+    "require": {},
+    "scripts": {
+        "post-install-cmd": "php usualtool composer",
+        "post-update-cmd": "php usualtool composer"
     }
 }

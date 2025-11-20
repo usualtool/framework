@@ -486,6 +486,17 @@ class UTInc{
         endif;
     }
     /**
+     * 获取配置文件中的版本号
+     * @return string
+     */
+    public static function GetVer($file){
+        $content=file_get_contents($file);
+        if(preg_match('/<ver>([^<]+)<\/ver>/i', $content, $matches)):
+            return trim($matches[1]);
+        endif;
+        return null;
+    }
+    /**
      * UT令牌验证
      * @param string $authcode UT令牌
      * @param string $authurl 验证通讯地址
@@ -940,6 +951,30 @@ class UTInc{
         }else{
             return false;
         }
+    }
+    /**
+     * 复制文件夹到指定位置
+     * @param string $src 源目录
+     * @param string $dst 目标位置
+     * @return bool
+     */
+    public static function CopyDir($src, $dst){
+        if (!is_dir($dst)) {
+            mkdir($dst, 0755, true);
+        }
+        $dir = opendir($src);
+        while (($file = readdir($dir)) !== false) {
+            if ($file === '.' || $file === '..') continue;
+            $srcPath = "$src/$file";
+            $dstPath = "$dst/$file";
+            if (is_dir($srcPath)) {
+                self::CopyDir($srcPath, $dstPath);
+            } else {
+                copy($srcPath, $dstPath);
+            }
+        }
+        closedir($dir);
+		return 1;
     }
     /**
      * 删除文件夹
