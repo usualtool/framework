@@ -94,6 +94,78 @@ CREATE TABLE `cms_update` (
   `updatetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `oauth_clients`;
+CREATE TABLE `oauth_clients` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT '0',
+  `client_id` varchar(80) DEFAULT NULL,
+  `client_secret` varchar(80) DEFAULT NULL,
+  `redirect_uri` varchar(250) DEFAULT NULL,
+  `grant_types` varchar(80) DEFAULT 'authorization_code',
+  `scope` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `oauth_access_tokens`;
+CREATE TABLE `oauth_access_tokens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `access_token` varchar(40) DEFAULT NULL,
+  `client_id` varchar(80) DEFAULT NULL,
+  `user_id` varchar(80) DEFAULT NULL,
+  `expires` TIMESTAMP DEFAULT NULL,
+  `scope` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `oauth_authorization_codes`;
+CREATE TABLE `oauth_authorization_codes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `authorization_code` varchar(40)  DEFAULT NULL,
+  `client_id` varchar(80)  DEFAULT NULL,
+  `user_id` varchar(80) DEFAULT NULL,
+  `redirect_uri` varchar(250) DEFAULT NULL,
+  `expires` TIMESTAMP DEFAULT NULL,
+  `scope` varchar(250) DEFAULT NULL,
+  `id_token` varchar(250) DEFAULT NULL,
+  `code_challenge` varchar(128) DEFAULT NULL,
+  `code_challenge_method` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `oauth_refresh_tokens`;
+CREATE TABLE `oauth_refresh_tokens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `refresh_token` varchar(40) DEFAULT NULL,
+  `client_id` varchar(80) DEFAULT NULL,
+  `user_id` varchar(80) DEFAULT NULL,
+  `expires` TIMESTAMP DEFAULT NULL,
+  `scope` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `oauth_users`;
+CREATE TABLE `oauth_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,  
+  `username` varchar(80) DEFAULT NULL,
+  `password` varchar(80) DEFAULT NULL,
+  `fullname` varchar(80) DEFAULT NULL,
+  `email` varchar(80) DEFAULT NULL,
+  `addtime` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `oauth_scopes`;
+CREATE TABLE `oauth_scopes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) DEFAULT NULL,
+  `scope` varchar(50) DEFAULT NULL,
+  `dbtable` varchar(50) DEFAULT NULL,
+  `is_default` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `oauth_jwt`;
+CREATE TABLE `oauth_jwt` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `client_id` varchar(80) DEFAULT NULL,
+  `subject` varchar(80) DEFAULT NULL,
+  `public_key` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 INSERT INTO `cms_admin` VALUES (1, 1, 'admin', 'd9c51907cc016f4ad6164423c3ddd04f025aa037', 'qHCgJ', '/assets/images/noimage.png', '2021-08-08 00:00:00');
 INSERT INTO `cms_admin_role` VALUES (1, '超级管理', 'ut-frame,ut-module,ut-plugin,ut-template,ut-cac,ut-system,ut-data,ut-api,ut-power');
 INSERT INTO `cms_api_set` VALUES (1, NULL, NULL, 'cms_admin', 'username=[0] and password=[1]');
