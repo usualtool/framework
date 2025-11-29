@@ -167,14 +167,15 @@ CREATE TABLE `oauth_jwt` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 INSERT INTO `cms_admin` VALUES (1, 1, 'admin', 'd9c51907cc016f4ad6164423c3ddd04f025aa037', 'qHCgJ', '/assets/images/noimage.png', '2021-08-08 00:00:00');
-INSERT INTO `cms_admin_role` VALUES (1, '超级管理', 'ut-frame,ut-module,ut-plugin,ut-template,ut-cac,ut-system,ut-data,ut-api,ut-power');
+INSERT INTO `cms_admin_role` VALUES (1, '超级管理', 'ut-frame,ut-module,ut-plugin,ut-template,ut-cac,ut-system,ut-data,ut-oauth,ut-api,ut-power');
 INSERT INTO `cms_api_set` VALUES (1, NULL, NULL, 'cms_admin', 'username=[0] and password=[1]');
-INSERT INTO `cms_module` VALUES (1, 3, 'ut-frame', 'UT公共模块', 'index.php', 1, 91, 0, '', NULL, NULL);
-INSERT INTO `cms_module` VALUES (2, 3, 'ut-module', '模块', 'index.php', 1, 92, 0, '', '', '模块市场:module.php,管理模块:index.php');
-INSERT INTO `cms_module` VALUES (3, 3, 'ut-plugin', '插件', 'index.php', 1, 93, 0, '', '', '插件市场:plugin.php,管理插件:index.php');
-INSERT INTO `cms_module` VALUES (4, 3, 'ut-template', '模板', 'index.php', 1, 94, 0, '', '', '模板市场:template.php,创建模板:template_creat.php,管理模板:index.php');
-INSERT INTO `cms_module` VALUES (5, 3, 'ut-cac', 'CAC', 'index.php', 1, 95, 0, '', '', '');
-INSERT INTO `cms_module` VALUES (6, 3, 'ut-system', '配置', 'index.php', 1, 96, 1, '', '', '系统:index.php,语言:lang.php,搜索:search.php');
-INSERT INTO `cms_module` VALUES (7, 3, 'ut-data', '数据', 'index.php', 1, 97, 1, '', '', '表管理:index.php,SQL查询:sql.php,备份还原:backup.php');
-INSERT INTO `cms_module` VALUES (8, 3, 'ut-api', '接口', 'index.php', 1, 98, 1, '', '', '接口列表:index.php,在线调试:test.php');
-INSERT INTO `cms_module` VALUES (9, 3, 'ut-power', '权限', 'index.php', 1, 99, 1, '', '', '角色:role.php,管理员:index.php,登陆日志:log.php');
+INSERT INTO `cms_module` VALUES (1, 3, 'ut-frame', 'UT公共模块', 'index.php', 1, 90, 0, '', NULL, NULL);
+INSERT INTO `cms_module` VALUES (2, 3, 'ut-module', '模块', 'index.php', 1, 91, 0, '', '', '模块市场:module.php,管理模块:index.php');
+INSERT INTO `cms_module` VALUES (3, 3, 'ut-plugin', '插件', 'index.php', 1, 92, 0, '', '', '插件市场:plugin.php,管理插件:index.php');
+INSERT INTO `cms_module` VALUES (4, 3, 'ut-template', '模板', 'index.php', 1, 93, 0, '', '', '模板市场:template.php,创建模板:template_creat.php,管理模板:index.php');
+INSERT INTO `cms_module` VALUES (5, 3, 'ut-cac', 'CAC', 'index.php', 1, 94, 0, '', '', '');
+INSERT INTO `cms_module` VALUES (6, 3, 'ut-system', '配置', 'index.php', 1, 95, 1, '', '', '系统:index.php,语言:lang.php,搜索:search.php');
+INSERT INTO `cms_module` VALUES (7, 3, 'ut-data', '数据', 'index.php', 1, 96, 1, '', '', '表管理:index.php,SQL查询:sql.php,备份还原:backup.php');
+INSERT INTO `cms_module` VALUES (8, 3, 'ut-oauth', 'OAuth', 'index.php', 1, 97, 1, '', '', '管理应用:index.php,授权记录:log.php,权限集合:role.php,用户列表:user.php');
+INSERT INTO `cms_module` VALUES (9, 3, 'ut-api', '接口', 'index.php', 1, 98, 1, '', '', '接口列表:index.php,在线调试:test.php');
+INSERT INTO `cms_module` VALUES (10, 3, 'ut-power', '权限', 'index.php', 1, 99, 1, '', '', '角色:role.php,管理员:index.php,登陆日志:log.php');
