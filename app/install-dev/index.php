@@ -1,14 +1,13 @@
 <?php
 /**
        * --------------------------------------------------------       
-       *  |    ░░░░░░░░░     █   █░▀▀█▀▀░    ░░░░░░░░░      |           
-       *  |  ░░░░░░░         █▄▄▄█   █                      |            
-       *  |                                                 |            
-       *  | Author:HuangDou   Email:292951110@qq.com        |            
+       *  |                  █   █ ▀▀█▀▀                    |           
+       *  |                  █▄▄▄█   █                      |           
+       *  |                                                 |           
+       *  | Author:HuangDou   Email:292951110@qq.com        |           
        *  | QQ-Group:583610949                              |           
-       *  | WebSite:http://www.UsualTool.com                |            
-       *  | UT Framework is suitable for Apache2 protocol.  |            
-       * --------------------------------------------------------                
+       *  | Applicable to Apache 2.0 protocol.              |           
+       * --------------------------------------------------------       
 */
 require_once dirname(dirname(dirname(__FILE__))).'/'.'autoload.php';
 use library\UsualToolInc\UTInc;
@@ -17,7 +16,7 @@ if(UTInc::SearchFile(APP_ROOT."/install-dev/usualtool.lock")):
    header("location:../");
    exit();
 endif;
-$httpcode=UTInc::HttpCode("http://frame.usualtool.com");
+$httpcode=UTInc::HttpCode($config["UTFURL"]);
 $sysinfo=UTInc::GetSystemInfo();
 $do=UTInc::SqlCheck($_GET["do"]);
 if($do=="db-test"){
@@ -193,7 +192,7 @@ if($do=="db-save"){
                   echo"<p>请再次检查文件夹权限!</p>";
                }else{
                   if($_GET["t"]=="db-dev"){
-                     $res=UTInc::SaveFile("http://frame.usualtool.com/down/UTDev.zip",UTF_ROOT."/update","UTDev.zip",1);
+                     $res=UTInc::SaveFile($config["DOWNURL"]."/UTDev.zip",UTF_ROOT."/update","UTDev.zip",1);
                      if(!empty($res)){
                         $zip=new ZipArchive;
                         if($zip->open(UTF_ROOT."/update/UTDev.zip")===TRUE){ 

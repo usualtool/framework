@@ -2,15 +2,14 @@
 namespace library\UsualToolWater;
 /**
        * --------------------------------------------------------       
-       *  |    ░░░░░░░░░     █   █░▀▀█▀▀░    ░░░░░░░░░      |           
-       *  |  ░░░░░░░         █▄▄▄█   █                      |            
-       *  |                                                 |            
-       *  | Author:HuangDou   Email:292951110@qq.com        |            
+       *  |                  █   █ ▀▀█▀▀                    |           
+       *  |                  █▄▄▄█   █                      |           
+       *  |                                                 |           
+       *  | Author:HuangDou   Email:292951110@qq.com        |           
        *  | QQ-Group:583610949                              |           
-       *  | WebSite:http://www.UsualTool.com                |            
-       *  | UT Framework is suitable for Apache2 protocol.  |            
-       * --------------------------------------------------------                
- */
+       *  | Applicable to Apache 2.0 protocol.              |           
+       * --------------------------------------------------------       
+*/
 /**
  * 水印
  * 文字:UTWater::MarkWater("text","1.jpg","usualtool.com",5,"#B5B5B5","14");

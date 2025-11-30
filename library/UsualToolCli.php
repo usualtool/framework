@@ -4,15 +4,14 @@ use library\UsualToolInc;
 use library\UsualToolData;
 /**
        * --------------------------------------------------------       
-       *  |    ░░░░░░░░░     █   █░▀▀█▀▀░    ░░░░░░░░░      |           
-       *  |  ░░░░░░░         █▄▄▄█   █                      |            
-       *  |                                                 |            
-       *  | Author:HuangDou   Email:292951110@qq.com        |            
+       *  |                  █   █ ▀▀█▀▀                    |           
+       *  |                  █▄▄▄█   █                      |           
+       *  |                                                 |           
+       *  | Author:HuangDou   Email:292951110@qq.com        |           
        *  | QQ-Group:583610949                              |           
-       *  | WebSite:http://www.UsualTool.com                |            
-       *  | UT Framework is suitable for Apache2 protocol.  |            
-       * --------------------------------------------------------                
- */
+       *  | Applicable to Apache 2.0 protocol.              |           
+       * --------------------------------------------------------       
+*/
 /**
  * 执行Cli命令
  */

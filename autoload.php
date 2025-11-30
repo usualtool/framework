@@ -1,14 +1,13 @@
 <?php
 /**
        * --------------------------------------------------------       
-       *  |    ░░░░░░░░░     █   █░▀▀█▀▀░    ░░░░░░░░░      |           
-       *  |  ░░░░░░░         █▄▄▄█   █                      |            
-       *  |                                                 |            
-       *  | Author:HuangDou   Email:292951110@qq.com        |            
+       *  |                  █   █ ▀▀█▀▀                    |           
+       *  |                  █▄▄▄█   █                      |           
+       *  |                                                 |           
+       *  | Author:HuangDou   Email:292951110@qq.com        |           
        *  | QQ-Group:583610949                              |           
-       *  | WebSite:http://www.UsualTool.com                |            
-       *  | UT Framework is suitable for Apache2 protocol.  |            
-       * --------------------------------------------------------                
+       *  | Applicable to Apache 2.0 protocol.              |           
+       * --------------------------------------------------------       
 */
 ini_set("error_reporting","E_ALL & ~E_NOTICE");
 ini_set('magic_quotes_gpc',0);

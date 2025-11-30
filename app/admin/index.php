@@ -1,15 +1,13 @@
 <?php
 /**
        * --------------------------------------------------------       
-       *  |    ░░░░░░░░░     █   █░▀▀█▀▀░    ░░░░░░░░░      |           
-       *  |  ░░░░░░░         █▄▄▄█   █                      |            
-       *  |                                                 |            
-       *  | Author:HuangDou   Email:292951110@qq.com        |            
+       *  |                  █   █ ▀▀█▀▀                    |           
+       *  |                  █▄▄▄█   █                      |           
+       *  |                                                 |           
+       *  | Author:HuangDou   Email:292951110@qq.com        |           
        *  | QQ-Group:583610949                              |           
-       *  | WebSite:http://www.UsualTool.com                |            
-       *  | UT Framework is suitable for Apache2 protocol.  |            
-       * --------------------------------------------------------  
-       后端控制器示例结构，权限控制文件需自行编写，可参考可视化包。
+       *  | Applicable to Apache 2.0 protocol.              |           
+       * --------------------------------------------------------       
 */
 require dirname(dirname(__FILE__)).'/'.'config.php';
 use library\UsualToolInc\UTInc;
