@@ -14,9 +14,10 @@ use library\UsualToolMemcache;
        *  |                  █   █ ▀▀█▀▀                    |           
        *  |                  █▄▄▄█   █                      |           
        *  |                                                 |           
-       *  | Author:HuangDou   Email:292951110@qq.com        |           
-       *  | QQ-Group:583610949                              |           
-       *  | Applicable to Apache 2.0 protocol.              |           
+       *  |    Author: Huang Hui                            |           
+       *  |    Repository 1: https://gitee.com/usualtool    |           
+       *  |    Repository 2: https://github.com/usualtool   |           
+       *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
 /**
