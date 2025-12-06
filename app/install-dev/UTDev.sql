@@ -6,7 +6,7 @@ CREATE TABLE `cms_admin` (
   `password` varchar(50) NOT NULL,
   `salts` varchar(20) NOT NULL,
   `avatar` varchar(250) DEFAULT NULL,
-  `addtime` timestamp NOT NULL,
+  `addtime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_admin_log`;
@@ -111,7 +111,7 @@ CREATE TABLE `oauth_access_tokens` (
   `access_token` varchar(40) DEFAULT NULL,
   `client_id` varchar(80) DEFAULT NULL,
   `user_id` varchar(80) DEFAULT NULL,
-  `expires` TIMESTAMP NULL DEFAULT NULL,
+  `expires` timestamp NULL DEFAULT NULL,
   `scope` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -122,7 +122,7 @@ CREATE TABLE `oauth_authorization_codes` (
   `client_id` varchar(80)  DEFAULT NULL,
   `user_id` varchar(80) DEFAULT NULL,
   `redirect_uri` varchar(250) DEFAULT NULL,
-  `expires` TIMESTAMP NULL DEFAULT NULL,
+  `expires` timestamp NULL DEFAULT NULL,
   `scope` varchar(250) DEFAULT NULL,
   `id_token` varchar(250) DEFAULT NULL,
   `code_challenge` varchar(128) DEFAULT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE `oauth_refresh_tokens` (
   `refresh_token` varchar(40) DEFAULT NULL,
   `client_id` varchar(80) DEFAULT NULL,
   `user_id` varchar(80) DEFAULT NULL,
-  `expires` TIMESTAMP NULL DEFAULT NULL,
+  `expires` timestamp NULL DEFAULT NULL,
   `scope` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
