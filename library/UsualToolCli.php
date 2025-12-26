@@ -496,6 +496,40 @@ class UTCli{
         endforeach;
     }
     /**
+     * 执行任务
+     * @return string
+     */
+    public static function Task(){
+        $task=APP_ROOT."/task/";
+        $lock=$task.".task.lock";
+        $fp=fopen($lock,'c');
+        if(!$fp):
+            echo "法创建或打开锁文件\r\n";
+            return;
+        endif;
+        if(!flock($fp, LOCK_EX | LOCK_NB)):
+            echo "任务正在运行中，本次跳过执行\r\n";
+            fclose($fp);
+            return;
+        endif;
+        ftruncate($fp, 0);
+        fwrite($fp, getmypid());
+        $list=UsualToolInc\UTInc::GetDir($task);
+        $file = array_values($list);
+        foreach($file as $class):
+            if(substr($class,-4)!=='.php'):
+                continue;
+            endif;
+            //循环运行任务
+            $class_name=str_replace(".php","",$class);
+            require_once $task.$class;
+            call_user_func([$class_name,'Run']);
+        endforeach;
+        flock($fp,LOCK_UN);
+        fclose($fp);
+        unlink($lock);
+    }
+    /**
      * 帮助
      * @return string
      */
@@ -514,6 +548,7 @@ class UTCli{
         echo"命令安装成功后请注意文件夹所有者及权限，如Linux下默认所有者为root，权限便需更改为777，否则请更改所有者为www\r\n";
         echo"php usualtool 命令帮助\r\n";
         echo"php usualtool help 命令帮助\r\n";
+        echo"php usualtool task 执行任务\r\n";
         echo"php usualtool key 验证UT令牌的合法性\r\n";
         echo"php usualtool version 获取当前UT框架版本号\r\n";
         echo"php usualtool print [param] [param] ... 打印参数\r\n";
