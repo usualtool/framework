@@ -28,7 +28,7 @@ class UTSockets{
         } catch (\Exception $e) {
             $err_code = socket_last_error();
             $err_msg = socket_strerror($err_code);
-            $this->error([
+            $this->Debug([
                 'error_init_server',
                 $err_code,
                 $err_msg
@@ -47,7 +47,7 @@ class UTSockets{
             try {
                 $this->DoServer();
             } catch (\Exception $e) {
-                $this->Error([
+                $this->Debug([
                     'error_do_server',
                     $e->getCode(),
                     $e->getMessage()
@@ -60,7 +60,7 @@ class UTSockets{
         $sockets = array_column($this->sockets, 'resource');
         $read_num = socket_select($sockets, $write, $except, NULL);
         if (false === $read_num) {
-            $this->Error([
+            $this->Debug([
                 'error_select',
                 $err_code = socket_last_error(),
                 socket_strerror($err_code)
@@ -71,7 +71,7 @@ class UTSockets{
             if ($socket == $this->master) {
                 $client = socket_accept($this->master);
                 if (false === $client) {
-                    $this->error([
+                    $this->Debug([
                         'err_accept',
                         $err_code = socket_last_error(),
                         socket_strerror($err_code)
@@ -274,18 +274,9 @@ class UTSockets{
         }
     }
     /*
-     * debug信息
+     * 记录错误/Debug信息
      */
     private function Debug(array $info) {
-        $time = date('Y-m-d H:i:s');
-        array_unshift($info, $time);
-        $info = array_map('json_encode', $info);
-        file_put_contents(UTF_ROOT.'/log/socket.log', implode(' | ', $info) . "\r\n", FILE_APPEND);
-    }
-    /*
-     * 记录错误信息
-     */
-    private function Error(array $info) {
         $time = date('Y-m-d H:i:s');
         array_unshift($info, $time);
         $info = array_map('json_encode', $info);

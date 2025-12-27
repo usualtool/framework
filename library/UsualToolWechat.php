@@ -32,7 +32,7 @@ class UTWechat{
     public function GetToken(){
         $file = file_get_contents(UTF_ROOT."/log/wechat.token.json",true);
         $result = json_decode($file,true);
-        if(time() > $result['expires']):
+        if($result === null || !isset($result['expires']) || time()>$result['expires']):
             $data = array();
             $data['access_token'] = $this->GetNewToken();
             $data['expires']=time()+5400;

@@ -1,6 +1,5 @@
 <?php
 namespace library\UsualToolDebug;
-use library\UsualToolInc;
 /**
        * --------------------------------------------------------       
        *  |                  █   █ ▀▀█▀▀                    |           
@@ -43,24 +42,37 @@ class UTDebug{
             echo"Result:".$file." ".$line." line ".$typetext.":".$message;
             echo"</div>";
         }
-        $thisbug=array(
+        $thebug=array(
             "time"=>date('Y-m-d H:i:s',time()),
             "type"=>$typetext,
             "file"=>$file,
             "line"=>$line,
             "message"=>$message);
-        $old=file_get_contents(UTF_ROOT."/log/debug.log");
-        if(!empty($old)){
-            $arr[]=$thisbug;
-            $old_data=json_decode($old,true);
-            foreach($old_data as $val){
-                $arr[]=$val;
-            }
-            $string=json_encode($arr,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
-        }else{
-            $string=json_encode(array($thisbug),JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
-        }
-        file_put_contents(UTF_ROOT."/log/debug.log",$string);
+		$fp = fopen(UTF_ROOT . "/log/debug.log", 'c+');
+		if($fp === false){
+			return;
+		}
+		if(flock($fp, LOCK_EX)){
+			$old = stream_get_contents($fp);
+			if(!empty($old)){
+				$arr[] = $thebug;
+				$old_data = json_decode($old, true);
+				if(is_array($old_data)){
+					foreach($old_data as $val){
+						$arr[] = $val;
+					}
+				}
+				$string = json_encode($arr, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+			}else{
+				$string = json_encode(array($thebug), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+			}
+			ftruncate($fp, 0);
+			rewind($fp);
+			fwrite($fp, $string);
+			fflush($fp);
+			flock($fp, LOCK_UN);
+		}
+		fclose($fp);
     }
     public static function Error($type='',$path=''){
         echo"<p style='margin-top:5%;'>";
