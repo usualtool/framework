@@ -142,7 +142,57 @@ class UTMysql{
             array_push($querydata,$rows);
         endwhile;
         return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
-        $db->close();
+    }
+    /**
+     * SELECT预处理查询
+     * @param string $sql 带?占位符的SELECT语句
+     * @param array $param 参数值数组
+     * @return array
+     */
+    public static function YuQuery($sql,$param=[]){
+        $db=UTMysql::GetMysql();
+        $stmt=$db->prepare($sql);
+        if(!$stmt):
+            return array("querydata"=>array(),"querynum"=>0);
+        endif;
+        if(!empty($param)):
+            $type='';
+            $bindParams=array();
+            foreach($param as $par):
+                if(is_int($par)):
+                    $type.='i';
+                elseif (is_float($par)):
+                    $type.='d';
+                else:
+                    $type.='s';
+                endif;
+                $bindParams[] = $par;
+            endforeach;
+            $ref=array();
+            foreach($bindParams as $key => &$value):
+                $ref[$key] = &$value;
+            endforeach;
+            array_unshift($ref,$type);
+            call_user_func_array([$stmt,'bind_param'],$ref);
+        endif;
+        if(!$stmt->execute()):
+            $stmt->close();
+            return array("querydata"=>array(),"querynum"=>0);
+        endif;
+        $result=$stmt->get_result();
+        if(!$result):
+            $stmt->close();
+            return array("querydata"=>array(),"querynum"=>0);
+        endif;
+        $querydata=array();
+        $xu=0;
+        while($rows=$result->fetch_assoc()):
+            $rows['xu']=++$xu;
+            $querydata[]=$rows;
+        endwhile;
+        $querynum=count($querydata);
+        $stmt->close();
+        return array("querydata"=>$querydata,"querynum"=>$querynum);
     }
     /**
      * 添加数据
@@ -224,7 +274,6 @@ class UTMysql{
         else:
             return false;
         endif;
-        $db->close();
     }
     /**
      * 获取数据标签
@@ -295,6 +344,7 @@ class UTMysql{
     }
     /**
      * 搜索方法
+	 * 可视化包预留
      * @param string $keyword 关键词
      * @return array 返回数组
      */
