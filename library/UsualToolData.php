@@ -205,6 +205,27 @@ class UTData{
         }
     }
     /**
+     * 执行预处理
+     * @param string $table 表名
+     * @param string $where 条件
+     * @return bool
+     */
+    public static function RunYu($sql,$param=[]){
+        if(UTData::GetDb()=="pdo"){
+            return UsualToolPdo\UTPdo::RunYu($sql,$param);
+        }elseif(UTData::GetDb()=="mysql"){
+            return UsualToolMysql\UTMysql::RunYu($sql,$param);
+        }elseif(UTData::GetDb()=="mssql"){
+            return UsualToolMysql\UTMssql::RunYu($sql,$param);
+        }elseif(UTData::GetDb()=="pgsql"){
+            return UsualToolPgsql\UTPgsql::RunYu($sql,$param);
+        }elseif(UTData::GetDb()=="sqlite"){
+            return UsualToolSqlite\UTSqlite::RunYu($sql,$param);
+        }else{
+            return false;
+        }
+    }
+    /**
      * 复制数据
      * @param string $table 表名
      * @param array $where 条件

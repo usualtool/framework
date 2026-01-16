@@ -167,6 +167,57 @@ class UTPgsql{
             return false;
         endif;
     }
+		/**
+		 * 执行预处理
+		 * @param string $sql 带 ? 占位符的 SQL 语句
+		 * @param array $param 参数值数组
+		 * @return array|bool|int
+		 */
+		public static function RunYu($sql,$param=[]){
+				$db=UTPgsql::GetPgsql();
+				$trimmed = ltrim(strtoupper($sql));
+				$runtype = explode(' ',$trimmed)[0];
+				$paramCount = count($param);
+				for($i=1;$i<=$paramCount;$i++):
+						$sql = preg_replace('/\?/', '\$' . $i, $sql, 1);
+				endfor;
+				$stmtName = 'stmt_' . uniqid();
+				$result = @pg_prepare($db, $stmtName, $sql);
+				if(!$result):
+						throw new \Exception(pg_last_error($db));
+				endif;
+				$result = @pg_execute($db, $stmtName, $param);
+				if(!$result):
+						throw new \Exception(pg_last_error($db));
+				endif;
+				if($runtype=="SELECT"):
+						$querydata = [];
+						$xu = 0;
+						while ($row = @pg_fetch_assoc($result)) {
+								$row['xu'] = ++$xu;
+								$querydata[] = $row;
+						}
+						return [
+								"querydata" => $querydata,
+								"querynum"  => count($querydata)
+						];
+				else:
+						if($runtype=="INSERT"):
+								$row = @pg_fetch_assoc($result);
+								if($row && isset($row['id'])):
+										return (int)$row['id'];
+								elseif ($row):
+										$firstValue = array_values($row)[0];
+										return is_numeric($firstValue) ? (int)$firstValue : $firstValue;
+								else:
+										return false;
+								endif;
+						else:
+								$affected = @pg_affected_rows($result);
+								return true;
+						endif;
+				endif;
+		}
     /**
      * 获取数据标签
      * @param string $table 表名

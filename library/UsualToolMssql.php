@@ -187,6 +187,57 @@ class UTMssql{
             return false;
         endif;
     }
+		/**
+		 * 执行预处理
+		 * @param string $sql 带 ? 占位符的 SQL 语句
+		 * @param array $param 参数值数组
+		 * @return array|bool|int
+		 */
+		public static function RunYu($sql,$param=[]){
+				$db=UTMssql::GetMssql();
+				$trimmed=ltrim(strtoupper($sql));
+				$runtype=explode(' ',$trimmed)[0];
+				$result = sqlsrv_query($db, $sql, $param, [
+						"Scrollable" => SQLSRV_CURSOR_STATIC
+				]);
+				if($result===false):
+						throw new \Exception(print_r(sqlsrv_errors(), true));
+				endif;
+				if($runtype=="SELECT"):
+						$querydata = [];
+						$xu = 0;
+						while($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
+								foreach($row as $key => $value):
+										if(is_object($value) && method_exists($value, 'format')):
+												$row[$key] = $value->format('Y-m-d H:i:s');
+										endif;
+								endforeach;
+								$row['xu'] = ++$xu;
+								$querydata[] = $row;
+						endwhile;
+						$querynum = count($querydata);
+						return [
+								"querydata" => $querydata,
+								"querynum"  => $querynum
+						];
+				else:
+						if($runtype=="INSERT"):
+								$idResult = sqlsrv_query($db, "SELECT SCOPE_IDENTITY() AS id");
+								if($idResult):
+										$idRow = sqlsrv_fetch_array($idResult, SQLSRV_FETCH_ASSOC);
+										$insertId = $idRow['id'];
+										sqlsrv_free_stmt($idResult);
+										return is_numeric($insertId) ? (int)$insertId : false;
+								else:
+										return false;
+								endif;
+						else:
+								$affected = sqlsrv_rows_affected($result);
+								sqlsrv_free_stmt($result);
+								return true;
+						endif;
+				endif;
+		}
     /**
      * 获取数据标签
      * @param string $table 表名

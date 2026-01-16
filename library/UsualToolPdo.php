@@ -179,6 +179,39 @@ class UTPdo{
           return false;
       endif;
   }
+	/**
+   * 执行预处理
+   * @param string $sql 带?占位符的SQL语句
+   * @param array $param 参数值数组
+   * @return array|bool|int
+   */
+	public static function RunYu($sql,$param=[]){
+		$db=UTPdo::GetPdo();
+		$trimmed=ltrim(strtoupper($sql));
+		$runtype=explode(' ',$trimmed)[0];
+		$stmt = $db->prepare($sql);
+		$stmt->execute($param);
+		if($runtype=="SELECT"):
+			$result=$stmt->fetchAll();
+			$querydata=[];
+			$xu = 0;
+			foreach($result as $row):
+				$row['xu'] = ++$xu;
+				$querydata[] = $row;
+			endforeach;
+			return [
+				"querydata"=>$querydata,
+				"querynum" =>count($querydata)
+			];
+		else:
+			if($runtype=="INSERT"):
+				$insertId=$db->lastInsertId();
+				return $insertId ?: false;
+			else:
+				return true;
+			endif;
+		endif;
+	}
   /**
    * 统计记录数目
    * @param string $sql SQL语句

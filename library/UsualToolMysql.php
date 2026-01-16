@@ -144,57 +144,6 @@ class UTMysql{
         return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
     }
     /**
-     * SELECT预处理查询
-     * @param string $sql 带?占位符的SELECT语句
-     * @param array $param 参数值数组
-     * @return array
-     */
-    public static function YuQuery($sql,$param=[]){
-        $db=UTMysql::GetMysql();
-        $stmt=$db->prepare($sql);
-        if(!$stmt):
-            return array("querydata"=>array(),"querynum"=>0);
-        endif;
-        if(!empty($param)):
-            $type='';
-            $bindParams=array();
-            foreach($param as $par):
-                if(is_int($par)):
-                    $type.='i';
-                elseif (is_float($par)):
-                    $type.='d';
-                else:
-                    $type.='s';
-                endif;
-                $bindParams[] = $par;
-            endforeach;
-            $ref=array();
-            foreach($bindParams as $key => &$value):
-                $ref[$key] = &$value;
-            endforeach;
-            array_unshift($ref,$type);
-            call_user_func_array([$stmt,'bind_param'],$ref);
-        endif;
-        if(!$stmt->execute()):
-            $stmt->close();
-            return array("querydata"=>array(),"querynum"=>0);
-        endif;
-        $result=$stmt->get_result();
-        if(!$result):
-            $stmt->close();
-            return array("querydata"=>array(),"querynum"=>0);
-        endif;
-        $querydata=array();
-        $xu=0;
-        while($rows=$result->fetch_assoc()):
-            $rows['xu']=++$xu;
-            $querydata[]=$rows;
-        endwhile;
-        $querynum=count($querydata);
-        $stmt->close();
-        return array("querydata"=>$querydata,"querynum"=>$querynum);
-    }
-    /**
      * 添加数据
      * @param string $table 表名
      * @param array $data 字段及值的数组，例：array("字段1"=>"值1","字段2"=>"值2")
@@ -275,6 +224,60 @@ class UTMysql{
             return false;
         endif;
     }
+	/**
+	 * 执行预处理
+	 * @param string $sql 带?占位符的SQL语句
+	 * @param array $param 参数值数组
+	 * @return array|bool|int
+	 */
+	public static function RunYu($sql,$param=[]){
+		$db=UTMysql::GetMysql();
+		$stmt=$db->prepare($sql);
+		if(!empty($param)):
+			$types='';
+			foreach($param as $value):
+				if(is_int($value)):
+					$types .= 'i';
+				elseif(is_float($value)):
+					$types .= 'd';
+				else:
+					$types .= 's';
+				endif;
+			endforeach;
+			$refs=[];
+			foreach($param as $key => &$val):
+				$refs[$key] = &$val;
+			endforeach;
+			array_unshift($refs,$types);
+			call_user_func_array([$stmt,'bind_param'],$refs);
+		endif;
+		$stmt->execute();
+		$trimmed=ltrim(strtoupper($sql));
+		$runtype=explode(' ',$trimmed)[0];
+		if($runtype!="SELECT"):
+			$result=$stmt->get_result();
+			if(!$result):
+				$stmt->close();
+				return ["querydata"=>[],"querynum"=>0];
+			endif;
+			$querydata=[];
+			$xu=0;
+			while($row = $result->fetch_assoc()):
+				$row['xu'] = ++$xu;
+				$querydata[] = $row;
+			endwhile;
+			$stmt->close();
+			return ["querydata"=>$querydata,"querynum"=>count($querydata)];
+		else:
+			$stmt->close();
+			if($runtype=="INSERT"):
+				$insertid=$db->insert_id;
+				return $insertid ?: false;
+			else:
+				return true;
+			endif;
+		endif;
+	}
     /**
      * 获取数据标签
      * @param string $table 表名

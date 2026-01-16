@@ -179,6 +179,48 @@ class UTSqlite{
             return false;
         endif;
     }
+		/**
+		 * 执行预处理
+		 * @param string $sql 带 ? 占位符的 SQL 语句
+		 * @param array $param 参数值数组
+		 * @return array|bool|int
+		 */
+		public static function RunYu($sql,$param=[]){
+				$db=UTSqlite::GetSqlite();
+				$trimmed=ltrim(strtoupper($sql));
+				$runtype=explode(' ',$trimmed)[0];
+				$stmt=$db->prepare($sql);
+				if(!$stmt):
+						throw new \Exception($db->lastErrorMsg());
+				endif;
+				foreach($param as $i => $value):
+						$stmt->bindValue($i+1,$value);
+				endforeach;
+				$result = $stmt->execute();
+				if(!$result):
+						throw new \Exception($db->lastErrorMsg());
+				endif;
+				if($runtype=="SELECT"):
+						$querydata = [];
+						$xu = 0;
+						while($row = $result->fetchArray(SQLITE3_ASSOC)):
+								$row = array_filter($row, 'is_string', ARRAY_FILTER_USE_KEY);
+								$row['xu'] = ++$xu;
+								$querydata[] = $row;
+						endwhile;
+						return [
+								"querydata" => $querydata,
+								"querynum"  => count($querydata)
+						];
+				else:
+						if ($runtype=="INSERT"):
+								$insertId = $db->lastInsertRowID();
+								return $insertId ?: false;
+						else:
+								return true;
+						endif;
+				endif;
+		}
     /**
      * 获取数据标签
      * @param string $table 表名
