@@ -130,6 +130,40 @@ class UTRedis{
         }
     }
     /**
+     * 查询Hash数据
+     */
+    public static function QueryHash($key,$field=''){
+        $db=UTRedis::GetRedis();
+        if(!empty($field)):
+            return $db->hGet($key,$field);
+        else:
+            return $db->hGetAll($key);
+        endif;
+    }
+    /**
+     * 创建Hash数据
+     * $data array 键值对["A"=>1,"B"=>2]或["A"=>1]等同hSet
+     */
+    public static function InsertHash($key,$data){
+        $db=UTRedis::GetRedis();
+        return $db->hMSet($key, $data);
+    }
+    /**
+     * 判断Hash中是否有某个字段
+     */
+    public static function ModHash($key,$field){
+        $db=UTRedis::GetRedis();
+        return $db->hExists($key,$field);
+    }
+    /**
+     * 
+    查询哈希表中的所有域
+     */
+    public static function FindHashKey($key){
+        $db=UTRedis::GetRedis();
+        return $db->hKeys($key);
+    }
+    /**
      * 创建队列任务
      * @param array $array 加入队列的数组
      */

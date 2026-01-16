@@ -496,15 +496,16 @@ class UTCli{
         endforeach;
     }
     /**
-     * 执行任务
+     * 自动化执行任务
      * @return string
      */
     public static function Task(){
+        echo "\r\nUsualTool Framework 正在检索任务\r\n";
         $task=APP_ROOT."/task/";
         $lock=$task.".task.lock";
         $fp=fopen($lock,'c');
         if(!$fp):
-            echo "法创建或打开锁文件\r\n";
+            echo "无法创建或打开锁文件\r\n";
             return;
         endif;
         if(!flock($fp, LOCK_EX | LOCK_NB)):
@@ -528,6 +529,7 @@ class UTCli{
         flock($fp,LOCK_UN);
         fclose($fp);
         unlink($lock);
+        echo "UsualTool Framework 检索任务结束\r\n";
     }
     /**
      * 帮助
