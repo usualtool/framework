@@ -230,54 +230,98 @@ class UTMysql{
 	 * @param array $param 参数值数组
 	 * @return array|bool|int
 	 */
-	public static function RunYu($sql,$param=[]){
-		$db=UTMysql::GetMysql();
-		$stmt=$db->prepare($sql);
-		if(!empty($param)):
-			$types='';
-			foreach($param as $value):
-				if(is_int($value)):
-					$types .= 'i';
-				elseif(is_float($value)):
-					$types .= 'd';
-				else:
-					$types .= 's';
-				endif;
-			endforeach;
-			$refs=[];
-			foreach($param as $key => &$val):
-				$refs[$key] = &$val;
-			endforeach;
-			array_unshift($refs,$types);
-			call_user_func_array([$stmt,'bind_param'],$refs);
-		endif;
-		$stmt->execute();
-		$trimmed=ltrim(strtoupper($sql));
-		$runtype=explode(' ',$trimmed)[0];
-		if($runtype!="SELECT"):
-			$result=$stmt->get_result();
-			if(!$result):
-				$stmt->close();
-				return ["querydata"=>[],"querynum"=>0];
-			endif;
-			$querydata=[];
-			$xu=0;
-			while($row = $result->fetch_assoc()):
-				$row['xu'] = ++$xu;
-				$querydata[] = $row;
-			endwhile;
-			$stmt->close();
-			return ["querydata"=>$querydata,"querynum"=>count($querydata)];
-		else:
-			$stmt->close();
-			if($runtype=="INSERT"):
-				$insertid=$db->insert_id;
-				return $insertid ?: false;
-			else:
-				return true;
-			endif;
-		endif;
-	}
+    public static function RunYu($sql,$param=[]){
+        $db=UTMysql::GetMysql();
+        $trimmed=ltrim(strtoupper($sql));
+        $yutype=explode(' ',$trimmed)[0];
+        if($yutype=="SELECT"):
+            $islimit=(bool) preg_match('/\bLIMIT\b/i',$sql);
+            $total=0;
+            if($islimit):
+                $countsql=UTMysql::YuCountSql($sql);
+                if($countsql!=false):
+                    $countstmt=$db->prepare($countsql);
+                    if($countstmt):
+                        if(!empty($param)):
+                            UTMysql::YuBindParam($countstmt, $param);
+                        endif;
+                        $countstmt->execute();
+                        $countstmt->bind_result($total);
+                        $countstmt->fetch();
+                        $countstmt->close();
+                    endif;
+                endif;
+            endif;
+            $stmt=$db->prepare($sql);
+            if(!$stmt):
+                return ["querydata" => [], "curnum" => 0, "querynum" => 0];
+            endif;
+            if(!empty($param)):
+                UTMysql::YuBindParam($stmt, $param);
+            endif;
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if(!$result):
+                $stmt->close();
+                return ["querydata" => [], "curnum" => 0, "querynum" => 0];
+            endif;
+            $querydata = [];
+            $xu = 0;
+            while($row = $result->fetch_assoc()):
+                $row['xu'] = ++$xu;
+                $querydata[] = $row;
+            endwhile;
+            $stmt->close();
+            $curnum = count($querydata);
+            if(!$islimit):
+                $total = $curnum;
+            endif;
+            return [
+                "querydata" => $querydata,
+                "curnum"    => $curnum,
+                "querynum"  => (int)$total
+            ];
+        else:
+            $stmt = $db->prepare($sql);
+            if(!$stmt):
+                return false;
+            endif;
+            if(!empty($param)):
+                UTMysql::YuBindParam($stmt, $param);
+            endif;
+            $stmt->execute();
+            $stmt->close();
+            if($yutype=="INSERT"):
+                return $db->insert_id ?: true;
+            else:
+                return true;
+            endif;
+        endif;
+    }
+    public static function YuCountSql($sql){
+        $sql = rtrim($sql," \t\n\r;");
+        $sql = preg_replace('/\s+LIMIT\s+\d+(?:\s*,\s*\d+)?\s*$/i','',$sql);
+        return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
+    }
+    public static function YuBindParam($stmt,$params){
+        if(empty($params)) return;
+        $types='';
+        foreach($params as $value):
+            if(is_int($value)):
+                $types .= 'i';
+            elseif(is_float($value)):
+                $types .= 'd';
+            else:
+                $types .= 's';
+            endif;
+        endforeach;
+        $refs = [];
+        foreach($params as $key => &$val):
+            $refs[$key] = &$val;
+        endforeach;
+        array_unshift($refs,$types);
+        call_user_func_array([$stmt,'bind_param'],$refs);
+    }
     /**
      * 获取数据标签
      * @param string $table 表名

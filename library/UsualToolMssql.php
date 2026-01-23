@@ -194,49 +194,79 @@ class UTMssql{
 		 * @return array|bool|int
 		 */
 		public static function RunYu($sql,$param=[]){
-				$db=UTMssql::GetMssql();
-				$trimmed=ltrim(strtoupper($sql));
-				$runtype=explode(' ',$trimmed)[0];
-				$result = sqlsrv_query($db, $sql, $param, [
-						"Scrollable" => SQLSRV_CURSOR_STATIC
-				]);
-				if($result===false):
-						throw new \Exception(print_r(sqlsrv_errors(), true));
-				endif;
-				if($runtype=="SELECT"):
+				 $db=UTMssql::GetMssql();
+				 $trimmed = ltrim(strtoupper($sql));
+				 $yutype = explode(' ',$trimmed)[0];
+				 if($yutype=="SELECT"):
+						 $islimit = (bool)(
+								preg_match('/\bTOP\s+\d+/i',$sql) ||
+								preg_match('/\bOFFSET\s+\d+\s+ROWS\s+FETCH\s+NEXT\s+\d+\s+ROWS\s+ONLY/i',$sql)
+						);
+						$total=0;
+						if($islimit):
+								$countSql = UTMssql::YuCountSql($sql);
+								if($countSql!=false):
+										$countStmt = sqlsrv_query($db,$countSql,$param);
+										if($countStmt == false):
+												throw new \Exception(print_r(sqlsrv_errors(),true));
+										endif;
+										$row = sqlsrv_fetch_array($countStmt,SQLSRV_FETCH_ASSOC);
+										$total = (int)($row['total'] ?? 0);
+										sqlsrv_free_stmt($countStmt);
+								endif;
+						endif;
+						$stmt = sqlsrv_query($db,$sql,$param,['Scrollable'=>SQLSRV_CURSOR_STATIC]);
+						if($stmt==false):
+								throw new \Exception(print_r(sqlsrv_errors(),true));
+						endif;
 						$querydata = [];
 						$xu = 0;
-						while($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)):
-								foreach($row as $key => $value):
-										if(is_object($value) && method_exists($value, 'format')):
-												$row[$key] = $value->format('Y-m-d H:i:s');
+						while($row = sqlsrv_fetch_array($stmt,SQLSRV_FETCH_ASSOC)):
+								foreach($row as $key=>$value):
+										if($value instanceof \DateTime):
+												 $row[$key]=$value->format('Y-m-d H:i:s');
 										endif;
 								endforeach;
 								$row['xu'] = ++$xu;
 								$querydata[] = $row;
 						endwhile;
-						$querynum = count($querydata);
+						sqlsrv_free_stmt($stmt);
+						$curnum = count($querydata);
+						if(!$islimit):
+								 $total=$curnum;
+						endif;
 						return [
-								"querydata" => $querydata,
-								"querynum"  => $querynum
+								'querydata'=>$querydata,
+								'curnum'=>$curnum,
+								'querynum'=>$total
 						];
 				else:
-						if($runtype=="INSERT"):
-								$idResult = sqlsrv_query($db, "SELECT SCOPE_IDENTITY() AS id");
-								if($idResult):
-										$idRow = sqlsrv_fetch_array($idResult, SQLSRV_FETCH_ASSOC);
-										$insertId = $idRow['id'];
-										sqlsrv_free_stmt($idResult);
-										return is_numeric($insertId) ? (int)$insertId : false;
-								else:
-										return false;
+						$stmt=sqlsrv_query($db,$sql,$param);
+						if($stmt==false):
+								throw new \Exception(print_r(sqlsrv_errors(),true));
+						endif;
+						if($yutype=="INSERT"):
+								$idstmt = sqlsrv_query($db,'SELECT SCOPE_IDENTITY() AS id');
+								if($idstmt):
+										$idrow = sqlsrv_fetch_array($idstmt,SQLSRV_FETCH_ASSOC);
+										$insertid = $idrow['id'];
+										sqlsrv_free_stmt($idstmt);
+										return is_numeric($insertid) ? (int) $insertid : true;
 								endif;
+								sqlsrv_free_stmt($stmt);
+								return true;
 						else:
-								$affected = sqlsrv_rows_affected($result);
-								sqlsrv_free_stmt($result);
+								sqlsrv_free_stmt($stmt);
 								return true;
 						endif;
 				endif;
+		}
+		public static function YuCountSql($sql){
+		    $sql = rtrim($sql," \t\n\r;");
+        $sql = preg_replace('/\s+OFFSET\s+\d+\s+ROWS\s+FETCH\s+NEXT\s+\d+\s+ROWS\s+ONLY\s*$/i','',$sql);
+        $sql = preg_replace('/^\s*SELECT\s+TOP\s+\d+/i','SELECT',$sql);
+        $sql = preg_replace('/\s+ORDER\s+BY\s+(?:(?!--|\/\*).)*(?=\s*(?:$))/i','',$sql);
+				return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
 		}
     /**
      * 获取数据标签

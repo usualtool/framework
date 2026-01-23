@@ -187,20 +187,41 @@ class UTSqlite{
 		 */
 		public static function RunYu($sql,$param=[]){
 				$db=UTSqlite::GetSqlite();
-				$trimmed=ltrim(strtoupper($sql));
-				$runtype=explode(' ',$trimmed)[0];
-				$stmt=$db->prepare($sql);
-				if(!$stmt):
-						throw new \Exception($db->lastErrorMsg());
-				endif;
-				foreach($param as $i => $value):
-						$stmt->bindValue($i+1,$value);
-				endforeach;
-				$result = $stmt->execute();
-				if(!$result):
-						throw new \Exception($db->lastErrorMsg());
-				endif;
-				if($runtype=="SELECT"):
+				$trimmed = ltrim(strtoupper($sql));
+				$yutype = explode(' ',$trimmed)[0];
+				if($yutype=="SELECT"):
+						$islimit=(bool) preg_match('/\bLIMIT\b/i', $sql);
+						$total = 0;
+						if($islimit):
+								$countSql=UTSqlite::YuCountSql($sql);
+								if($countSql!=false):
+										$countStmt = $db->prepare($countSql);
+										if(!$countStmt):
+												throw new \Exception($db->lastErrorMsg());
+										endif;
+										foreach($param as $i => $value):
+												$countStmt->bindValue($i + 1, $value);
+										endforeach;
+										$countresult = $countStmt->execute();
+										if(!$countresult):
+												throw new \Exception($db->lastErrorMsg());
+										endif;
+										$row = $countresult->fetchArray(SQLITE3_NUM);
+										$total = (int) ($row[0] ?? 0);
+										$countresult->finalize();
+								endif;
+						endif;
+						$stmt = $db->prepare($sql);
+						if (!$stmt):
+								throw new \Exception($db->lastErrorMsg());
+						endif;
+						foreach ($param as $i => $value):
+								$stmt->bindValue($i + 1, $value);
+						endforeach;
+						$result = $stmt->execute();
+						if (!$result):
+								throw new \Exception($db->lastErrorMsg());
+						endif;
 						$querydata = [];
 						$xu = 0;
 						while($row = $result->fetchArray(SQLITE3_ASSOC)):
@@ -208,18 +229,40 @@ class UTSqlite{
 								$row['xu'] = ++$xu;
 								$querydata[] = $row;
 						endwhile;
+						$result->finalize();
+						$curnum = count($querydata);
+						if(!$islimit):
+								$total = $curnum;
+						endif;
 						return [
 								"querydata" => $querydata,
-								"querynum"  => count($querydata)
+								"curnum"    => $curnum,
+								"querynum"  => $total
 						];
 				else:
-						if ($runtype=="INSERT"):
-								$insertId = $db->lastInsertRowID();
-								return $insertId ?: false;
+						$stmt=$db->prepare($sql);
+						if(!$stmt):
+								throw new \Exception($db->lastErrorMsg());
+						endif;
+						foreach($param as $i => $value):
+								$stmt->bindValue($i + 1, $value);
+						endforeach;
+						$result = $stmt->execute();
+						if(!$result):
+								throw new \Exception($db->lastErrorMsg());
+						endif;
+						if($yutype=="INSERT"):
+								return $db->lastInsertRowID() ?: false;
 						else:
 								return true;
 						endif;
 				endif;
+    }
+		public static function YuCountSql($sql){
+				$sql = rtrim($sql," \t\n\r;");
+				$sql = preg_replace('/\s+ORDER\s+BY\s+(?:(?!--).)*(?=\s*(?:LIMIT|$))/i','',$sql);
+        $sql = preg_replace('/\s+LIMIT\s+\d+(?:\s*,\s*\d+)?\s*$/i','',$sql);
+				return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
 		}
     /**
      * 获取数据标签

@@ -186,31 +186,54 @@ class UTPdo{
    * @return array|bool|int
    */
 	public static function RunYu($sql,$param=[]){
-		$db=UTPdo::GetPdo();
-		$trimmed=ltrim(strtoupper($sql));
-		$runtype=explode(' ',$trimmed)[0];
-		$stmt = $db->prepare($sql);
-		$stmt->execute($param);
-		if($runtype=="SELECT"):
-			$result=$stmt->fetchAll();
-			$querydata=[];
-			$xu = 0;
-			foreach($result as $row):
-				$row['xu'] = ++$xu;
-				$querydata[] = $row;
-			endforeach;
-			return [
-				"querydata"=>$querydata,
-				"querynum" =>count($querydata)
-			];
-		else:
-			if($runtype=="INSERT"):
-				$insertId=$db->lastInsertId();
-				return $insertId ?: false;
+			$db=UTPdo::GetPdo();
+			$trimmed=ltrim(strtoupper($sql));
+			$yutype=explode(' ',$trimmed)[0];
+			if($yutype=="SELECT"):
+					$islimit = (bool) preg_match('/\bLIMIT\b/i',$sql);
+					$total = 0;
+					if($islimit):
+							$countsql=UTPdo::YuCountSql($sql);
+							if($countsql!=false):
+									$countstmt=$db->prepare($countsql);
+									$countstmt->execute($param);
+									$total=(int) $countstmt->fetchColumn();
+							endif;
+					endif;
+					$stmt=$db->prepare($sql);
+					$stmt->execute($param);
+					$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+					$querydata = [];
+					$xu = 0;
+					foreach($result as $row):
+							$row['xu'] = ++$xu;
+							$querydata[] = $row;
+					endforeach;
+					$curnum = count($querydata);
+					if(!$islimit):
+							$total = $curnum;
+					endif;
+					return [
+							"querydata" => $querydata,
+							"curnum"    => $curnum,
+							"querynum"  => $total
+					];
 			else:
-				return true;
+					$stmt=$db->prepare($sql);
+					$stmt->execute($param);
+					if($yutype=="INSERT"):
+							return $db->lastInsertId() ?: false;
+					else:
+							return true;
+					endif;
 			endif;
-		endif;
+	}
+	public static function YuCountSql($sql){
+			$sql = rtrim($sql, " \t\n\r;");
+			$sql = preg_replace('/\s+LIMIT\s+\d+(?:\s*,\s*\d+)?\s*$/i','',$sql);
+			$sql = preg_replace('/^\s*SELECT\s+TOP\s+\d+/i','SELECT',$sql);
+			$sql = preg_replace('/\s+OFFSET\s+\d+\s+ROWS\s+FETCH\s+NEXT\s+\d+\s+ROWS\s+ONLY\s*$/i','',$sql);
+			return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
 	}
   /**
    * 统计记录数目

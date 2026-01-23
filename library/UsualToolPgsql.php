@@ -176,47 +176,90 @@ class UTPgsql{
 		public static function RunYu($sql,$param=[]){
 				$db=UTPgsql::GetPgsql();
 				$trimmed = ltrim(strtoupper($sql));
-				$runtype = explode(' ',$trimmed)[0];
-				$paramCount = count($param);
-				for($i=1;$i<=$paramCount;$i++):
-						$sql = preg_replace('/\?/', '\$' . $i, $sql, 1);
+				$yutype = explode(' ',$trimmed)[0];
+				$paramcount = count($param);
+				for($i=1;$i<=$paramcount;$i++):
+						 $sql=preg_replace('/\?/','$'.$i,$sql,1);
 				endfor;
-				$stmtName = 'stmt_' . uniqid();
-				$result = @pg_prepare($db, $stmtName, $sql);
-				if(!$result):
-						throw new \Exception(pg_last_error($db));
-				endif;
-				$result = @pg_execute($db, $stmtName, $param);
-				if(!$result):
-						throw new \Exception(pg_last_error($db));
-				endif;
-				if($runtype=="SELECT"):
+				if($yutype=="SELECT"):
+						$islimit = (bool) preg_match('/\bLIMIT\s+\d+/i',$sql);
+						$total=0;
+						if($islimit):
+								$countsql=UTPgsql::YuCountSql($sql);
+								if($countsql!=false):
+										$stmtname='count_'.uniqid();
+										$countresult=@pg_prepare($db,$stmtname,$countsql);
+										if(!$countresult):
+												throw new \Exception(pg_last_error($db));
+										endif;
+										$countresult=@pg_execute($db,$stmtname,$param);
+										if(!$countresult):
+												throw new \Exception(pg_last_error($db));
+										endif;
+										$row = pg_fetch_assoc($countresult);
+										$total = (int) ($row['total'] ?? 0);
+										pg_free_result($countresult);
+								endif;
+						endif;
+						$stmtname='stmt_'.uniqid();
+						$result=@pg_prepare($db,$stmtname,$sql);
+						if(!$result):
+								throw new \Exception(pg_last_error($db));
+						endif;
+						$result=@pg_execute($db,$stmtname,$param);
+						if(!$result):
+								throw new \Exception(pg_last_error($db));
+						endif;
 						$querydata = [];
 						$xu = 0;
-						while ($row = @pg_fetch_assoc($result)) {
-								$row['xu'] = ++$xu;
-								$querydata[] = $row;
-						}
+						while($row=@pg_fetch_assoc($result)):
+								 $row['xu'] = ++ $xu;
+								 $querydata[] =  $row;
+						endwhile;
+						pg_free_result($result);
+						$curnum=count($querydata);
+						if(!$islimit):
+								 $total=$curnum;
+						endif;
 						return [
-								"querydata" => $querydata,
-								"querynum"  => count($querydata)
+								"querydata"=>$querydata,
+								"curnum"=>$curnum,
+								"querynum"=>$total
 						];
 				else:
-						if($runtype=="INSERT"):
-								$row = @pg_fetch_assoc($result);
-								if($row && isset($row['id'])):
-										return (int)$row['id'];
-								elseif ($row):
-										$firstValue = array_values($row)[0];
-										return is_numeric($firstValue) ? (int)$firstValue : $firstValue;
-								else:
-										return false;
+						$stmtname='stmt_'.uniqid();
+						$result=@pg_prepare($db,$stmtname,$sql);
+						if(!$result):
+								throw new \Exception(pg_last_error($db));
+						endif;
+						$result=@pg_execute($db,$stmtname,$param);
+						if(!$result):
+								throw new \Exception(pg_last_error($db));
+						endif;
+						if($yutype=="INSERT"):
+								$row=@pg_fetch_assoc($result);
+								pg_free_result($result);
+								if($row):
+										if(isset($row['id'])):
+												return (int) $row['id'];
+										else:
+												 $firstvalue = array_values($row)[0] ?? null;
+												return is_numeric($firstvalue) ? (int) $firstvalue : $firstvalue;
+										endif;
 								endif;
+								return true;
 						else:
-								$affected = @pg_affected_rows($result);
+								$affected=@pg_affected_rows($result);
+								pg_free_result($result);
 								return true;
 						endif;
 				endif;
+		}
+		public static function YuCountSql($sql) {
+				$sql = rtrim($sql," \t\n\r;");
+				$sql = preg_replace('/\s+LIMIT\s+\d+(?:\s*,\s*\d+)?\s*$/i','',$sql);
+				$sql = preg_replace('/\s+OFFSET\s+\d+\s*$/i','',$sql);
+				return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
 		}
     /**
      * 获取数据标签
