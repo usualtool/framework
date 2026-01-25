@@ -68,6 +68,10 @@ $p=empty($_GET["p"]) ? $config["DEFAULT_PAGE"] : UTInc::SqlCheck(str_replace(".p
  */
 $modpath=APP_ROOT."/modules/".$m;
 /**
+ * 模块依赖
+ */
+UTInc::HasComposer($modpath);
+/**
  * 模板节点
  */
 $endpath=UTInc::TempEndPath();

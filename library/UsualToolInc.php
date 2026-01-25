@@ -486,6 +486,36 @@ class UTInc{
         endif;
     }
     /**
+     * 判断配置文件的依赖是否安装
+     */
+    public static function HasComposer($modpath){
+        $xmlfile=$modpath."/usualtool.config";
+        if(!file_exists($xmlfile)){
+            $missing=[];
+        }else{
+            libxml_use_internal_errors(true);
+            $xml=simplexml_load_file($xmlfile);
+            libxml_clear_errors();
+            if($xml===false || !isset($xml->composer)){
+                $missing=[];
+            }else{
+                $missing=[];
+                $composer=$xml->composer;
+                $packages=explode(",",$composer);
+                foreach($packages as $package){
+                    $pkg=trim($package);
+                    if($pkg!="" && !UTInc::FindPackage($pkg)){
+                        $missing[]=$pkg;
+                    }
+                }
+            }
+        }
+        if(!empty($missing)){
+            $missingstr=implode(" and ",$missing);
+            UTInc::GoUrl("-1",$missingstr." not installed.");
+        }
+    }
+    /**
      * 获取配置文件中的版本号
      * @return string
      */
@@ -1162,5 +1192,55 @@ class UTInc{
             $browser='Other';
         }
         return $browser;
+    }
+    /**
+     * 判断依赖
+     * @param string $packagename 包名
+     */
+    public static function FindPackage($packagename){
+        $installedphp=UTF_ROOT.'/vendor/composer/installed.php';
+        if(file_exists($installedphp)){
+            $packages=include $installedphp;
+            if(is_array($packages)){
+                if(isset($packages['versions']) && is_array($packages['versions'])){
+                    return isset($packages['versions'][$packagename]);
+                }
+                foreach($packages as $package){
+                    $pkgname=trim($package['name']);
+                    if(isset($pkgname) && $pkgname==$packagename){
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+        $installedjson=UTF_ROOT.'/vendor/composer/installed.json';
+        if(!file_exists($installedjson)){
+            return false;
+        }
+        $content=file_get_contents($installedjson);
+        if($content===false){
+            return false;
+        }
+        $data=json_decode($content,true);
+        if(json_last_error()!==JSON_ERROR_NONE){
+            return false;
+        }
+        if(isset($data['packages']) && is_array($data['packages'])){
+            foreach($data['packages'] as $package) {
+                if(isset($package['name']) && $package['name']==$packagename){
+                    return true;
+                }
+            }
+            return false;
+        }
+        if(is_array($data)){
+            foreach($data as $package){
+                if(isset($package['name']) && $package['name']==$packagename){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
