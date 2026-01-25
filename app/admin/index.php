@@ -10,6 +10,9 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
+/**
+ * 后端示例文件
+ */
 require dirname(dirname(__FILE__)).'/'.'config.php';
 use library\UsualToolInc\UTInc;
 /**
