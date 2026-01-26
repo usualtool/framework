@@ -60,7 +60,7 @@ if($do=="db-save"){
                   <p>你即将安装UT框架可视化包，请再次核对协议及请求，并使网络保持通畅。</p>
                   <p>通讯状态：<?php echo$httpcode;?> <?php echo $httpcode=="200" ? "" : "，因通讯障碍，在线安装可视化包将有极大几率失败。";?></p>
                   <p>PHP版本：<?php echo$sysinfo["PHP"];?></p>
-									<p><a target="_blank" href="//frame.usualtool.com/baike/index.php?do=%E5%AE%89%E5%85%A8">生产环境安全配置建议</a></p>
+                  <p><a target="_blank" href="//frame.usualtool.com/baike/index.php?do=%E5%AE%89%E5%85%A8">生产环境安全配置建议</a></p>
                   <hr/>
                <form action="?do=db-save" method="post" name="form">
                <div class="row">
