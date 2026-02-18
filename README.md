@@ -12,8 +12,7 @@ Support Nginx/Apache/IIS.
 Support PHP5/PHP7/PHP8 and other known upward distributions.
 #### Security
 .ut.config configuration contains sensitive information.   
-You must set in the configuration file to prohibit non local access Config file.  
-[Server configuration example](http://frame.usualtool.com/baike/config.php)
+You must set in the configuration file to prohibit non-local access Config file.  
 install-dev is the installation directory of visual package on the development side. If visualization is not required, please delete this directory after deploying UT.
 #### system architecture
 ```
