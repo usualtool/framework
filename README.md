@@ -3,7 +3,7 @@
 ![size](https://img.shields.io/github/languages/code-size/usualtool/framework?style=social) 
 ### English | [简体中文](http://frame.usualtool.com/baike)
 #### Introduction
-UsualTool Framework (UT) is based on PHP multi-end development framework, class library perfect, suitable for the development of various types of applications.
+UsualTool Framework (UT) is a PHP-based multi-end development framework with a comprehensive class library, suitable for building various types of applications.
 #### Schematic diagram
 Difference from traditional MVC  
 ![schematic](http://frame.usualtool.com/image/utyl-en.jpg) 
