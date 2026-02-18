@@ -3,7 +3,7 @@
 ![size](https://img.shields.io/github/languages/code-size/usualtool/framework?style=social) 
 ### English | [简体中文](http://frame.usualtool.com/baike)
 #### Introduction
-UsualTool Framework (UT) is based on PHP multi-end development framework, class library perfect, suitable for the development of various types of applications.
+UsualTool Framework (UT) is based on PHP multi-end development framework, comprehensive class library, suitable for the development of various types of applications.
 #### Schematic diagram
 Difference from traditional MVC  
 ![schematic](http://frame.usualtool.com/image/utyl-en.jpg) 
@@ -12,7 +12,7 @@ Support Nginx/Apache/IIS.
 Support PHP5/PHP7/PHP8 and other known upward distributions.
 #### Security
 .ut.config configuration contains sensitive information.   
-You must set in the configuration file to prohibit non local access Config file.  
+You must set in the configuration file to prohibit non-local access Config file.  
 [Server configuration example](http://frame.usualtool.com/baike/config.php)
 install-dev is the installation directory of visual package on the development side. If visualization is not required, please delete this directory after deploying UT.
 #### system architecture
