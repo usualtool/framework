@@ -83,7 +83,7 @@ class UTRoute{
             $qs= explode("&",$surl);
             for($i=0;$i<count($qs);$i++){
                 $qx=explode("=",str_replace("amp;","",$qs[$i]));
-                $param[$qx[0]]=$qx[1];
+                $param[$qx[0]]=$qx[1] ?? '';
             }
         }
       return $param;

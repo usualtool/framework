@@ -50,7 +50,7 @@ class UTInc{
                     exit();
                 }
             }else{
-                echo$text;
+                echo $text;
                 exit();
             }
         }else{
@@ -318,6 +318,7 @@ class UTInc{
         if(empty($type) || $type==0){
             $temp=scandir(APP_ROOT."/modules/");
             foreach($temp as $v){
+              if($v!="index.html"){
                 $file=APP_ROOT."/modules/".$v;
                 if(is_file($file."/usualtool.config")){
                     $mods=file_get_contents($file."/usualtool.config");
@@ -331,6 +332,7 @@ class UTInc{
                         $mod[]=array("mid"=>$mid,"catid"=>$catid,"title"=>$title,"auther"=>$auther,"url"=>$url);
                     }
                 }
+              }
             }
         }elseif($type==1){
             $modules=UTInc::Auth($config["UTCODE"],$config["UTFURL"],"module");
@@ -366,6 +368,7 @@ class UTInc{
         if(empty($type) || $type==0){
             $temp=scandir(APP_ROOT."/plugins/");
             foreach($temp as $v){
+              if($v!="index.html"){
                 $file=APP_ROOT."/plugins/".$v;
                 if(is_file($file."/usualtool.config")){
                     $plugins=file_get_contents($file."/usualtool.config");
@@ -378,6 +381,7 @@ class UTInc{
                         $plugin[]=array("pid"=>$pid,"title"=>$title,"auther"=>$auther,"description"=>$description);
                     }
                 }
+              }
             }
         }elseif($type==1){
             $hooks=UTInc::Auth($config["UTCODE"],$config["UTFURL"],"plugin");
@@ -415,6 +419,7 @@ class UTInc{
         if(empty($type) || $type==0){
             $temp=scandir(APP_ROOT."/template/");
             foreach($temp as $v){
+              if($v!="index.html"){
                 $file=APP_ROOT."/template/".$v;
                 if(is_file($file."/usualtool.config")){
                     $temps=file_get_contents($file."/usualtool.config");
@@ -426,6 +431,7 @@ class UTInc{
                         $description=UTInc::StrSubstr("<description>","</description>",$temps);
                         $template[]=array("tid"=>$tid,"title"=>$title,"auther"=>$auther,"description"=>$description);
                     }
+                  }
                 }
             }
         }elseif($type==1){
@@ -459,7 +465,7 @@ class UTInc{
      */
     public static function InstallDev(){
         if(is_dir('install-dev')){
-            if(file_exists(APP_ROOT."/install-dev/usualtool.lock")){
+            if(file_exists(OPEN_ROOT."/install-dev/usualtool.lock")){
                 return true;
             }else{
                 return false;
@@ -470,20 +476,28 @@ class UTInc{
     }
     /**
      * 引用UT插件
-     * @param string $pluginname 插件标识
-     * @param string $pluginroot 引用插件页面
-     * @return string include_once引用页面或者iframe调用
+     * @param string $plugin 插件
+     * @param string $action 动作
+     * @return string include_once输出方法
      */
-    public static function Plugin($pluginname,$pluginroot='index.php'){
-        $config=UTInc::GetConfig();
-        if(is_dir(APP_ROOT."/plugins/".$pluginname."")):
-            if(empty($pluginroot)||UTInc::Contain(".php",$pluginroot)):
-                include_once(APP_ROOT."/plugins/".$pluginname."/".$pluginroot."");
-            else:
-                $getpost="<iframe src=".$config["APPURL"]."/app/plugins/".$pluginname."/".$pluginroot." frameborder=0 id=external-frame></iframe><style>iframe{width:100%;margin:0 0 1em;border:0;}</style><script src=images/js/autoheight.js></script>";
-                echo$getpost;
-            endif;
-        endif;
+    public static function Plugin($plugin,$action='index'){
+        if(!preg_match('/^[a-z0-9\-_]+$/i', $plugin)){
+            return;
+        }
+        $pluginFile = APP_ROOT . "/plugins/{$plugin}/plugin.php";
+        if(!is_file($pluginFile)){
+            return;
+        }
+        include_once $pluginFile;
+        $className = ucfirst(str_replace(['-', '_'], '_', $plugin));
+        if(!class_exists($className)){
+            return;
+        }
+        $instance = new $className();
+        if(!method_exists($instance,$action)){
+            return;
+        }
+        call_user_func([$instance,$action],$_POST);
     }
     /**
      * 判断配置文件的依赖是否安装
@@ -521,9 +535,9 @@ class UTInc{
      */
     public static function GetVer($file){
         $content=file_get_contents($file);
-        if(preg_match('/<ver>([^<]+)<\/ver>/i', $content, $matches)):
+        if(preg_match('/<ver>([^<]+)<\/ver>/i', $content, $matches)){
             return trim($matches[1]);
-        endif;
+        }
         return null;
     }
     /**
@@ -901,10 +915,14 @@ class UTInc{
      * @param int $mode 文件夹权限
      * @return bool
      */
-    public static function MakeDir($dir,$mode=0777){
-        if(is_dir($dir) || @mkdir($dir, $mode)) return TRUE;
-        if(!mkdirs(dirname($dir), $mode)) return FALSE;
-        return @mkdir($dir, $mode);
+		public static function MakeDir($dir,$mode=0777){
+        if(empty($dir)){
+            return false;
+        }
+        if(is_dir($dir)){
+            return true;
+        }
+        return @mkdir($dir,$mode,true);
     }
     /**
      * 移动文件夹

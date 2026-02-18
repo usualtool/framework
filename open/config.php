@@ -10,34 +10,27 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
-require_once dirname(dirname(__FILE__)).'/'.'autoload.php';
+require dirname(__DIR__).'/'.'autoload.php';
 /**
- * 写入前端公共模板路径
+ * 模块路径
  */
-$app->Runin("pubtemp",PUB_TEMP."/front");
+define('MODULE_PATH',APP_ROOT.'/modules');
 /**
- * 写入模板工程前端公共路径
+ * 模板工程路径
  */
-$app->Runin("template",$frontwork."/skin/".$config["DEFAULT_MOD"]."/front");
+define('TEMPLATE_PATH',APP_ROOT.'/template');
 /**
- * 拼接当前文件
+ * 插件路径
  */
-$modfile=$modpath."/front/".$p.".php";
+define('PLUGIN_PATH',APP_ROOT.'/plugins');
 /**
- * 判断文件真实性
+ * 计划任务路径
  */
-if(library\UsualToolInc\UTInc::SearchFile($modfile)){
-    /**
-     * 引用前端模板
-     */
-    require_once $modfile;
-}else{
-    /**
-     * 配置公共错误提示
-     */
-    require_once PUB_PATH.'/front/error.php';
-    exit();
-}
-if($config["DEBUG"]){
-    library\UsualToolDebug\UTDebug::Debug($config["DEBUG_BAR"]);
-}
+define('TASK_PATH',APP_ROOT.'/task');
+/**
+ * 语言包路径
+ */
+define('LANG_PATH',APP_ROOT.'/lang');
+/**
+ * 其他自定义配置
+ */

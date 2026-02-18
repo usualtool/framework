@@ -107,7 +107,7 @@ class UTTemp{
         $replacement=array(
         '<?php if("${1}"=="null"):if(rtrim(library\UsualToolInc\UTInc::CurPageUrl(),"/")==rtrim($GLOBALS["config"]["APPURL"],"/")):echo"${2}";endif;else:if(library\UsualToolInc\UTInc::Contain("${1}",library\UsualToolInc\UTInc::CurPageUrl())):echo"${2}";endif;endif;?>',
         '<?php echo"<div class=\"nav-item dropdown\"><a class=\"nav-link dropdown-toggle\" data-toggle=dropdown><i class=\"fa fa-link\"></i> Column</a><div class=\"dropdown-menu\">";$item=explode(",",$this->tplvars["${2}"]);for($i=0;$i<count($item);$i++):echo"<a class=\"dropdown-item\" href=?m=".$this->tplvars["${1}"]."&p=".explode(":",$item[$i])[1].">".explode(":",$item[$i])[0]."</a>";endfor;echo"</div></div>";?>',
-		'<?php if(library\UsualToolInc\UTInc::Contain(",","${1}")):$pluginfile=explode(",","${1}");$HOOKPATH=APP_ROOT."/plugins/$pluginfile[0]/";if(is_dir($HOOKPATH)):if(library\UsualToolInc\UTInc::Contain(".php","$pluginfile[1]")):include_once $HOOKPATH.$pluginfile[1];else:echo"<iframe src=$HOOKPATH.$pluginfile[1] frameborder=0 id=external-frame></iframe><style>iframe{width:100%;margin:0 0 1em;border:0;}</style><script src=assets/js/autoheight.js></script>";endif;endif;else:$HOOKPATH=APP_ROOT."/plugins/${1}/";if(is_dir($HOOKPATH)):include_once $HOOKPATH."index.php";endif;endif;?>',
+		'<?php $plugin=explode(",","${1}");if(count($plugin)==1):library\UsualToolInc\UTInc::Plugin($plugin[0]);else:library\UsualToolInc\UTInc::Plugin($plugin[0],$plugin[1]);endif;?>',
 		'<?php $split=explode("${2}",$this->tplvars["${1}"]);echo $split[${3}];?>',
 		'<?php $${1}=explode("${2}",$this->tplvars["${1}"]);for($i=0;$i<count($${1});$i++){?>${3}<?php }?>',
         '<?php $split=explode("${3}",$this->tplvars["${1}"]["${2}"]);echo $split[${4}];?>',
@@ -202,6 +202,7 @@ class UTTemp{
         $admin=array();
         $fornt=array();
         foreach($file_arr as $file){
+		      if($file!="index.html"){
             if(is_dir(APP_ROOT."/modules/".$file."/skin/front/")){
                 $dirx = scandir(APP_ROOT."/modules/".$file."/skin/front/");
                 foreach ($dirx as $valuex){
@@ -221,7 +222,8 @@ class UTTemp{
                             $admin[$file][] = $value;
                       }
                 }
-            }            
+            }
+		      }
         }
         return array("admin"=>$admin,"front"=>$front);
     }    

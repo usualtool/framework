@@ -135,11 +135,11 @@ class UTCli{
                 $c.="<description>NULL</description>\r\n";
                 $c.="<installsql><![CDATA[0]]></installsql>\r\n";
                 $c.="<uninstallsql><![CDATA[0]]></uninstallsql>\r\n";
-                $c.="<plugincode><![CDATA[?><?php echo'这里是插件后端代码部分';?>]]></plugincode>\r\n";
+                $c.="<plugincode><![CDATA[?><?php echo'插件操作管理示例';?>]]></plugincode>\r\n";
                 $c.="</hook>";
                 file_put_contents(APP_ROOT."/plugins/".$plugin."/usualtool.config",$c);
-                $i="这里是插件前段代码部分";
-                file_put_contents(APP_ROOT."/plugins/".$plugin."/index.php",$i);
+                $i="插件类方法示例";
+                file_put_contents(APP_ROOT."/plugins/".$plugin."/plugin.php",$i);
                 echo"插件创建成功\r\n";
                 echo"插件路径：/app/plugins/".$plugin."/\r\n";
             else:
@@ -196,6 +196,14 @@ class UTCli{
                         echo "安装权限不足\r\n";
                         exit();
                     endif;
+                endif;
+                if(is_dir(APP_ROOT."/modules/".$name."/assets")):
+                    echo"正在移动静态资源...\r\n";
+                    $assets_dir=OPEN_ROOT."/assets/modules/".$name;
+                    if(!is_dir($assets_dir)):
+                        UsualToolInc\UTInc::MakeDir($assets_dir);
+                    endif;
+                    UsualToolInc\UTInc::MoveDir(APP_ROOT."/modules/".$name."/assets",$assets_dir);
                 endif;
                 $modconfig=APP_ROOT."/modules/".$name."/usualtool.config";
                 $mods=file_get_contents($modconfig);
@@ -268,7 +276,15 @@ class UTCli{
                         echo "安装权限不足\r\n";
                         exit();
                     endif;
-                endif;    
+                endif;
+                if(is_dir(APP_ROOT."/plugins/".$name."/assets")):
+                    echo"正在移动静态资源...\r\n";
+                    $assets_dir=OPEN_ROOT."/assets/plugins/".$name;
+                    if(!is_dir($assets_dir)):
+                        UsualToolInc\UTInc::MakeDir($assets_dir);
+                    endif;
+                    UsualToolInc\UTInc::MoveDir(APP_ROOT."/plugins/".$name."/assets",$assets_dir);
+                endif;
                 $pconfig=APP_ROOT."/plugins/".$name."/usualtool.config";
                 $plugins=file_get_contents($pconfig);
                 $type=UsualToolInc\UTInc::StrSubstr("<type>","</type>",$plugins);
@@ -331,7 +347,18 @@ class UTCli{
                         exit();
                     endif;
                 endif;
-                UsualToolInc\UTInc::MoveDir(APP_ROOT."/template/".$name."/move",UTF_ROOT);
+                if(is_dir(APP_ROOT."/template/".$name."/move")):
+                    echo"正在移动模型文件...\r\n";
+                    UsualToolInc\UTInc::MoveDir(APP_ROOT."/template/".$name."/move",UTF_ROOT);
+                endif;
+                if(is_dir(APP_ROOT."/template/".$name."/assets")):
+                    echo"正在移动静态资源...\r\n";
+                    $assets_dir=OPEN_ROOT."/assets/template/".$name;
+                    if(!is_dir($assets_dir)):
+                        UsualToolInc\UTInc::MakeDir($assets_dir);
+                    endif;
+                    UsualToolInc\UTInc::MoveDir(APP_ROOT."/template/".$name."/assets",$assets_dir);
+                endif;
                 $pconfig=APP_ROOT."/template/".$name."/usualtool.config";
                 $template=file_get_contents($pconfig);
                 $id=UsualToolInc\UTInc::StrSubstr("<id>","</id>",$template);

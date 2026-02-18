@@ -10,10 +10,10 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
-require_once dirname(dirname(dirname(__FILE__))).'/'.'autoload.php';
+require dirname(__DIR__).'/'.'config.php';
 use library\UsualToolInc\UTInc;
 use library\UsualToolMysql\UTMysql;
-if(UTInc::SearchFile(APP_ROOT."/install-dev/usualtool.lock")):
+if(UTInc::SearchFile(OPEN_ROOT."/install-dev/usualtool.lock")):
    header("location:../");
    exit();
 endif;
@@ -24,9 +24,9 @@ if($do=="db-test"){
    $data=array();
    $db=UTMysql::TestDataBase($_POST["DBHOST"],$_POST["DBPORT"],$_POST["DBUSER"],$_POST["DBPASS"],$_POST["DBNAME"]);
    if(!$db){
-      echo"UT-NO";
+      echo "UT-NO";
    }else{
-      echo"UT-YES";
+      echo "UT-YES";
    }
 }
 if($do=="db-save"){
@@ -44,10 +44,10 @@ if($do=="db-save"){
     <title>UT框架可视化</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="//cdn.staticfile.org/bootstrap/4.6.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="//cdn.staticfile.org/jquery/3.1.0/jquery.min.js"></script>
-    <script src="//cdn.staticfile.org/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+    <link href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/fontawesome.min.css" rel="stylesheet">
+    <script src="//cdn.bootcdn.net/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <style>p {margin-bottom:0rem;font-size:14px;}.fontsmall{font-size:12px;}#license p{font-size:11px;}</style>
 </head>
 <body>
@@ -58,45 +58,45 @@ if($do=="db-save"){
               <div class="border p-2">
                <?php if(empty($do)){?>
                   <p>你即将安装UT框架可视化包，请再次核对协议及请求，并使网络保持通畅。</p>
-                  <p>通讯状态：<?php echo$httpcode;?> <?php echo $httpcode=="200" ? "" : "，因通讯障碍，在线安装可视化包将有极大几率失败。";?></p>
-                  <p>PHP版本：<?php echo$sysinfo["PHP"];?></p>
+                  <p>通讯状态：<?php echo $httpcode;?> <?php echo $httpcode=="200" ? "" : "，因通讯障碍，在线安装可视化包将有极大几率失败。";?></p>
+                  <p>PHP版本：<?php echo $sysinfo["PHP"];?></p>
                   <p><a target="_blank" href="//frame.usualtool.com/baike/index.php?do=%E5%AE%89%E5%85%A8">生产环境安全配置建议</a></p>
                   <hr/>
                <form action="?do=db-save" method="post" name="form">
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">应用域名/IP:</label>
-                     <input class="form-control" name="APPURL" id="APPURL" value="<?php echo$config["APPURL"];?>">
+                     <input class="form-control" name="APPURL" id="APPURL" value="<?php echo $config["APPURL"];?>">
                   </div>
                   <div class="form-group col-md-6">
                      <label for="email">UT令牌:</label>
-                     <input class="form-control" name="UTCODE" id="UTCODE" value="<?php echo$config["UTCODE"];?>">
+                     <input class="form-control" name="UTCODE" id="UTCODE" value="<?php echo $config["UTCODE"];?>">
                   </div>
                </div>
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">数据库服务器:</label>
-                     <input class="form-control" name="MYSQL_HOST" id="MYSQL_HOST" value="<?php echo$config["MYSQL_HOST"];?>">
+                     <input class="form-control" name="MYSQL_HOST" id="MYSQL_HOST" value="<?php echo $config["MYSQL_HOST"];?>">
                   </div>
                   <div class="form-group col-md-6">
                      <label for="email">端口:</label>
-                     <input class="form-control" name="MYSQL_PORT" id="MYSQL_PORT" value="<?php echo$config["MYSQL_PORT"];?>">
+                     <input class="form-control" name="MYSQL_PORT" id="MYSQL_PORT" value="<?php echo $config["MYSQL_PORT"];?>">
                   </div>
                </div>
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">数据库用户:</label>
-                     <input class="form-control" name="MYSQL_USER" id="MYSQL_USER" value="<?php echo$config["MYSQL_USER"];?>">
+                     <input class="form-control" name="MYSQL_USER" id="MYSQL_USER" value="<?php echo $config["MYSQL_USER"];?>">
                   </div>
                   <div class="form-group col-md-6">
                      <label for="email">数据库密码:</label>
-                     <input class="form-control" name="MYSQL_PASS" id="MYSQL_PASS" value="<?php echo$config["MYSQL_PASS"];?>">
+                     <input class="form-control" name="MYSQL_PASS" id="MYSQL_PASS" value="<?php echo $config["MYSQL_PASS"];?>">
                   </div>
                </div>
                <div class="row">
                   <div class="form-group col-md-6">
                      <label for="email">数据库名称:</label>
-                     <input class="form-control" name="MYSQL_DB" id="MYSQL_DB" value="<?php echo$config["MYSQL_DB"];?>">
+                     <input class="form-control" name="MYSQL_DB" id="MYSQL_DB" value="<?php echo $config["MYSQL_DB"];?>">
                   </div>
                </div>
                <div class="row">
@@ -136,11 +136,11 @@ if($do=="db-save"){
                   }elseif($do=="sql"){
                ?>
                   <p>你即将导入SQL到数据库，请保持网络通畅。</p>
-                  <p>通讯状态：<?php echo$httpcode;?> <?php echo $httpcode=="200" ? "" : "， 因通讯障碍，在线安装可视化包将有极大几率失败。";?></p>
+                  <p>通讯状态：<?php echo $httpcode;?> <?php echo $httpcode=="200" ? "" : "， 因通讯障碍，在线安装可视化包将有极大几率失败。";?></p>
                   <hr/>
                   <?php
                   if($_GET["t"]=="db-sql"){
-                     $sql=file_get_contents("./UTDev.sql");
+                     $sql=file_get_contents("./develop.sql");
                      $arr=explode(';',$sql);
                      $total=count($arr)-1;
                      $c=0;
@@ -148,10 +148,10 @@ if($do=="db-save"){
                         $k=$i+1;
                         $result=UTMysql::RunSql($arr[$i]);
                         if($result){
-                           echo"<p class='fontsmall'>第".$k."条SQL执行成功!</p>";
+                           echo "<p class='fontsmall'>第".$k."条SQL执行成功!</p>";
                         }else{
                            $c=$c+1;
-                           echo"<p class='fontsmall' style='color:red;'>第".$k."条SQL执行失败:".$arr[$i]."</p>";
+                           echo "<p class='fontsmall' style='color:red;'>第".$k."条SQL执行失败:".$arr[$i]."</p>";
                         }
                         if($k==$total && $c==0){
                            echo "<script>alert('导入SQL成功!');window.location.href='?do=dev'</script>";
@@ -166,24 +166,24 @@ if($do=="db-save"){
                   }elseif($do=="dev"){
                ?>
                <p>你即将部署可视包源码，请保持网络通畅。</p>
-               <p>通讯状态：<?php echo$httpcode;?> <?php echo $httpcode=="200" ? "" : "， 因通讯障碍，在线安装可视化包将有极大几率失败。";?></p>
+               <p>通讯状态：<?php echo $httpcode;?> <?php echo $httpcode=="200" ? "" : "， 因通讯障碍，在线安装可视化包将有极大几率失败。";?></p>
                <p>请将app目录及update目录开启可写权限。权限校验：
                   app: <?php 
                   if(UTInc::FileMode(UTF_ROOT."/app")):
                       $a=0;
-                      echo"<font color=green>可写</font>";
+                      echo "<font color=green>可写</font>";
                   else:
                       $a=1;
-                      echo"<font color=red>不可写</font>";
+                      echo "<font color=red>不可写</font>";
                   endif;
                   ?> ，
                   update: <?php
                   if(UTInc::FileMode(UTF_ROOT."/update")):
                       $b=0;
-                      echo"<font color=green>可写</font>";
+                      echo "<font color=green>可写</font>";
                   else:
                       $b=1;
-                      echo"<font color=red>不可写</font>";
+                      echo "<font color=red>不可写</font>";
                   endif;
                   ?> 
             </p>
@@ -191,18 +191,18 @@ if($do=="db-save"){
                <?php
                $k=intval($a)+intval($b);
                if($k>0){
-                  echo"<p>请再次检查文件夹权限!</p>";
+                  echo "<p>请再次检查文件夹权限!</p>";
                }else{
                   if($_GET["t"]=="db-dev"){
-                     $res=UTInc::SaveFile($config["DOWNURL"]."/UTDev.zip",UTF_ROOT."/update","UTDev.zip",1);
+                     $res=UTInc::SaveFile($config["DOWNURL"]."/develop.zip",UTF_ROOT."/update","develop.zip",1);
                      if(!empty($res)){
                         $zip=new ZipArchive;
-                        if($zip->open(UTF_ROOT."/update/UTDev.zip")===TRUE){ 
+                        if($zip->open(UTF_ROOT."/update/develop.zip")===TRUE){ 
                             $zip->extractTo(UTF_ROOT."/update/");
                             $zip->close();
-                            UTInc::MoveDir(UTF_ROOT."/update/UTDev/",UTF_ROOT);
-                            UTInc::DelDir(UTF_ROOT."/update/UTDev/");
-                            unlink(UTF_ROOT."/update/UTDev.zip");
+                            UTInc::MoveDir(UTF_ROOT."/update/develop/",UTF_ROOT);
+                            UTInc::DelDir(UTF_ROOT."/update/develop/");
+                            unlink(UTF_ROOT."/update/develop.zip");
                             file_put_contents("./usualtool.lock","lock");
                             $info=file_get_contents(UTF_ROOT."/.ut.config"); 
                             $info=preg_replace("/MANAGE=(.*)/","MANAGE=/dev",$info); 

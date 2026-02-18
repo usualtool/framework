@@ -10,16 +10,20 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
-ini_set("error_reporting","E_ALL & ~E_NOTICE");
-ini_set('magic_quotes_gpc',0);
+ini_set("display_errors","Off");
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 /**
  * 框架根路径
  */
-define('UTF_ROOT', dirname(__FILE__));
+define('UTF_ROOT',__DIR__);
+/**
+ * 开发根路径
+ */
+define('APP_ROOT',__DIR__.'/app');
 /**
  * 应用根路径
  */
-define('APP_ROOT', dirname(__FILE__).'/app');
+define('OPEN_ROOT',__DIR__.'/open');
 /**
  * 开启SESSION
  */
@@ -36,12 +40,6 @@ use library\UsualToolRoute\UTRoute;
  */
 $config=UTInc::GetConfig();
 /**
- * 禁止配置联网
- */
-if(!empty($config["APPURL"]) && UTInc::HttpCode($config["APPURL"]."/.ut.config")=="200"):
-    UTInc::GoUrl("-1","Error:The configuration must be disconnected from the network.");
-endif;
-/**
  * 公共模块
  */
 define('PUB_PATH', APP_ROOT.'/modules/'.$config["DEFAULT_MOD"]);
@@ -52,17 +50,14 @@ define('PUB_TEMP', PUB_PATH.'/skin');
 /**
  * 识别路由
  */
-foreach(UTRoute::Analy(UTInc::CurPageUrl()) as $key=>$val){
+foreach(UTRoute::Analy(UTInc::CurPageUrl()) as $key=>$val):
     $_GET[$key]=$val;
-}
+endforeach;
 /**
- * 加载模块
+ * 加载模块及页面
  */
-$m=empty($_GET["m"]) ? $config["DEFAULT_MOD"] : UTInc::SqlCheck($_GET["m"]);
-/**
- * 加载页面
- */
-$p=empty($_GET["p"]) ? $config["DEFAULT_PAGE"] : UTInc::SqlCheck(str_replace(".php","",$_GET["p"]));
+$m=UTInc::SqlCheck($_GET["m"] ?? $config["DEFAULT_MOD"]);
+$p=UTInc::SqlCheck(str_replace(".php","",$_GET["p"] ?? $config["DEFAULT_PAGE"]));
 /**
  * 当前模块
  */
@@ -104,21 +99,27 @@ $app=new UTTemp($config["TEMPCACHE"],$skin."/".$endpath,$cache."/".$endpath);
 /**
  * 基础绑定
  */
-$app->Runin(array("appname","appurl","module","page","editor"),array($config["APPNAME"],$config["APPURL"],$m,$p,$config["EDITOR"]));
+$app->Runin(
+    array("appname","appurl","module","page","editor"),
+    array($config["APPNAME"],$config["APPURL"],$m,$p,$config["EDITOR"])
+);
 /**
  * 语言配置
  */
-$app->Runin(array("lang","thelang"),array(explode(",",$config["LANG_OPTION"]),$config["LANG"]));
-if(!empty($_COOKIE['Language'])):
-    $language=UTInc::SqlCheck($_COOKIE['Language']);
+$app->Runin(
+    array("lang","thelang"),
+		array(explode(",",$config["LANG_OPTION"]),$config["LANG"])
+);
+if(!empty($_COOKIE["language"])):
+    $language=UTInc::SqlCheck($_COOKIE["language"]);
 else:
     if($config["LANG"]=="big5"):
         $language="zh";
-        setcookie("Language","zh");
-        setcookie("chinaspeak","big5");
+        $chinaspeak="big5";
     else:
         $language=$config["LANG"];
-        setcookie("Language",$config["LANG"]);
-        setcookie("chinaspeak","");
+        $chinaspeak="";
     endif;
+    setcookie("language", $language);
+    setcookie("chinaspeak", $chinaspeak);
 endif;

@@ -63,7 +63,11 @@ function getcookie(cookiename){
 			var jsonweb=""+window.ROOTPATH+"/";
 		}
 		String.prototype.transbig=function(){
-			htmlobj=$.ajax({url:jsonweb+"lang/lg-"+getcookie("chinaspeak")+".json",async:false});
+			htmlobj =  $.ajax({
+  url: "lang/lg-" + getcookie("chinaspeak") + ".json",
+  async: false
+});
+			//htmlobj=$.ajax({url:jsonweb+"lang/lg-"+getcookie("chinaspeak")+".json",async:false});
 			var zhjsondata=(htmlobj.responseText);
 			var obj = eval("("+zhjsondata+")");
 			var s=obj["l"]["simplified"];

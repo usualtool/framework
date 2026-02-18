@@ -239,7 +239,7 @@ class UTSockets{
                 $response['content'] = $msg_content;
                 $response['sendtime'] = date('Y-m-d H:i:s',time());
                 if(!empty($recv_msg['item']) && !empty($recv_msg['roomid'])){
-                    file_put_contents(APP_ROOT.'/'.$recv_msg['item'].'/room-'.$recv_msg['roomid'].'-'.date("Ymd").'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
+                    file_put_contents(UTF_ROOT.'/log/websocket/'.$recv_msg['item'].'/room-'.$recv_msg['roomid'].'-'.date("Ymd").'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
                 }
                 break;
             //单对单消息
@@ -252,9 +252,9 @@ class UTSockets{
                 $response['sendtime'] = date('Y-m-d H:i:s',time());
                 if(!empty($recv_msg['item'])){
                     if(strpos($recv_msg['startuid'],'u')!==false){
-                    file_put_contents(APP_ROOT.'/'.$recv_msg['item'].'/chat-'.$recv_msg['startuid'].'-'.$recv_msg['enduid'].'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
+                    file_put_contents(UTF_ROOT.'/log/websocket/'.$recv_msg['item'].'/chat-'.$recv_msg['startuid'].'-'.$recv_msg['enduid'].'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
                     }else{
-                    file_put_contents(APP_ROOT.'/'.$recv_msg['item'].'/chat-'.$recv_msg['enduid'].'-'.$recv_msg['startuid'].'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
+                    file_put_contents(UTF_ROOT.'/log/websocket/'.$recv_msg['item'].'/chat-'.$recv_msg['enduid'].'-'.$recv_msg['startuid'].'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
                     }
                 }
                 break;
