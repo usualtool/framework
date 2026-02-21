@@ -204,6 +204,7 @@ class UTCli{
                         UsualToolInc\UTInc::MakeDir($assets_dir);
                     endif;
                     UsualToolInc\UTInc::MoveDir(APP_ROOT."/modules/".$name."/assets",$assets_dir);
+										UsualToolInc\UTInc::DelDir(APP_ROOT."/modules/".$name."/assets");
                 endif;
                 $modconfig=APP_ROOT."/modules/".$name."/usualtool.config";
                 $mods=file_get_contents($modconfig);
@@ -284,6 +285,7 @@ class UTCli{
                         UsualToolInc\UTInc::MakeDir($assets_dir);
                     endif;
                     UsualToolInc\UTInc::MoveDir(APP_ROOT."/plugins/".$name."/assets",$assets_dir);
+										UsualToolInc\UTInc::DelDir(APP_ROOT."/plugins/".$name."/assets");
                 endif;
                 $pconfig=APP_ROOT."/plugins/".$name."/usualtool.config";
                 $plugins=file_get_contents($pconfig);
@@ -358,6 +360,7 @@ class UTCli{
                         UsualToolInc\UTInc::MakeDir($assets_dir);
                     endif;
                     UsualToolInc\UTInc::MoveDir(APP_ROOT."/template/".$name."/assets",$assets_dir);
+										UsualToolInc\UTInc::DelDir(APP_ROOT."/template/".$name."/assets");
                 endif;
                 $pconfig=APP_ROOT."/template/".$name."/usualtool.config";
                 $template=file_get_contents($pconfig);
