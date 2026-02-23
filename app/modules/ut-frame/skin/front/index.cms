@@ -4,21 +4,35 @@
     <title><{$title}></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="UT Framework"/>
+    <meta name="keywords" content="UsualTool Framework"/>
     <meta name="Description" content="UsualTool Framework"/>
     <style>
-        h1,h2,h3{
-            font-weight:normal;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container {
+        body {
             width: 100%;
+            height: 100vh;
             background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .framework{
-            width:60%;
-            margin: 10% auto 0;
-            padding: 2% 5%;
-            border-radius: 10px
+            width: 90%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 5% 5%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .divider {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+            margin: 15px 0;
         }
         ul {
             padding-left: 20px;
@@ -32,16 +46,16 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="framework">
-            <h2>UsualTool Framework successful installation.</h2>
-            <h2><img src="/assets/logo.png"></h2>
-            <{if $setup==0}><h3>Visual development package not installed.</h3><{/if}>
-            <ul>
-                <li>Author:HuangDou  Email:usualtool@qq.com  QQ-Group:583610949</li>
-                <li>UsualTool Framework is suitable for Apache2 protocol.</li>
-            </ul>
-        </div>
+    <div class="framework">
+        <p>Tip: UsualTool Framework successful installation.</p>
+        <hr class="divider">
+        <p><img src="/assets/logo.png" style="max-width: 100%;"></p>
+        <{if $setup==0}><h3>Visual development package not installed.</h3><{/if}>
+        <ul>
+            <li>Repository 1: <a target="_blank" href="https://gitee.com/usualtool">https://gitee.com/usualtool</a></li>
+            <li>Repository 2: <a target="_blank" href="https://github.com/usualtool">https://github.com/usualtool</a></li>
+            <li>UsualTool Framework is suitable for Apache2 protocol.</li>
+        </ul>
     </div>
 </body>
 </html>
