@@ -455,73 +455,79 @@ class UTCli{
      */
     public static function Composer($array){
         echo "开始运行检测...\r\n";
-        $composerFile = UTF_ROOT . '/composer.lock';
-        if(file_exists($composerFile)):
-            $content = file_get_contents($composerFile);
-            $hasModule = strpos($content, '"usualtool/ut-module-') !== false;
-            $hasTemplate = strpos($content, '"usualtool/ut-template-') !== false;
-            $hasPlugin = strpos($content, '"usualtool/ut-plugin-') !== false;
-            if(!$hasModule && !$hasTemplate && !$hasPlugin):
+        $composerfile=UTF_ROOT.'/composer.lock';
+        if(file_exists($composerfile)):
+            $content = file_get_contents($composerfile);
+            $hasmodule = strpos($content,'usualtool/ut-module-') !== false;
+            $hastemplate = strpos($content,'usualtool/ut-template-') !== false;
+            $hasplugin = strpos($content,'usualtool/ut-plugin-') !== false;
+            if(!$hasmodule && !$hastemplate && !$hasplugin):
                 echo "Composer自动化完成\r\n";
                 exit();
             endif;
         endif;
-        $vendorDir = UTF_ROOT . '/vendor/usualtool';
-        if(!is_dir($vendorDir)):
+        $vendordir=UTF_ROOT.'/vendor/usualtool';
+        if(!is_dir($vendordir)):
             echo "依赖包目录不存在\r\n";
             exit();
         endif;
-        $allDirs = glob($vendorDir . '/ut-*', GLOB_ONLYDIR);
-        if(empty($allDirs)):
+        $alldirs = glob($vendordir . '/ut-*', GLOB_ONLYDIR);
+        if(empty($alldirs)):
             echo "未找到 ut-module-* / ut-template-* / ut-plugin-* 命名的依赖包。\r\n";
             exit();
         endif;
-        foreach ($allDirs as $utPath):
-            $pkgDir = basename($utPath);
-            if(strpos($pkgDir, 'ut-module-') === 0):
-                $type = 'module'; $installDir = APP_ROOT . '/modules'; $utName = substr($pkgDir, 10);
-            elseif(strpos($pkgDir, 'ut-template-') === 0):
-                $type = 'template'; $installDir = APP_ROOT . '/templates'; $utName = substr($pkgDir, 12);
-            elseif(strpos($pkgDir, 'ut-plugin-') === 0):
-                $type = 'plugin'; $installDir = APP_ROOT . '/plugins'; $utName = substr($pkgDir, 10);
+        foreach ($alldirs as $utpath):
+            $pkgdir = basename($utpath);
+            if(strpos($pkgdir,'ut-module-')=== 0):
+                $type = 'module';
+						    $installdir = APP_ROOT.'/modules';
+                $utname = substr($pkgdir, 10);
+            elseif(strpos($pkgdir,'ut-template-')=== 0):
+                $type = 'template';
+                $installdir = APP_ROOT.'/template';
+                $utname = substr($pkgdir, 12);
+            elseif(strpos($pkgdir,'ut-plugin-')=== 0):
+                $type = 'plugin';
+                $installdir = APP_ROOT.'/plugins';
+                $utname = substr($pkgdir, 10);
             else:
                 continue;
             endif;
-            if(!is_dir($installDir)):
-                if (!mkdir($installDir, 0755, true)):
+            if(!is_dir($installdir)):
+                if (!mkdir($installdir, 0755, true)):
                     echo "目录创建失败.\r\n";
                     continue;
                 endif;
             endif;
-            $sourceModuleDir = "$utPath/src/$utName";
-            $targetModuleDir = "$installDir/$utName";
-            if(!is_dir($sourceModuleDir)):
+            $source_moduledir = $utPath."/src/".$utname;
+            $target_moduledir = $installdir."/".$utname;
+            if(!is_dir($source_moduledir)):
                 echo "跳过错误：找不到源目录\r\n";
                 continue;
             endif;
-            $newConfigFile = "$sourceModuleDir/usualtool.config";
-            if(!file_exists($newConfigFile)):
+            $new_configfile = $source_moduledir."/usualtool.config";
+            if(!file_exists($new_configfile)):
                 echo "跳过错误：在源目录中未找到usualtool.config配置文件\r\n";
                 continue;
             endif;
-            $newVersion = UsualToolInc\UTInc::GetVer($newConfigFile);
-            if(!$newVersion):
+            $new_version = UsualToolInc\UTInc::GetVer($new_configfile);
+            if(!$new_version):
                 echo "跳过错误：未找到<ver>版本号\r\n";
                 continue;
             endif;
-            $oldConfigFile = "$targetModuleDir/usualtool.config";
-            $oldVersion = null;
-            if(file_exists($oldConfigFile)):
-                $oldVersion = UsualToolInc\UTInc::GetVer($oldConfigFile);
+            $old_configfile = $target_moduledir."/usualtool.config";
+            $old_version = null;
+            if(file_exists($old_configfile)):
+                $old_version = UsualToolInc\UTInc::GetVer($old_configfile);
             endif;
-            if($oldVersion && version_compare($newVersion, $oldVersion, '<=')):
+            if($old_version && version_compare($new_version,$old_version, '<=')):
                 echo "跳过错误：与依赖包的版本号一致无需更新\r\n";
                 continue;
             endif;
-            if(is_dir($targetModuleDir)):
-                UsualToolInc\UTInc::DelDir($targetModuleDir);
+            if(is_dir($target_moduledir)):
+                UsualToolInc\UTInc::DelDir($target_moduledir);
             endif;
-            UsualToolInc\UTInc::CopyDir($sourceModuleDir, $targetModuleDir);
+            UsualToolInc\UTInc::CopyDir($source_moduledir,$target_moduledir);
             echo "Composer自动化完成\r\n";
         endforeach;
     }
