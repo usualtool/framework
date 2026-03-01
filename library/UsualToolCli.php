@@ -75,10 +75,11 @@ class UTCli{
             $m2=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/admin",0777);
             $m3=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/cache",0777);
             $m4=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/front",0777);
-            $m5=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/skin",0777);
-            $m6=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/skin/admin",0777);
-            $m7=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/skin/front",0777);
-            if($m1 && $m2 && $m3 && $m4 && $m5 && $m6 && $m7):
+            $m5=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/model",0777);
+            $m6=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/skin",0777);
+            $m7=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/skin/admin",0777);
+            $m8=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/skin/front",0777);
+            if($m1 && $m2 && $m3 && $m4 && $m5 && $m6 && $m7 && $m8):
                 $c="<?xml version='1.0' encoding='UTF-8'?>\r\n";
                 $c.="<mod>\r\n";
                 $c.="<id>".$module."</id>\r\n";
