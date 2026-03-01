@@ -19,46 +19,47 @@ install-dev is the installation directory of visual package on the development s
 ┌─── 📁app 应用开发目录 core
 ├────├─── 📁lang 语言包 Language package
 ├────├─── 📁modules 模块 Module
-├────├────└───ut-frame 公共默认模块 Common module
+├────├────└───ut-frame 公共模块
 ├────├─────────├─assets 临时资源包
-├────├────├────├─admin 后端模型 Admin model
+├────├────├────├─admin 后端控制 Admin control
 ├────├────├────├─cache 缓存编译 Cache
 ├────├────├────├─skin 视图 View
 ├────├────├────├────├─admin 后端视图 Admin view
 ├────├────├────├────└─front 前端视图 Client view
-├────├────├────├─front 前端模型 Client model
-├────├────├────├────├─error.php 错误页 Error page
-├────├────├────├────└─index.php 前端示例文件 Client example file
+├────├────├────├─front 前端控制 Client control
+├────├────├────├────├─error.php
+├────├────├────├────└─index.php 示例文件
+├────├────├────├─model 模型 Model
 ├────├─────────└─usualtool.config 模块配置 Configure
 ├────├─── 📁plugins 插件 Plugin
-├────├────└───插件名称 Plugin Name
+├────├────└───插件名称
 ├────├─────────├─assets 临时资源包
 ├────├─────────├─plugin.php 插件模型
 ├────├─────────└─usualtool.config 插件配置 Configure
 ├────├─── 📁task 计划任务 Crontab
 ├────└─── 📁template 模板工程 Formwork
-├─────────└───模板名称 Template Name
+├─────────└───模板名称
 ├──────────────├─assets 临时资源包
-├──────────────├─move 覆盖模型
+├──────────────├─move 覆盖控制&模型
 ├──────────────├─skin 视图 View
-├──────────────├───├─ut-frame 公共模块模型视图 Common module model-view
+├──────────────├───├─ut-frame 公共模块视图
 ├──────────────├───├────├─admin 后端视图 Admin view
 ├──────────────├───├────├─cache 缓存 Cache
 ├──────────────├───├────└─front 前端视图 Client view
-├──────────────├───└─其他模块模型视图 Other module model-view
+├──────────────├───└─其他模块视图
 ├──────────────└─usualtool.config 模板配置 Configure
 ├─── 📁library 类库 Class library
 ├─── 📁log 框架日志 Log
 ├─── 📁open 应用根目录（开放访问）
 ├────├─── 📁assets 静态资源 Resource
-├────├─── index.php 前端控制器 Client Controller file
+├────├─── index.php 路由控制器
 ├────├─── plugin.php 插件控制器
-├────└─── config.php 应用配置 Application configure
+├────└─── config.php 应用配置
 ├─── 📁update 更新包目录 Update
 ├─── 📁vendor 依赖库目录
 ├─── .ut.config 全局配置 Global configuration
+├─── .version.ini 框架版本 Version
 ├─── autoload.php 自动加载 Automatic file loading
-├─── usualtool 命令行服务端 Command line
-└─── .version.ini 版本号 Version
+└─── usualtool 命令行服务端 Command line
 ```
 #### [Development documentation](http://frame.usualtool.com/baike)
