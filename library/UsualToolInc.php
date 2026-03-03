@@ -195,7 +195,7 @@ class UTInc{
             return null;
         }
         $rawnamespace=trim($nsmatch[1]);
-        $lowernamespace=strtolower($rawNamespace);
+        $lowernamespace=strtolower($rawnamespace);
         if(strpos($lowernamespace,$zonestr)===false){
             return null;
         }

@@ -16,15 +16,15 @@ use library\UsualToolDebug\UTDebug;
 /**
  * 控制方向
  */
-$controlform="/front";
+$controlform="front";
 /**
  * 公共模板
  */
-$app->Runin("pubtemp",PUB_TEMP.$controlform);
+$app->Runin("pubtemp",PUB_TEMP."/".$controlform);
 /**
  * 公共模板工程
  */
-$app->Runin("template",$frontwork."/skin/".$config["DEFAULT_MOD"].$controlform);
+$app->Runin("template",$frontwork."/skin/".$config["DEFAULT_MOD"]."/".$controlform);
 /**
  * 拼接当前文件
  */
