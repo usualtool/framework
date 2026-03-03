@@ -180,6 +180,32 @@ class UTInc{
         return ltrim(trim($str));
     }
     /**
+     * 从文件中获取类名
+     * @param string $file 文件路径
+     * @param int $zone 1=model, 2=controller
+     * @return string|null 返回完整类名
+     */
+    function GetClassName($file,$zone=2){
+        $zonestr=($zone == 1) ? "model" : "controller";
+        $content=file_get_contents($file);
+        if(!$content){
+            return null;
+        }
+        if(!preg_match('/namespace\s+([^;]+);/',$content,$nsmatch)){
+            return null;
+        }
+        $rawnamespace=trim($nsmatch[1]);
+        $lowernamespace=strtolower($rawNamespace);
+        if(strpos($lowernamespace,$zonestr)===false){
+            return null;
+        }
+       if(!preg_match('/class\s+([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\s*(?:extends|implements|\{)/',$content,$clmatch)){
+            return null;
+        }
+        $classname=trim($clmatch[1]);
+        return '\\'.ltrim($rawnamespace,'\\').'\\'.$classname;
+    }
+    /**
      * 提取字符串中的所有图片
      * @param string $str
      * @return array
