@@ -36,6 +36,7 @@ install-dev is the installation directory of visual package on the development s
 ├────├─────────├─assets 临时资源包
 ├────├─────────├─plugin.php 插件模型
 ├────├─────────└─usualtool.config 插件配置 Configure
+├────├─── 📁share 共享命名空间 Crontab
 ├────├─── 📁task 计划任务 Crontab
 ├────└─── 📁template 模板工程 Formwork
 ├─────────└───模板名称
