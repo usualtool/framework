@@ -14,36 +14,41 @@ require_once __DIR__.'/'.'config.php';
 use library\UsualToolInc\UTInc;
 use library\UsualToolDebug\UTDebug;
 /**
- * 控制方向
+ * 控制目录
  */
-$controlform="front";
+$_form_="front";
 /**
- * 公共模板
+ * 模板目录
  */
-$app->Runin("pubtemp",PUB_TEMP."/".$controlform);
+$_temp_="front";
 /**
- * 公共模板工程
+ * 接引模板
  */
-$app->Runin("template",$frontwork."/skin/".$config["DEFAULT_MOD"]."/".$controlform);
+$app->Runin("pubtemp",PUB_TEMP."/".$_temp_);
+$app->Runin("template",$frontwork."/skin/".$config["DEFAULT_MOD"]."/".$_temp_);
 /**
- * 拼接当前文件
+ * 路由分发控制
  */
-$modfile=$modpath."/".$controlform."/".$p.".php";
+$_map_=$modpath."/route.php";
+$_file_=$p;
+if(UTInc::SearchFile($_map_)):
+    $_route=include $_map_;
+    $_file_=$_route[$p] ?? $p;
+endif;
+$_file_path_=$modpath."/".$_form_."/".$_file_.".php";
 /**
  * 判断文件真实性
  */
-if(UTInc::SearchFile($modfile)):
-    require_once $modfile;
-    $classname=UTInc::GetClassName($modfile);
+if(UTInc::SearchFile($_file_path_)):
+    require_once $_file_path_;
+    $_class_=UTInc::GetClassName($_file_path_);
     /**
      * 分层模式
      */
-    if($classname):
-        $action=UTInc::SqlCheck($_GET["action"]) ?? "index";
-        if(!preg_match('/^[a-zA-Z0-9_]+$/',$action)):
-            $action="index"; 
-        endif;
-        $controller=new $classname();
+    if($_class_):
+        $action=$_GET["action"] ?? "";
+        $action=preg_match('/^[a-zA-Z0-9_]+$/',$action) ? $action : "index";
+        $controller=new $_class_();
         /**
          * 执行动作
          */
@@ -52,7 +57,6 @@ if(UTInc::SearchFile($modfile)):
         endif;
     endif;
 else:
-    require_once PUB_PATH.'/front/error.php';
-    exit();
+    UTDebug::Error("module",str_replace(APP_ROOT."/modules","",$modfile));
 endif;
 $config["DEBUG"] && UTDebug::Debug($config["DEBUG_BAR"]);
