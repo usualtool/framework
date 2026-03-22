@@ -76,11 +76,11 @@ $endpath=UTInc::TempEndPath();
 $frontwork=APP_ROOT."/template/".$config["TEMPFRONT"];
 $adminwork=APP_ROOT."/template/".$config["TEMPADMIN"];
 /**
- * 开发路径
+ * 入端路径判断
  */
-$develop=UTInc::Contain(UTInc::GetConfig()["MANAGE"],UTInc::CurPageUrl());
+$develop=UTInc::Contain($config["MANAGE"],UTInc::CurPageUrl());
 /**
- * 开发端
+ * 开发/管理端
  */
 if($config["TEMPADMIN"]!='0' && $develop):
     $skin=$adminwork."/skin/".$m;
