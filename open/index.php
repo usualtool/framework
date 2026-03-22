@@ -14,11 +14,11 @@ require_once __DIR__.'/'.'config.php';
 use library\UsualToolInc\UTInc;
 use library\UsualToolDebug\UTDebug;
 /**
- * 控制目录
+ * 控制终端
  */
 $_form_="front";
 /**
- * 模板目录
+ * 模板终端
  */
 $_temp_="front";
 /**
