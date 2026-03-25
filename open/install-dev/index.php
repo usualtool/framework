@@ -45,7 +45,7 @@ if($do=="db-save"){
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/fontawesome.min.css" rel="stylesheet">
+    <link href="//cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="//cdn.bootcdn.net/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <style>p {margin-bottom:0rem;font-size:14px;}.fontsmall{font-size:12px;}#license p{font-size:11px;}</style>
