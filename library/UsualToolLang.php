@@ -20,22 +20,27 @@ class UTLang{
      * 获取语言文件列表
      * @return array
      */
-    public static function GetLang(){
-        $lang=array();
-        $path = APP_ROOT."/lang/";
+    public static function GetLang($path=OPEN_ROOT."/lang/"){
+        $langs = array();
+        if(!is_dir($path)):
+            return $langs;
+        endif;
         $current_dir = opendir($path);
-        while(($file = readdir($current_dir)) !== false) {
-            $sub_dir = "".$path."/".$file."";
-            if($file == '.' || $file == '..') {
+        while(($file = readdir($current_dir)) !== false):
+            if($file == '.' || $file == '..'):
                 continue;
-            }elseif(is_dir($sub_dir)){
-                GetLang($sub_dir);
-            }elseif(UTInc::Contain("json",$file)){
-                $lang[]=UTInc::StrSubstr("lg-",".json",basename($file));
-            }
-        }
-        return $lang;
-    }    
+            endif;
+            $sub_dir=$path."/".$file;
+            if(is_dir($sub_dir)):
+                $sub_langs = self::GetLang($sub_dir);
+                $langs = array_merge($langs, $sub_langs);
+            elseif(UTInc::Contain("json", $file)):
+                $langs[] = UTInc::StrSubstr("lg-", ".json", basename($file));
+            endif;
+        endwhile;
+        closedir($current_dir);
+        return $langs;
+    } 
     /**
      * 获取单词对应语言包翻译，解析L部分
      * @param string $word 单词
@@ -43,11 +48,10 @@ class UTLang{
      * @return string
      */
     public static function LangData($word,$type=''){
-        global$language;
         if(!empty($type)):
-            $langdata=json_decode(file_get_contents(APP_ROOT."/lang/lg-".$type.".json"),true);
+            $langdata=json_decode(file_get_contents(OPEN_ROOT."/lang/lg-".$type.".json"),true);
         else:
-            $langdata=json_decode(file_get_contents(APP_ROOT."/lang/lg-".$language.".json"),true);
+            $langdata=json_decode(file_get_contents(OPEN_ROOT."/lang/lg-".self::GetActiveLang().".json"),true);
         endif;
         if(array_key_exists($word,$langdata["l"])){
         $langword=$langdata["l"]["".$word.""];
@@ -62,12 +66,11 @@ class UTLang{
      * @return string
      */
     public static function ModLangData($word,$module=''){
-        global$language;
         global$modpath;
         if(!empty($module)){
-            $langdata=json_decode(file_get_contents(APP_ROOT."/modules/".$module."/lang/lg-".$language.".json"),true);
+            $langdata=json_decode(file_get_contents(APP_ROOT."/modules/".$module."/lang/lg-".self::GetActiveLang().".json"),true);
         }else{
-            $langdata=json_decode(file_get_contents($modpath."/lang/lg-".$language.".json"),true);
+            $langdata=json_decode(file_get_contents($modpath."/lang/lg-".self::GetActiveLang().".json"),true);
         }
         if(array_key_exists($word,$langdata["l"])){
             $langword=$langdata["l"]["".$word.""];
@@ -83,11 +86,10 @@ class UTLang{
      * @return string
      */
     public static function LangSet($word,$type=''){
-        global$language;
         if(!empty($type)):
-            $langdata=json_decode(file_get_contents(APP_ROOT."/lang/lg-".$type.".json"),true);
+            $langdata=json_decode(file_get_contents(OPEN_ROOT."/lang/lg-".$type.".json"),true);
         else:
-            $langdata=json_decode(file_get_contents(APP_ROOT."/lang/lg-".$language.".json"),true);
+            $langdata=json_decode(file_get_contents(OPEN_ROOT."/lang/lg-".self::GetActiveLang().".json"),true);
         endif;
         $langword=$langdata["s"]["".$word.""];
         return $langword;
@@ -97,15 +99,23 @@ class UTLang{
      * @param string $path 语言包路径
      * @return array
      */
-    public static function Lang($path = APP_ROOT.'/lang/'){
+    public static function Lang($path=OPEN_ROOT.'/lang/'){
+			  $lgfile=[];
         $current_dir = opendir($path);
         while(($file = readdir($current_dir)) !== false) {
-            if(UsualToolCMS::contain(".json",$file)!==false):
+            if(UTInc::Contain(".json",$file)!==false):
                 $filename=explode(".json",$file);
                 $lgfilename=str_replace("lg-","",str_replace($path,"",$filename[0]));
-                $lgfile[]=array("speak"=>LangSet("speak",$lgfilename),"lgname"=>$lgfilename);
+                $lgfile[]=array("speak"=>self::LangSet("speak",$lgfilename),"lgname"=>$lgfilename);
             endif;
         }
         return $lgfile;
+    }
+    /**
+     * 当前语言
+     */
+    private static function GetActiveLang(){
+        global $lang;
+        return $lang ?? 'zh';
     }
 }
