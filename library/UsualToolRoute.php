@@ -97,24 +97,27 @@ class UTRoute{
      * @param string $param
      * @return string
      */
-    public static function Link($module = "", $page = "", $param = ""){
+    public static function Link($module="", $page="", $param=""){
         $config = UsualToolInc\UTInc::GetConfig();
-        $appurl = rtrim($config["APPURL"], "/");
-        $mStr = $module ?: $config["DEFAULT_MOD"];
-        $routeConfigFile = OPEN_ROOT.'/route.php';
-        if(file_exists($routeConfigFile)){
-            $routeMap = include $routeConfigFile;
-            $reverseMap = array_flip($routeMap);
-            if(isset($reverseMap[$mStr])){
-                $mStr = $reverseMap[$mStr];
+        $rewrite = $config["REWRITE"];
+        $m = empty($module) ? $config["DEFAULT_MOD"] : $module;
+        $p = empty($page) ? $config["DEFAULT_PAGE"] : $page;
+        if($rewrite==0){
+            $params = ['m'=>$m,'p'=>$p];
+            if(!empty($param)){
+                $extraParams = UTRoute::UrlToArray($param);
+                if(is_array($extraParams)){
+                    $params=array_merge($params, $extraParams);
+                }
+            }
+            $link="?".http_build_query($params);
+        }elseif($rewrite==1){
+            $link="/{$m}/{$p}";
+            if(!empty($param)){
+                $link.="?".$param;
             }
         }
-        $pStr = $page ?: $config["DEFAULT_PAGE"];
-        $path = "/{$mStr}/{$pStr}";
-        if(!empty($param)){
-            $path .= "?" . $param;
-        }
-        return $appurl . $path;
+        return $link;
     }
     /**
      * 解析URL

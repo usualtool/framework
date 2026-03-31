@@ -53,7 +53,7 @@ if($do=="db-save"){
 <body>
 <div class="container">
     <div class="row m-b-md">
-           <div class="col-md-12"><img src="/assets/ut-logo.png"></div>
+           <div class="col-md-12"><img src="/assets/logo.png"></div>
            <div class="col-md-8">
               <div class="border p-2">
                <?php if(empty($do)){?>
@@ -100,38 +100,11 @@ if($do=="db-save"){
                   </div>
                </div>
                <div class="row">
-                  <div class="col-md-6">
-                  <button type="button" class="btn btn-primary mr-3" onclick="test()">测试数据库连接</button>    
+                  <div class="col-md-6"> 
                   <button type="submit" class="btn btn-success">保存设置</button>
                   </div>
                </div>
                </form>
-               <script>
-                function test(){
-                   $.ajax({
-                   url:'?do=db-test',
-                   type:"post",
-                   data:{
-                        'DBHOST':$("#MYSQL_HOST").val(),
-                        'DBPORT':$("#MYSQL_PORT").val(),
-                        'DBNAME':$("#MYSQL_DB").val(),
-                        'DBUSER':$("#MYSQL_USER").val(),
-                        'DBPASS':$("#MYSQL_PASS").val()
-                    },
-                    dataType: "text",
-                   success: function(data){
-                        if(data.indexOf("UT-YES")!=-1){
-                         alert("数据库连接成功!");
-                      }else{
-                         alert("数据库连接失败!");
-                      }
-                   },
-                   failure:function(d){
-                      alert("Error");
-                   }
-                   });
-                }
-                </script>
                <?php
                   }elseif($do=="sql"){
                ?>
