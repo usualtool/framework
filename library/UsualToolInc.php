@@ -847,13 +847,13 @@ class UTInc{
      */
     public static function TempEndPath(){
         $thispage=UTInc::CurPageUrl();
-        $manage=UTInc::GetConfig()["MANAGE"];
-        if(strpos($thispage,$manage)!==false){
+        $develop=UTInc::GetConfig()["DEVELOP"];
+        if(strpos($thispage,$develop)!==false){
             return "admin/";
         }else{
             return "front/";
         }
-    }    
+    }   
     /**
      * 保存远程文件
      * @param string $url 远程文件地址
