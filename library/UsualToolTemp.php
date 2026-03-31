@@ -226,55 +226,5 @@ class UTTemp{
 		      }
         }
         return array("admin"=>$admin,"front"=>$front);
-    }    
-    /**
-     * 选用函数：自定义生成静态
-     * index.php?$m=demo&p=tests&cat=0&page=1 => $m/$p-$cat_$page.html  => demo/tests-0_1.html
-     * index.php?$m=demo&p=tests&page=1       => $m/$p_$page.html       => demo/tests_1.html
-     * index.php?$m=demo&p=tests&cat=0        => $m/$p-$cat.html        => demo/tests-0.html
-     * index.php?$m=demo&p=tests              => $m/$p.html             => demo/tests.html
-     * index.php?$m=demo&p=test&id=1          => $m/$p-$id.html         => demo/test-1.html
-     * @param string $filename 模板文件
-     * @param string $htmlname 保存静态文件
-     * @param string $weburl 应用地址
-     * @param int $rewrite 伪静态状态
-     */
-    function MakeHtml($filename,$htmlname,$weburl,$rewrite='0'){
-        $tplfile=$this->tempdir.$filename;
-        if(!file_exists($tplfile)){
-            exit();
-        }
-        $comfilename=$this->cachedir."cache_".basename($tplfile);
-        if($this->mode==1){
-            if(!file_exists($filename) || filemtime($comfilename) < filetime($tplfile)){
-                $repcontent=$this->TempReplace(file_get_contents($tplfile));
-            }
-            $handle=fopen($comfilename, 'w+');
-            fwrite($handle, $repcontent);
-            fclose($handle);
-            unset($repcontent);
-        }
-        ob_start();
-        require_once($comfilename);
-        $content = ob_get_contents();
-        ob_end_clean();
-        $fp = fopen($htmlname,"w");
-        $content=str_replace('\'','"',$content);
-        if($rewrite=="0"):
-            $content=preg_replace('/(href|HREF)="index.php\?m\=([a-zA-Z0-9]*)&p\=([a-zA-Z0-9]*)&catid\=([0-9]*)&page\=([0-9]*)"(.*?)/is','$1="html/$2/$3-$4_$5.html"$6',$content);
-            $content=preg_replace('/(href|HREF)="index.php\?m\=([a-zA-Z0-9]*)&p\=([a-zA-Z0-9]*)&page\=([0-9]*)"(.*?)/is','$1="html/$2/$3_$4.html"$5',$content);
-            $content=preg_replace('/(href|HREF)="index.php\?m\=([a-zA-Z0-9]*)&p\=([a-zA-Z0-9]*)&catid\=([0-9]*)"(.*?)/is','$1="html/$2/$3-$4.html"$5',$content);
-            $content=preg_replace('/(href|HREF)="index.php\?m\=([a-zA-Z0-9]*)&p\=([a-zA-Z0-9]*)"(.*?)/is','$1="html/$2/$3.html"$4',$content);
-            $content=preg_replace('/(href|HREF)="index.php\?m\=([a-zA-Z0-9]*)&p\=([a-zA-Z0-9]*)&id\=([0-9]*)"(.*?)/is','$1="html/$2/$3-$4.html"$5',$content);
-        else:
-            $content=preg_replace('/(href|HREF)="([a-zA-Z0-9]*)/([a-zA-Z0-9]*)\.html\?catid\=([0-9]*)&page\=([0-9]*)"(.*?)/is','$1="html/$2/$3-$4_$5.html"$6',$content);
-            $content=preg_replace('/(href|HREF)="([a-zA-Z0-9]*)/([a-zA-Z0-9]*)\.html\?page\=([0-9]*)"(.*?)/is','$1="html/$2/$3_$4.html"$5',$content);
-            $content=preg_replace('/(href|HREF)="([a-zA-Z0-9]*)/([a-zA-Z0-9]*)\.html\?catid\=([0-9]*)"(.*?)/is','$1="html/$2/$3-$4.html"$5',$content);
-            $content=preg_replace('/(href|HREF)="([a-zA-Z0-9]*)/([a-zA-Z0-9]*)\.html"(.*?)/is','$1="html/$2/$3.html"$4',$content);
-            $content=preg_replace('/(href|HREF)="([a-zA-Z0-9]*)/([a-zA-Z0-9]*)-([0-9]*)\.html"(.*?)/is','$1="html/$2/$3-$4.html"$5',$content);
-        endif;
-            $content=preg_replace('/(href|src|HREF|SRC)="(?!http)(.*?)"(.*?)/is','$1="'.$weburl.'/$2"$3',$content);
-        fwrite($fp,$content);
-        fclose($fp);
     }
 }

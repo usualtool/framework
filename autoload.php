@@ -78,7 +78,7 @@ $adminwork=APP_ROOT."/template/".$config["TEMPADMIN"];
 /**
  * 入端路径判断
  */
-$develop=UTInc::Contain($config["MANAGE"],UTInc::CurPageUrl());
+$develop=UTInc::Contain($config["DEVELOP"],UTInc::CurPageUrl());
 /**
  * 开发/管理端
  */

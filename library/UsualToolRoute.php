@@ -26,12 +26,14 @@ class UTRoute{
             "&times","&cent","&pound","&yen","&shy",
             "&thorn","&sect","&micro","&uml","&reg",
             "&laquo","&para","&acute","&deg","&eth",
-            "&raquo","&copy","&aquo","&not","&curren");
+            "&raquo","&copy","&aquo","&not","&curren"
+        );
         $n=array(
             "&amp;times","&amp;cent","&amp;pound","&amp;yen","&amp;shy",
             "&amp;thorn","&amp;sect","&amp;micro","&amp;uml","&amp;reg",
             "&amp;laquo","&amp;para","&amp;acute","&amp;deg","&amp;eth",
-            "&amp;raquo","&amp;copy","&amp;aquo","&amp;not","&amp;curren");
+            "&amp;raquo","&amp;copy","&amp;aquo","&amp;not","&amp;curren"
+        );
         $url=str_replace($o,$n,$url);
         return $url;
     }
@@ -40,53 +42,52 @@ class UTRoute{
      * @param string $url
      * @return array
      */
-    public static function Analy($url){
-        $config=UsualToolInc\UTInc::GetConfig();
-        $rule=$config["REWRITE"];
-        if($rule==0){
-            $url=$_SERVER["HTTP_HOST"].$_SERVER["PHP_SELF"]."?".$_SERVER["QUERY_STRING"];
+    public static function Analy($url = ''){
+        $config = UsualToolInc\UTInc::GetConfig();
+        $param = array();
+        if(empty($url)) {
+            $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+            $path = parse_url($requestUri, PHP_URL_PATH);
+            $scriptName = basename($_SERVER['SCRIPT_NAME']);
+            $path = str_replace("/".$scriptName,"",$path);
+            $path = trim($path,'/');
         }else{
-            if(empty($url)){
-                $url=UsualToolInc\UTInc::CurPageUrl();
-            }else{
-                $url=$url;
+            $url = self::ConverUrl($url);
+            $parsedUrl = parse_url($url);
+            $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : $url;
+            if (!empty($config["APPURL"])) {
+                $path = str_replace($config["APPURL"],"",$path);
+            }
+            $path = trim($path,'/');
+        }
+        $segment = explode('/', $path);
+        $develop = trim($config["DEVELOP"] ?? '', '/');
+        if(!empty($develop) && isset($segment[0]) && $segment[0]===$develop){
+            return array();
+        }
+        $segments = array_values(array_filter(explode('/', $path)));
+        $m = $config["DEFAULT_MOD"] ?? 'index';
+        $p = $config["DEFAULT_PAGE"] ?? 'index';
+        if (count($segments) >= 1) {
+            $m = $segments[0];
+            if (isset($segments[1])) {
+                $p = $segments[1];
             }
         }
-        $url=UTRoute::ConverUrl($url);
-        $url=str_replace("//","/",str_replace("app/dev","",str_replace($config["APPURL"],"",$url)));
-        $url=substr($url,1);
-        $param=array();
-        if(!UsualToolInc\UTInc::Contain("m=",$url) && !UsualToolInc\UTInc::Contain("p=",$url) && $rule==1){
-            $urls=explode("/",$url);
-            $param["m"]=$urls[0];
-            $param["p"]=$urls[1];
-            $q=explode(".",$urls[2])[0];
-            $qs = explode('-',$q);
-            for($i=0;$i<count($qs);$i++){
-                if($i%2==0){
-                    $param[$qs[$i]]=$qs[$i+1];
-                }
-            }
-        }elseif(!UsualToolInc\UTInc::Contain("m=",$url) && !UsualToolInc\UTInc::Contain("p=",$url) && $rule==2){
-            $urls=explode("/",$url);
-            $param["m"]=$urls[0];
-            $param["p"]=$urls[1];
-            $qs=explode("/",explode(".",$url)[0]);
-            for($i=2;$i<count($qs);$i++){
-                if($i%2==0){
-                    $param[$qs[$i]]=$qs[$i+1];
-                }
-            }
-        }else{
-            $urls=explode("?",$url);
-            $surl=$urls[1];
-            $qs= explode("&",$surl);
-            for($i=0;$i<count($qs);$i++){
-                $qx=explode("=",str_replace("amp;","",$qs[$i]));
-                $param[$qx[0]]=$qx[1] ?? '';
+        $route = OPEN_ROOT.'/route.php';
+        if (file_exists($route)) {
+            $map = include $route;
+            if (is_array($map) && isset($map[$m])) {
+                $m = $map[$m];
             }
         }
-      return $param;
+        $param['m'] = $m;
+        $param['p'] = $p;
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            parse_str($_SERVER['QUERY_STRING'],$queryParams);
+            $param = array_merge($param,$queryParams);
+        }
+        return $param;
     }
     /**
      * 编制路由
@@ -96,54 +97,24 @@ class UTRoute{
      * @param string $param
      * @return string
      */
-    public static function Link($module="",$page="",$param=""){
-        $config=UsualToolInc\UTInc::GetConfig();
-        $appurl=rtrim($config["APPURL"],"/");
-        $rule=$config["REWRITE"];
-        if($rule==0){
-            /**m={m}&p={p}&id={id}*/
-            $m=empty($module) ? "" : "m=".$module."&";
-            $p=empty($page) ? "" : "p=".$page."&";
-            $r=empty($param) ? "" : $param."&";
-            $link="/".substr("?".$m.$p.$r,0,-1);
-        }elseif($rule==1){
-            /**{m}/{p}/id-{id}.html*/
-            $m=empty($module) ? "/".$config["DEFAULT_MOD"]."/" : "/".$module."/";
-            $p=empty($page) ? $config["DEFAULT_PAGE"]."/" : $page."/";
-            $r="";
-            if(!empty($param)){
-                foreach(UTRoute::UrlToArray($param) as $key=>$val){
-                    $r.=$key."-".$val."-";
-                }
-            }
-            if(empty($r)){
-                $link=$m.$p."index.html";
-            }else{
-                $link=substr($m.$p.$r,0,-1).".html";
-            }
-        }elseif($rule==2){
-            /**{m}/{p}/id/{id}.html*/
-            $m=empty($module) ? "/".$config["DEFAULT_MOD"]."/" : "/".$module."/";
-            $p=empty($page) ? $config["DEFAULT_PAGE"]."/" : $page."/";
-            $r="";
-            if(!empty($param)){
-                foreach(UTRoute::UrlToArray($param) as $key=>$val){
-                    $r.=$key."/".$val."/";
-                }
-            }
-            if(empty($r)){
-                $link=$m.$p;
-            }else{
-                $link=substr($m.$p.$r,0,-1).".html";
+    public static function Link($module = "", $page = "", $param = ""){
+        $config = UsualToolInc\UTInc::GetConfig();
+        $appurl = rtrim($config["APPURL"], "/");
+        $mStr = $module ?: $config["DEFAULT_MOD"];
+        $routeConfigFile = OPEN_ROOT.'/route.php';
+        if(file_exists($routeConfigFile)){
+            $routeMap = include $routeConfigFile;
+            $reverseMap = array_flip($routeMap);
+            if(isset($reverseMap[$mStr])){
+                $mStr = $reverseMap[$mStr];
             }
         }
-        $d=parse_url($config["APPURL"])["host"];
-        $e=str_replace("/","",explode($d,$config["APPURL"])[1]);
-        if(!empty($e)){
-            return $appurl.$link;
-        }else{
-            return $link;
+        $pStr = $page ?: $config["DEFAULT_PAGE"];
+        $path = "/{$mStr}/{$pStr}";
+        if(!empty($param)){
+            $path .= "?" . $param;
         }
+        return $appurl . $path;
     }
     /**
      * 解析URL
@@ -151,13 +122,17 @@ class UTRoute{
      * @return array
      */
     public static function UrlToArray($url){
-      $query = explode('&',$url);
-      $params = array();
-      foreach ($query as $param) {
-        $item = explode('=', $param);
-        $params[$item[0]] = $item[1];
-      }
-      return $params;
+        $params = array();
+        $query = explode('&', $url);
+        foreach ($query as $param) {
+            $item = explode('=', $param);
+            if(isset($item[0]) && isset($item[1])){
+                $params[$item[0]] = $item[1];
+            } elseif(isset($item[0])) {
+                $params[$item[0]] = '';
+            }
+        }
+        return $params;
     }
     /**
      * 获取指定URL参数值
@@ -165,21 +140,21 @@ class UTRoute{
      * @param string $key
      * @return string
      */
-    public static function GetUrlVal($url,$key){
-        $res = '';
-        $a = strpos($url,'?');
+     public static function GetUrlVal($url, $key){
+        $res='';
+        $a=strpos($url, '?');
         if($a!==false){
-            $str = substr($url,$a+1);
-            $arr = explode('&',$str);
-            foreach($arr as $k=>$v){
-            $tmp = explode('=',$v);
-                if(!empty($tmp[0]) && !empty($tmp[1])){
-                    $barr[$tmp[0]] = $tmp[1];
-                }
-            }
+            $str=substr($url, $a + 1);
+        }else{
+            $str = $url;
         }
-        if(!empty($barr[$key])){
-            $res = $barr[$key];
+        $arr=explode('&', $str);
+        foreach($arr as $v){
+            $tmp = explode('=', $v);
+            if(isset($tmp[0]) && isset($tmp[1]) && $tmp[0] == $key){
+                $res = $tmp[1];
+                break;
+            }
         }
         return $res;
     }
