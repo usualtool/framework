@@ -45,21 +45,20 @@ class UTRoute{
     public static function Analy($url = ''){
         $config = UsualToolInc\UTInc::GetConfig();
         $param = array();
-        if(empty($url)) {
+        if(empty($url)){
             $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
             $path = parse_url($requestUri, PHP_URL_PATH);
             $scriptName = basename($_SERVER['SCRIPT_NAME']);
             $path = str_replace("/".$scriptName,"",$path);
-            $path = trim($path,'/');
         }else{
             $url = self::ConverUrl($url);
             $parsedUrl = parse_url($url);
             $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : $url;
-            if (!empty($config["APPURL"])) {
-                $path = str_replace($config["APPURL"],"",$path);
-            }
-            $path = trim($path,'/');
         }
+        if(!empty($config["APPURL"])){
+            $path = preg_replace('#^'.preg_quote($config["APPURL"],'#').'#','',$path);
+        }
+        $path = trim($path,'/');
         $segment = explode('/', $path);
         $develop = trim($config["DEVELOP"] ?? '', '/');
         if(!empty($develop) && isset($segment[0]) && $segment[0]===$develop){
