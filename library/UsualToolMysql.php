@@ -85,12 +85,12 @@ class UTMysql{
      * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
-        global$language;
+        global$_lang_;
         $db=UTMysql::GetMysql();
         $field=empty($field) ? "*" : $field;
         if($lang!="0"):
             if(is_numeric($lang)):
-                $where=empty($where) ? "where lang='$language'" : "where lang='$language' and ".$where;
+                $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where;
             else:
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where;
             endif;
@@ -332,13 +332,13 @@ class UTMysql{
      * @return array 返回数组，例：array('tags'=>$taglist)
      */
     public static function TagData($table,$field='',$where='',$order='',$lang='0'){
-        global$language;
+        global$_lang_;
         $db=UTMysql::GetMysql();
         $tags="";
         $field=empty($field) ? "*" : $field;
         if($lang!="0"):
             if(is_numeric($lang)):
-                $where=empty($where) ? "where lang='$language'" : "where lang='$language' and ".$where."";
+                $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where."";
             else:
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where."";
             endif;
@@ -397,12 +397,12 @@ class UTMysql{
      */
     public static function SearchData($keyword){
         $db=UTMysql::GetMysql();
-        global$language;
+        global$_lang_;
 		if(!empty($keyword)):
 			$sql="SELECT * FROM `cms_search` WHERE keyword ='$keyword'";
 			$sdata=mysqli_query($db,$sql);
 			if(mysqli_num_rows($sdata)>0):
-			    UTMysql::UpdateData("cms_search",array("hit"=>"hit+1"),"keyword ='$keyword' and lang='$language'");
+			    UTMysql::UpdateData("cms_search",array("hit"=>"hit+1"),"keyword ='$keyword' and lang='$_lang_'");
 			endif;
 		endif;
 		$data=array();
@@ -419,7 +419,7 @@ class UTMysql{
         $search=$db->query($table);
         $searchnum=mysqli_num_rows($search);
         if(!empty($keyword) && $searchnum>0 && mysqli_num_rows($sdata)<=0):
-			UTMysql::InsertData("cms_search",array("lang"=>$language,"keyword"=>$keyword));
+			UTMysql::InsertData("cms_search",array("lang"=>$_lang_,"keyword"=>$keyword));
         endif;
         $searchdata=array(); 
         $xu=0;

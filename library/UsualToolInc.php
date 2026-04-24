@@ -168,13 +168,13 @@ class UTInc{
      * @return string
      */
     public static function DeleteHtml($str){
-        global$language;
+        global$_lang_;
         $str=htmlspecialchars_decode($str);
         $str = strip_tags($str,"");
         $str = str_replace(array("\r\n", "\r", "\n"), "", $str);   
         $str = str_replace("　","",$str);
         $str = str_replace("&nbsp;","",$str);
-        if($language=="zh"):
+        if($_lang_=="zh"):
             $str = str_replace(" ","",$str);
         endif;
         return ltrim(trim($str));
@@ -842,8 +842,9 @@ class UTInc{
         return $pageURL;
     }
     /**
-     * 获取模板末尾节点路径，通过判断当前路径是否在app目录打开
+     * 获取模板末尾节点标识
      * @return string admin即后端，front即前端
+     * UT7.0后逐步废弃
      */
     public static function TempEndPath(){
         $thispage=UTInc::CurPageUrl();

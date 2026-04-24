@@ -71,10 +71,11 @@ class UTMssql{
      * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
+        global$_lang_;
         $field=empty($field) ? "*" : $field;
         if($lang!="0"):
             if(is_numeric($lang)):
-                $where=empty($where) ? "where lang='$language'" : "where lang='$language' and ".$where;
+                $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where;
             else:
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where;
             endif;
@@ -278,13 +279,13 @@ class UTMssql{
      * @return array 返回数组，例：array('tags'=>$taglist)
      */
     public static function TagData($table,$field='',$where='',$order='',$lang='0'){
-        global$language;
+        global$_lang_;
         $db=UTMssql::GetMssql();
         $tags="";
         $field=empty($field) ? "*" : $field;
         if($lang!="0"):
             if(is_numeric($lang)):
-                $where=empty($where) ? "where lang='$language'" : "where lang='$language' and ".$where."";
+                $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where."";
             else:
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where."";
             endif;

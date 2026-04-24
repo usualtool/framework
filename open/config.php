@@ -12,25 +12,22 @@
 */
 require dirname(__DIR__).'/'.'autoload.php';
 /**
- * 模块路径
+ * 业务级全局路径
  */
-define('MODULE_PATH',APP_ROOT.'/modules');
+//模块路径
+defined('MODULE_PATH') or define('MODULE_PATH',APP_ROOT.'/modules');
+//模板工程路径
+defined('TEMPLATE_PATH') or define('TEMPLATE_PATH',APP_ROOT.'/template');
+//插件路径
+defined('PLUGIN_PATH') or define('PLUGIN_PATH',APP_ROOT.'/plugins');
+//计划任务路径
+defined('TASK_PATH') or define('TASK_PATH',APP_ROOT.'/task');
+//语言包路径
+defined('LANG_PATH') or define('LANG_PATH',OPEN_ROOT.'/lang');
 /**
- * 模板工程路径
+ * 其他自定义配置（业务变量）
  */
-define('TEMPLATE_PATH',APP_ROOT.'/template');
-/**
- * 插件路径
- */
-define('PLUGIN_PATH',APP_ROOT.'/plugins');
-/**
- * 计划任务路径
- */
-define('TASK_PATH',APP_ROOT.'/task');
-/**
- * 语言包路径
- */
-define('LANG_PATH',APP_ROOT.'/lang');
-/**
- * 其他自定义配置
- */
+$custom=[
+    //全局配置中未涉及配置
+    //例如各类密钥等，未设置保留为空
+];

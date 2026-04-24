@@ -1,6 +1,6 @@
 <?php
 namespace library\UsualToolRoute;
-use library\UsualToolInc;
+use library\UsualToolInc\UTInc;
 /**
        * --------------------------------------------------------       
        *  |                  █   █ ▀▀█▀▀                    |           
@@ -43,7 +43,7 @@ class UTRoute{
      * @return array
      */
     public static function Analy($url = ''){
-        $config = UsualToolInc\UTInc::GetConfig();
+        $config = UTInc::GetConfig();
         $param = array();
         if(empty($url)){
             $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
@@ -61,10 +61,15 @@ class UTRoute{
         $path = trim($path,'/');
         $segment = explode('/', $path);
         $develop = trim($config["DEVELOP"] ?? '', '/');
-        if(!empty($develop) && isset($segment[0]) && $segment[0]===$develop){
-            return array();
+        $control_type = "front";
+        if(!empty($develop) && isset($segment[0]) && $segment[0] === $develop){
+            $control_type = "admin";
         }
+        $param['_control_'] = $control_type;
         $segments = array_values(array_filter(explode('/', $path)));
+        if ($control_type === "admin" && !empty($develop) && isset($segments[0]) && $segments[0] === $develop) {
+            array_shift($segments);
+        }
         $m = $config["DEFAULT_MOD"] ?? 'index';
         $p = $config["DEFAULT_PAGE"] ?? 'index';
         if (count($segments) >= 1) {
@@ -83,8 +88,9 @@ class UTRoute{
         $param['m'] = $m;
         $param['p'] = $p;
         if (!empty($_SERVER['QUERY_STRING'])) {
-            parse_str($_SERVER['QUERY_STRING'],$queryParams);
-            $param = array_merge($param,$queryParams);
+            $cleanQuery=str_replace('&amp;','&',$_SERVER['QUERY_STRING']); 
+            parse_str($cleanQuery,$queryParams);
+            $param=array_merge($param,$queryParams);
         }
         return $param;
     }
@@ -97,11 +103,10 @@ class UTRoute{
      * @return string
      */
     public static function Link($module="", $page="", $param=""){
-        $config = UsualToolInc\UTInc::GetConfig();
-        $rewrite = $config["REWRITE"];
+        $config = UTInc::GetConfig();
         $m = empty($module) ? $config["DEFAULT_MOD"] : $module;
         $p = empty($page) ? $config["DEFAULT_PAGE"] : $page;
-        if($rewrite==0){
+        if($config["REWRITE"]==0){
             $params = ['m'=>$m,'p'=>$p];
             if(!empty($param)){
                 $extraParams = UTRoute::UrlToArray($param);
@@ -110,7 +115,7 @@ class UTRoute{
                 }
             }
             $link="?".http_build_query($params);
-        }elseif($rewrite==1){
+        }elseif($config["REWRITE"]==1){
             $link="/{$m}/{$p}";
             if(!empty($param)){
                 $link.="?".$param;

@@ -265,12 +265,14 @@ class UTSockets{
      * 广播消息
      */
     private function Broadcast($data) {
-        foreach ($this->sockets as $socket) {
-            if ($socket['resource'] == $this->master) {
+        foreach($this->sockets as $socket){
+            if($socket['resource'] == $this->master){
                 continue;
             }
-            socket_write($socket['resource'], $data, strlen($data));
-            echo$data."\r\n";
+            $result = @socket_write($socket['resource'],$data,strlen($data));
+            if($result !== false){
+                echo $data."\r\n";
+            }
         }
     }
     /*

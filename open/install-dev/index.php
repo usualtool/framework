@@ -178,7 +178,9 @@ if($do=="db-save"){
                             unlink(UTF_ROOT."/update/develop.zip");
                             file_put_contents("./usualtool.lock","lock");
                             $info=file_get_contents(UTF_ROOT."/.ut.config"); 
-                            $info=preg_replace("/MANAGE=(.*)/","MANAGE=/dev",$info); 
+														$info = preg_replace("/^DEVELOP=.*/m","DEVELOP=/dev",$info);
+                            $info = preg_replace("/^ADMIN_POWER_PAGE=.*/m","ADMIN_POWER_PAGE=ut-frame/admin/session",$info);
+                            $info = preg_replace("/^ADMIN_POWER_OUT=.*/m","ADMIN_POWER_OUT=ut-frame/admin/login,ut-frame/admin/captcha",$info);
                             file_put_contents(UTF_ROOT."/.ut.config",$info);
                             echo "<script>alert('UT可视化部署成功!');window.location.href='../dev/'</script>";
                         }else{
