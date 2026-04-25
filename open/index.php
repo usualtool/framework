@@ -12,6 +12,7 @@
 */
 require_once __DIR__.'/config.php';
 use library\UsualToolInc\UTInc;
+use library\UsualToolPower\UTPower;
 use library\UsualToolDebug\UTDebug;
 /**
  * 全局权限中间件
