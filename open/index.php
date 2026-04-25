@@ -14,14 +14,10 @@ require_once __DIR__.'/config.php';
 use library\UsualToolInc\UTInc;
 use library\UsualToolDebug\UTDebug;
 /**
- * 权限中间件
+ * 全局权限中间件
  */
-$_page_=$m."/".$_form_."/".$p;
-$_power_page_=$_deve_ ? ($config["ADMIN_POWER_PAGE"] ?? '') : ($config["FRONT_POWER_PAGE"] ?? '');
-$_power_out_=$_deve_ ? ($config["ADMIN_POWER_OUT"] ?? '')  : ($config["FRONT_POWER_OUT"] ?? '');
-if(!empty($_power_page_) && !UTInc::Contain($_page_,$_power_out_)){
-    require_once MODULE_PATH."/".$_power_page_.".php";
-}
+$_gate_=new UTPower($_deve_,MODULE_PATH);
+$_gate_->SetPage($m."/".$_form_."/".$p)->Check();
 /**
  * 路由分发控制
  */
