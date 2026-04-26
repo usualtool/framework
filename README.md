@@ -17,7 +17,6 @@ install-dev is the installation directory of visual package on the development s
 #### system architecture
 ```
 ┌─── 📁app 应用开发目录 core
-├────├─── 📁lang 语言包 Language package
 ├────├─── 📁modules 模块 Module
 ├────├────└───ut-frame 公共模块（示例）
 ├────├─────────├─assets 临时资源包
@@ -53,6 +52,7 @@ install-dev is the installation directory of visual package on the development s
 ├─── 📁log 框架日志 Log
 ├─── 📁open 应用根目录（开放访问）
 ├────├─── 📁assets 静态资源 Resource
+├────├─── 📁lang 语言包 Language package
 ├────├─── index.php 应用控制器
 ├────├─── plugin.php 插件控制器
 ├────├─── route.php 模块映射配置
