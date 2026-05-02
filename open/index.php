@@ -10,6 +10,15 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
+/**
+ * 参数引用说明
+ * @var string $m 模块名
+ * @var string $p 页面名
+ * @var array $config 配置数组
+ * @var bool $_deve_ 路由节点
+ * @var string $_form_ 表单类型
+ * @var string $_modpath_ 模块路径
+*/
 require_once __DIR__.'/config.php';
 use library\UsualToolInc\UTInc;
 use library\UsualToolPower\UTPower;

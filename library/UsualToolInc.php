@@ -66,15 +66,21 @@ class UTInc{
     /**
      * 严格过滤
      * @param string $str
-     * @return string
+     * @return string|int
      */
     public static function SqlCheck($str){
-        $str=UTInc::SqlChecks($str);
-        if(PHP_VERSION>=6 || !get_magic_quotes_gpc()):
-            $str=addslashes($str);
-        endif;
-        $str=htmlspecialchars($str,ENT_QUOTES);
-        return $str;
+		    if(is_array($str)){
+            $clean=[];
+            foreach($str as $val){
+                $clean[]=UTInc::SqlCheck($val);
+            }
+            return $clean;
+        }else{
+				    $str=trim($str);
+				    $str=str_replace(['(',')'],['（','）'],$str);
+            $str=htmlspecialchars($str,ENT_QUOTES);
+            return $str;
+				}
     }
     /**
      * 反解析严格过滤
@@ -82,76 +88,9 @@ class UTInc{
      * @return string
      */
     public static function DeSqlCheck($str){
-        $str=str_replace("’","'",$str);
-        $str=str_replace('“','"',$str);
-        $str=str_replace("（","(",$str);
-        $str=str_replace("）",")",$str);
-        if(PHP_VERSION>=6 || !get_magic_quotes_gpc()):
-            $str=stripslashes($str);
-        endif;
         $str=htmlspecialchars_decode($str);
+				$str=str_replace(['（','）'],['(',')'],$str);
         return $str;
-    }
-    /**
-     * 危险符号转化
-     * @param string $str
-     * @return string
-     */
-    public static function SqlChecks($str){
-        $str=str_replace("'","’",$str);
-        $str=str_replace('"','“',$str);
-        $str=str_replace("(","（",$str);
-        $str=str_replace(")","）",$str);
-        $str=str_replace("@","#",$str);
-        $str=str_replace("/*","",$str);
-        $str=str_replace("*/","",$str);
-        return $str;
-    }
-    /**
-     * 危险函数过滤
-     * @param string $str
-     * @return string
-     */
-    public static function SqlCheckv($str){
-        $replace=array(
-            "eval",
-            "assert",
-            "create_function",
-            "call_user_func",
-            "call_user_func_array",
-            "array_map",
-            "system",
-            "shell_exec",
-            "passthru",
-            "exec",
-            "popen",
-            "proc_open",
-            "ob_start",
-            "putenv",
-            "putenv",
-            "ini_set",
-            "preg_match"
-        );
-        $str=str_ireplace($replace,"",$str);
-        return $str;
-    }
-    /**
-     * 过滤并验证数字
-     * @param string $str
-     * @return int
-     */
-    public static function SqlCheckx($str){
-        $result=false;
-        if($str!=='' && !is_null($str)){
-            $var=UTInc::SqlChecks($str);
-            $var=str_replace(array("+","-","%","*"),array("","","",""),$var);
-            if($var!=='' && !is_null($var) && (is_numeric($var) || is_float($var))){
-                $result=$var;
-            }else{
-                $result=false;
-            }
-        }
-        return $result;
     }
     /**
      * 清除字符中的数字
@@ -185,7 +124,7 @@ class UTInc{
      * @param int $zone 1=model, 2=controller
      * @return string|null 返回完整类名
      */
-    function GetClassName($file,$zone=2){
+    public static function GetClassName($file,$zone=2){
         $zonestr=($zone == 1) ? "model" : "controller";
         $content=file_get_contents($file);
         if(!$content){
@@ -600,15 +539,13 @@ class UTInc{
      * @return string
      */
     public static function GetIp(){
-        $unknown = 'unknown';
-        if(isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'] && strcasecmp($_SERVER['HTTP_X_FORWARDED_FOR'], $unknown) ){
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } elseif(isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], $unknown) ) {
-            $ip = $_SERVER['REMOTE_ADDR'];
+        if(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+            $ips=explode(',',$_SERVER['HTTP_X_FORWARDED_FOR']);
+            $ip=trim($ips[0]);
+        }else{
+            $ip=$_SERVER['REMOTE_ADDR'] ?? '';
         }
-        if(false !== strpos($ip, ','))
-            $ip = reset(explode(',', $ip));
-            return $ip;
+        return filter_var($ip,FILTER_VALIDATE_IP) ? $ip : '0.0.0.0';
     }
     /**
      * 判断是否为移动端
@@ -669,17 +606,17 @@ class UTInc{
     }
     /**
      * 取年月日
-     * @param date $thisdate 日期
+     * @param int|null $date 日期
      * @param int $type 1取年份，2取月份，3取日期
-     * @return int
+     * @return int|false
      */
-    public static function OpenDate($thisdate,$type){
+    public static function OpenDate($date,$type){
         if($type==1):
-            return date('y',$thisdate);
+            return date('y',$date);
         elseif($type==2):
-            return date('m',$thisdate);
+            return date('m',$date);
         elseif($type==3):
-            return date('d',$thisdate);
+            return date('d',$date);
         endif;
     }
     /**
@@ -926,8 +863,8 @@ class UTInc{
                     $subFile = $dir."/".$filename;
                     if(is_dir($subFile)){
                         $list[]=$filename;
-                        if($mod!=0):
-                            DirList($subFile);
+                        if($mode!=0):
+                            UTInc::DirList($subFile);
                         endif;
                     }
                 }
@@ -1191,7 +1128,7 @@ class UTInc{
     /**
      * 获取客户端操作系统
      */    
-    function GetOs(){
+    public static function GetOs(){
         $os=$_SERVER['HTTP_USER_AGENT'];
         if(preg_match('/win/i',$os)){
             $os='Windows';
@@ -1217,7 +1154,7 @@ class UTInc{
     /**
      * 获取客户端浏览器
      */   
-    function GetBrowser(){
+    public static function GetBrowser(){
         $browser=$_SERVER['HTTP_USER_AGENT'];
         if(preg_match('/MSIE/i',$browser)){
             $browser='MSIE';
