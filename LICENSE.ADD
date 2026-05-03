@@ -1,0 +1,15 @@
+All agreement documents shall be subject to the latest release through official channels.
+您需要明确，UT核心（框架）是基于Apache2.0协议使用， 
+您可以通过http://www.apache.org/licenses/LICENSE-2.0了解或下载到详尽的协议内容。
+You need to be clear that the UT core (framework) is based on the Apache 2.0 protocol, 
+and you can read or download the detailed protocol from the http://www.apache.org/licenses/license-2.0.
+您需要明确，UT可视包（开发后端）可以免费使用，亦可以用于商业用途，
+但必须遵循可视包的使用协议，保证可视包原始著作权人的相应权利不被损害和侵犯。
+You need to be clear that the UT visual package (development backend) can be used for free or for commercial purposes,
+However, the use agreement of the visual package must be followed to ensure that the corresponding rights of the original copyright owner of the visual package will not be damaged and infringed.
+UT（框架或可视包）若包含第三方资源，在发布时可能进行了简化，但您在使用时，请务必遵循其要求进行署名或使用，我们将不对此担责。
+If UT (framework or development backend) contains third-party resources, it may be simplified at the time of release, but when you use it, be sure to follow its requirements for signature or use, we will not be responsible for this.
+您自愿使用UT（框架或可视包），必须了解可能存在的风险，需要明确UT著作权人与开源参与者不对任何使用UT的行为或目的提供任何明确的或隐含的赔偿或担保。
+If you voluntarily use UT (framework or development backend), you must understand the possible risks and make it clear that the UT copyright owner and open source participants will not provide any explicit or implicit compensation or guarantee for any behavior or purpose of using UT.
+安装UT（框架或可视包）即表明您已经明确理解并同意相应协议，包括在您所在国的法律法规所允许的范围内合法使用UT，并且独立承担所有法律责任及义务。 
+Install UT (framework or development backend) that you have a clear understanding and consent to the corresponding agreement, can be in your country's laws and regulations within the scope of use UT, can independently assume all legal responsibilities and obligations.

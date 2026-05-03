@@ -1,0 +1,611 @@
+<?php
+namespace library\UsualToolCli;
+use library\UsualToolInc;
+use library\UsualToolData;
+/**
+       * --------------------------------------------------------       
+       *  |                  █   █ ▀▀█▀▀                    |           
+       *  |                  █▄▄▄█   █                      |           
+       *  |                                                 |           
+       *  |    Author: Huang Hui                            |           
+       *  |    Repository 1: https://gitee.com/usualtool    |           
+       *  |    Repository 2: https://github.com/usualtool   |           
+       *  |    Applicable to Apache 2.0 protocol.           |           
+       * --------------------------------------------------------       
+*/
+/**
+ * 执行Cli命令
+ */
+class UTCli{
+    public static $cli;
+    /**
+     * 初始化命令控制
+     * @param int $num
+     * @param array $array
+     */
+    public static function Run($array){
+        if(count($array)>1):
+            $cli=ucwords($array[1]);
+        else:
+            $cli="Help";
+        endif;
+        if(method_exists(UTCli::class,$cli)):
+            UTCli::$cli($array);
+        else:
+            $cli=str_replace("/","\\",$array[1]);
+            $cli();
+        endif;
+    }
+    /**
+     * 打印参数
+     * @param array $array
+     * @return string
+     */
+    public static function Print($array){
+        foreach($array as $key=>$val):
+            if($key>1):
+                $n=$key-1;
+                echo"第".$n."个参数：".$val."\r\n";
+            endif;
+        endforeach;
+    }
+    /**
+     * 运行命令并返回结果
+     * @param string $cmd
+     * @return string
+     */
+    public static function Execute($cmd){
+        $cmd=str_replace("%26","",str_replace("%7C","",str_replace("&","",str_replace("|","",$cmd))));
+        if(substr($cmd,0,2)=="cd" || substr($cmd,0,3)=="php" || substr($cmd,0,5)=="nohup" ||substr($cmd,0,8)=="composer"){
+            $results=shell_exec($cmd);
+        }else{
+            $results="Not Supported.";
+        }
+        return $results;
+    }
+    /**
+     * 创建模块
+     * @param array $array
+     * @return string
+     */
+    public static function Module($array){
+        if(count($array)>2):
+            $module=$array[2];
+            $m1=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module,0777);
+            $m2=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/admin",0777);
+            $m3=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/cache",0777);
+            $m4=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/front",0777);
+            $m5=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/model",0777);
+            $m6=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/skin",0777);
+            $m7=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/skin/admin",0777);
+            $m8=UsualToolInc\UTInc::MakeDir(APP_ROOT."/modules/".$module."/skin/front",0777);
+            if($m1 && $m2 && $m3 && $m4 && $m5 && $m6 && $m7 && $m8):
+                $c="<?xml version='1.0' encoding='UTF-8'?>\r\n";
+                $c.="<mod>\r\n";
+                $c.="<id>".$module."</id>\r\n";
+                $c.="<modtype>2</modtype>\r\n";
+                $c.="<auther>NULL</auther>\r\n";
+                $c.="<title>".$module."</title>\r\n";
+                $c.="<modname>".$module."</modname>\r\n";
+                $c.="<ver>1.0</ver>\r\n";
+                $c.="<description>NULL</description>\r\n";
+                $c.="<itemid>1</itemid>\r\n";
+                $c.="<ordernum>1</ordernum>\r\n";
+                $c.="<modurl>index.php</modurl>\r\n";
+                $c.="<befoitem>NULL</befoitem>\r\n";
+                $c.="<backitem>NULL</backitem>\r\n";
+                $c.="<installsql><![CDATA[0]]></installsql>\r\n";
+                $c.="<uninstallsql><![CDATA[0]]></uninstallsql>\r\n";
+                $c.="</mod>";
+                file_put_contents(APP_ROOT."/modules/".$module."/usualtool.config",$c);
+                $iphp='<?php $app->Open("index.cms");';
+                file_put_contents(APP_ROOT."/modules/".$module."/front/index.php",$iphp);
+                $icms.='Hello UT';
+                file_put_contents(APP_ROOT."/modules/".$module."/skin/front/index.cms",$icms);
+                echo"模块创建成功，请注意给该模块设置写入权限\r\n";
+                echo"模块路径：/app/modules/".$module."/\r\n";
+                echo"访问路径：/?m=".$module."\r\n";
+            else:
+                echo"模块创建失败\r\n";
+            endif;
+        else:
+            echo"命令参数错误\r\n";
+        endif;
+    }
+    /**
+     * 创建插件
+     * @param array $array
+     * @return string
+     */
+    public static function Plugin($array){
+        if(count($array)>2):
+            $plugin=$array[2];
+            $p=UsualToolInc\UTInc::MakeDir(APP_ROOT."/plugins/".$plugin,0777);
+            if($p):
+                $c="<?xml version='1.0' encoding='UTF-8'?>\r\n";
+                $c="<?xml-stylesheet type='text/css' href='http://frame.usualtool.com/image/css/xml.css'?>\r\n";
+                $c.="<hook>\r\n";
+                $c.="<id>".$plugin."</id>\r\n";
+                $c.="<type>Free</type>\r\n";
+                $c.="<plugintype>1</plugintype>\r\n";
+                $c.="<price>0.00</price>\r\n";
+                $c.="<auther>NULL</auther>\r\n";
+                $c.="<title>".$plugin."</title>\r\n";
+                $c.="<pluginname>".$plugin."</pluginname>\r\n";
+                $c.="<ver>1.0</ver>\r\n";
+                $c.="<description>NULL</description>\r\n";
+                $c.="<installsql><![CDATA[0]]></installsql>\r\n";
+                $c.="<uninstallsql><![CDATA[0]]></uninstallsql>\r\n";
+                $c.="<plugincode><![CDATA[?><?php echo'插件操作管理示例';?>]]></plugincode>\r\n";
+                $c.="</hook>";
+                file_put_contents(APP_ROOT."/plugins/".$plugin."/usualtool.config",$c);
+                $i="插件类方法示例";
+                file_put_contents(APP_ROOT."/plugins/".$plugin."/plugin.php",$i);
+                echo"插件创建成功\r\n";
+                echo"插件路径：/app/plugins/".$plugin."/\r\n";
+            else:
+                echo"插件创建失败\r\n";
+            endif;
+        else:
+            echo"命令参数错误\r\n";
+        endif;
+    }
+    /**
+     * 验证UT令牌合法性
+     * @param array $array
+     * @return string
+     */
+    public static function Key(){
+        $config=UsualToolInc\UTInc::GetConfig();
+        $key=$config["UTCODE"];
+        echo UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"key")."\r\n";
+    }
+    /**
+     * 安装命令
+     * @param array $array
+     * @return string
+     */
+    public static function Install($array){
+        $config=UsualToolInc\UTInc::GetConfig();
+        if(count($array)>2):
+            $type=$array[2];
+            $name=$array[3];
+            $number=$array[4];
+            if($type=="module"):
+                echo"模块安装中...\r\n";
+                if($number!="-2"):  
+                    if($number=="-1"):
+                        $down=UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"module-".$name);
+                    elseif($number=="-3"):  
+                        $down=UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"moduleorder-".$name);
+                    endif;
+                    $downurl=UsualToolInc\UTInc::StrSubstr("<downurl>","</downurl>",$down);
+                    $filename=basename($downurl);
+                    $res=UsualToolInc\UTInc::SaveFile($downurl,APP_ROOT."/modules",$filename,1);
+                    if(!empty($res)):
+                        UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"moduledel-".str_replace(".zip","",$filename)."");
+                        $zip=new \ZipArchive;
+                        if($zip->open(APP_ROOT."/modules/".$filename)===TRUE): 
+                            $zip->extractTo(APP_ROOT."/modules/");
+                            $zip->close();
+                            unlink(APP_ROOT."/modules/".$filename);
+                        else:
+                            echo "modules目录775权限不足\r\n";
+                           exit();
+                        endif;
+                    else:
+                        echo "安装权限不足\r\n";
+                        exit();
+                    endif;
+                endif;
+                if(is_dir(APP_ROOT."/modules/".$name."/assets")):
+                    echo"正在移动静态资源...\r\n";
+                    $assets_dir=OPEN_ROOT."/assets/modules/".$name;
+                    if(!is_dir($assets_dir)):
+                        UsualToolInc\UTInc::MakeDir($assets_dir);
+                    endif;
+                    UsualToolInc\UTInc::MoveDir(APP_ROOT."/modules/".$name."/assets",$assets_dir);
+										UsualToolInc\UTInc::DelDir(APP_ROOT."/modules/".$name."/assets");
+                endif;
+                $modconfig=APP_ROOT."/modules/".$name."/usualtool.config";
+                $mods=file_get_contents($modconfig);
+                $modname=UsualToolInc\UTInc::StrSubstr("<modname>","</modname>",$mods);
+                $ordernum=UsualToolInc\UTInc::StrSubstr("<ordernum>","</ordernum>",$mods);
+                $modurl=UsualToolInc\UTInc::StrSubstr("<modurl>","</modurl>",$mods);
+                $befoitem=UsualToolInc\UTInc::StrSubstr("<befoitem>","</befoitem>",$mods);
+                $backitem=UsualToolInc\UTInc::StrSubstr("<backitem>","</backitem>",$mods);
+                $itemid=UsualToolInc\UTInc::StrSubstr("<itemid>","</itemid>",$mods);
+                $installsql=UsualToolInc\UTInc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$mods);
+                if(UsualToolData\UTData::ModTable("cms_admin_role") && UsualToolData\UTData::ModTable("cms_module")):
+                    $role=UsualToolData\UTData::QueryData("cms_admin_role","","","","")["querydata"];
+                    foreach($role as $rows):
+                        $role_range=UsualToolData\UTData::QueryData("cms_admin_role","","id='".$rows["id"]."'","","")["querydata"][0]["module"];
+                        $new_range=$role_range.",".$name;
+                        UsualToolData\UTData::UpdateData("cms_admin_role",array("module"=>$new_range),"id='".$rows["id"]."'");
+                    endforeach;
+                    if(UsualToolData\UTData::QueryData("cms_module","","mid='$name'","","1")["querynum"]>0):
+                        UsualToolData\UTData::UpdateData("cms_module",array(
+                            "bid"=>$itemid,
+                            "modname"=>$modname,
+                            "modurl"=>$modurl,
+                            "befoitem"=>$befoitem,
+                            "backitem"=>$backitem),"mid='$name'");
+                    else:
+                        UsualToolData\UTData::InsertData("cms_module",array(
+                            "bid"=>$itemid,
+                            "mid"=>$name,
+                            "modname"=>$modname,
+                            "modurl"=>$modurl,
+                            "isopen"=>1,
+                            "look"=>1,
+                            "ordernum"=>$ordernum,
+                            "befoitem"=>$befoitem,
+                            "backitem"=>$backitem));
+                    endif;
+                endif;
+                if($installsql=='0'):
+                    echo"成功安装".$name."模块\r\n";
+                else:
+                    if(UsualToolData\UTData::RunSql($installsql)):
+                        echo"成功安装".$name."模块\r\n";
+                    else:
+                        echo"模块".$name."安装失败\r\n";
+                    endif;   
+                endif;
+            elseif($type=="plugin"):
+                echo"插件安装中...\r\n";
+                if($number!="-2"):
+                    if($number=="-1"):
+                        $down=UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"plugin-".$name);
+                    elseif($number=="-3"):  
+                        $down=UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"pluginorder-".$name);
+                    endif;
+                    $downurl=UsualToolInc\UTInc::StrSubstr("<downurl>","</downurl>",$down);
+                    $filename=basename($downurl);
+                    $res=UsualToolInc\UTInc::SaveFile($downurl,APP_ROOT."/plugins",$filename,1);
+                    if(!empty($res)):
+                        UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"plugindel-".str_replace(".zip","",$filename)."");
+                        $zip=new \ZipArchive;
+                        if($zip->open(APP_ROOT."/plugins/".$filename)===TRUE): 
+                            $zip->extractTo(APP_ROOT."/plugins/");
+                            $zip->close();
+                            unlink(APP_ROOT."/plugins/".$filename);
+                        else:
+                           echo "plugins目录775权限不足\r\n";
+                           exit();
+                        endif;
+                    else:
+                        echo "安装权限不足\r\n";
+                        exit();
+                    endif;
+                endif;
+                if(is_dir(APP_ROOT."/plugins/".$name."/assets")):
+                    echo"正在移动静态资源...\r\n";
+                    $assets_dir=OPEN_ROOT."/assets/plugins/".$name;
+                    if(!is_dir($assets_dir)):
+                        UsualToolInc\UTInc::MakeDir($assets_dir);
+                    endif;
+                    UsualToolInc\UTInc::MoveDir(APP_ROOT."/plugins/".$name."/assets",$assets_dir);
+										UsualToolInc\UTInc::DelDir(APP_ROOT."/plugins/".$name."/assets");
+                endif;
+                $pconfig=APP_ROOT."/plugins/".$name."/usualtool.config";
+                $plugins=file_get_contents($pconfig);
+                $type=UsualToolInc\UTInc::StrSubstr("<type>","</type>",$plugins);
+                $auther=UsualToolInc\UTInc::StrSubstr("<auther>","</auther>",$plugins);
+                $title=UsualToolInc\UTInc::StrSubstr("<title>","</title>",$plugins);
+                $ver=UsualToolInc\UTInc::StrSubstr("<ver>","</ver>",$plugins);
+                $description=UsualToolInc\UTInc::StrSubstr("<description>","</description>",$plugins);
+                $installsql=UsualToolInc\UTInc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$plugins);
+                if(UsualToolData\UTData::ModTable("cms_plugin")):
+                    if(UsualToolData\UTData::QueryData("cms_plugin","","pid='$name'","","1")["querynum"]>0):
+                        UsualToolData\UTData::UpdateData("cms_plugin",array(
+                            "type"=>$type,
+                            "auther"=>$auther,
+                            "title"=>$title,
+                            "ver"=>$ver,
+                            "description"=>$description),"pid='$name'");
+                    else:
+                        UsualToolData\UTData::InsertData("cms_plugin",array(
+                            "pid"=>$name,
+                            "type"=>$type,
+                            "auther"=>$auther,
+                            "title"=>$title,
+                            "ver"=>$ver,
+                            "description"=>$description));
+                    endif;
+                endif;
+                if($installsql=='0'):
+                    echo"成功安装".$name."插件\r\n";
+                else:
+                    if(UsualToolData\UTData::RunSql($installsql)):
+                        echo"成功安装".$name."插件\r\n";
+                    else:
+                        echo"插件".$name."安装失败\r\n";
+                    endif;   
+                endif;
+            elseif($type=="template"):
+                echo"整站模板工程安装中...\r\n";
+                if($number!="-2"):
+                    if($number=="-1"):
+                        $down=UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"temp_".$name);
+                    elseif($number=="-3"):  
+                        $down=UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"temporder_".$name);
+                    endif;
+                    $downurl=UsualToolInc\UTInc::StrSubstr("<downurl>","</downurl>",$down);
+                    $filename=basename($downurl);
+                    $res=UsualToolInc\UTInc::SaveFile($downurl,APP_ROOT."/template",$filename,1);
+                    if(!empty($res)):
+                        UsualToolInc\UTInc::Auth($config["UTCODE"],$config["UTFURL"],"tempdel_".str_replace(".zip","",$filename)."");
+                        $zip=new \ZipArchive;
+                        if($zip->open(APP_ROOT."/template/".$filename)===TRUE): 
+                            $zip->extractTo(APP_ROOT."/template/");
+                            $zip->close();
+                            unlink(APP_ROOT."/template/".$filename);
+                        else:
+                           echo "template目录775权限不足\r\n";
+                           exit();
+                        endif;
+                    else:
+                        echo "安装权限不足\r\n";
+                        exit();
+                    endif;
+                endif;
+                if(is_dir(APP_ROOT."/template/".$name."/move")):
+                    echo"正在移动模型文件...\r\n";
+                    UsualToolInc\UTInc::MoveDir(APP_ROOT."/template/".$name."/move",UTF_ROOT);
+                endif;
+                if(is_dir(APP_ROOT."/template/".$name."/assets")):
+                    echo"正在移动静态资源...\r\n";
+                    $assets_dir=OPEN_ROOT."/assets/template/".$name;
+                    if(!is_dir($assets_dir)):
+                        UsualToolInc\UTInc::MakeDir($assets_dir);
+                    endif;
+                    UsualToolInc\UTInc::MoveDir(APP_ROOT."/template/".$name."/assets",$assets_dir);
+										UsualToolInc\UTInc::DelDir(APP_ROOT."/template/".$name."/assets");
+                endif;
+                $pconfig=APP_ROOT."/template/".$name."/usualtool.config";
+                $template=file_get_contents($pconfig);
+                $id=UsualToolInc\UTInc::StrSubstr("<id>","</id>",$template);
+                $type=UsualToolInc\UTInc::StrSubstr("<type>","</type>",$template);
+                $lang=UsualToolInc\UTInc::StrSubstr("<lang>","</lang>",$template);
+                $auther=UsualToolInc\UTInc::StrSubstr("<auther>","</auther>",$template);
+                $title=UsualToolInc\UTInc::StrSubstr("<title>","</title>",$template);
+                $ver=UsualToolInc\UTInc::StrSubstr("<ver>","</ver>",$template);
+                $description=UsualToolInc\UTInc::StrSubstr("<description>","</description>",$template);
+                $installsql=UsualToolInc\UTInc::StrSubstr("<installsql><![CDATA[","]]></installsql>",$template);
+                $module=UsualToolInc\UTInc::StrSubstr("<module>","</module>",$template);
+                if(UsualToolData\UTData::ModTable("cms_template")):
+                    if(UsualToolData\UTData::QueryData("cms_template","","tid='$name'","","1")["querynum"]>0):
+                        UsualToolData\UTData::UpdateData("cms_template",array("tid"=>$name,"lang"=>$lang,"title"=>$title),"tid='$name'");
+                    else:
+                        UsualToolData\UTData::InsertData("cms_template",array("tid"=>$name,"lang"=>$lang,"title"=>$title));
+                    endif;
+                endif;
+                if(!empty($module)):
+                    $mod=explode(",",$module);
+                    for($i=0;$i<count($mod);$i++):
+                        UTCli::Install(array("usualtool","install","module",$mod[$i],"-1"));
+                    endfor;
+                endif;
+                if($installsql=='0'):
+                    echo"成功安装".$name."模板\r\n";
+                else:
+                    if(UsualToolData\UTData::RunSql($installsql)):
+                        echo"成功安装".$name."模板\r\n";
+                    else:
+                        echo"模板".$name."安装失败\r\n";
+                    endif;   
+                endif;
+            endif;
+        else:
+            echo"命令参数错误\r\n";
+        endif;
+    }
+    /**
+     * Swoole命令
+     * @param array $array
+     * @return string
+     */
+    public static function Swoole($array){
+        require_once UTF_ROOT.'/'.'vendor/autoload.php';
+        if(count($array)>2):
+            $server=$array[2];
+            $host=$array[3];
+            $port=$array[4];
+            if($server=="http"):
+                $server=new \usualtool\Swoole\Http($host,$port);
+            elseif($server=="proxy"):
+                $server=new \usualtool\Swoole\Proxy($host,$port,$array[5]);
+            elseif($server=="websocket"):
+                $server=new \usualtool\Swoole\Websocket($host,$port,$array[5]);
+            elseif($server=="pool"):
+                $server=new \usualtool\Swoole\Pool($host,$port);
+            elseif($server=="queue"):
+                $server=new \usualtool\Swoole\Queue($host,$port);
+            endif;
+            $server->Run();
+        else:
+            echo"Swoole命令错误\r\n";
+            echo"该命令在安装ut-swoole依赖后生效\r\n";
+        endif;
+    }
+    /**
+     * Workerman命令
+     * @param array $array
+     * @return string
+     */
+    public static function Workerman($array){
+        require_once UTF_ROOT.'/'.'vendor/autoload.php';
+        $server=$array[2];
+            if($server=="start"):
+                if(in_array('-d',$array)):
+                    $server=new \usualtool\Workerman\Start($array[4]);
+                else:
+                    $server=new \usualtool\Workerman\Start($array[3]);
+                endif; 
+            elseif($server=="restart"):
+                $server=new \usualtool\Workerman\Start($array[3]);
+            elseif($server=="stop" || $server=="status" || $server=="reload"):
+                $server=new \usualtool\Workerman\Start();
+            endif;
+    }
+    /**
+     * Composer自动化工作
+     * @param array $array
+     * @return string
+     */
+    public static function Composer($array){
+        echo "开始运行检测...\r\n";
+        $composerfile=UTF_ROOT.'/composer.lock';
+        if(file_exists($composerfile)):
+            $content = file_get_contents($composerfile);
+            $hasmodule = strpos($content,'usualtool/ut-module-') !== false;
+            $hastemplate = strpos($content,'usualtool/ut-template-') !== false;
+            $hasplugin = strpos($content,'usualtool/ut-plugin-') !== false;
+            if(!$hasmodule && !$hastemplate && !$hasplugin):
+                echo "Composer自动化完成\r\n";
+                exit();
+            endif;
+        endif;
+        $vendordir=UTF_ROOT.'/vendor/usualtool';
+        if(!is_dir($vendordir)):
+            echo "依赖包目录不存在\r\n";
+            exit();
+        endif;
+        $alldirs = glob($vendordir . '/ut-*', GLOB_ONLYDIR);
+        if(empty($alldirs)):
+            echo "未找到 ut-module-* / ut-template-* / ut-plugin-* 命名的依赖包。\r\n";
+            exit();
+        endif;
+        foreach ($alldirs as $utpath):
+            $pkgdir = basename($utpath);
+            if(strpos($pkgdir,'ut-module-')=== 0):
+                $type = 'module';
+						    $installdir = APP_ROOT.'/modules';
+                $utname = substr($pkgdir, 10);
+            elseif(strpos($pkgdir,'ut-template-')=== 0):
+                $type = 'template';
+                $installdir = APP_ROOT.'/template';
+                $utname = substr($pkgdir, 12);
+            elseif(strpos($pkgdir,'ut-plugin-')=== 0):
+                $type = 'plugin';
+                $installdir = APP_ROOT.'/plugins';
+                $utname = substr($pkgdir, 10);
+            else:
+                continue;
+            endif;
+            if(!is_dir($installdir)):
+                if (!mkdir($installdir, 0755, true)):
+                    echo "目录创建失败.\r\n";
+                    continue;
+                endif;
+            endif;
+            $source_moduledir = $utPath."/src/".$utname;
+            $target_moduledir = $installdir."/".$utname;
+            if(!is_dir($source_moduledir)):
+                echo "跳过错误：找不到源目录\r\n";
+                continue;
+            endif;
+            $new_configfile = $source_moduledir."/usualtool.config";
+            if(!file_exists($new_configfile)):
+                echo "跳过错误：在源目录中未找到usualtool.config配置文件\r\n";
+                continue;
+            endif;
+            $new_version = UsualToolInc\UTInc::GetVer($new_configfile);
+            if(!$new_version):
+                echo "跳过错误：未找到<ver>版本号\r\n";
+                continue;
+            endif;
+            $old_configfile = $target_moduledir."/usualtool.config";
+            $old_version = null;
+            if(file_exists($old_configfile)):
+                $old_version = UsualToolInc\UTInc::GetVer($old_configfile);
+            endif;
+            if($old_version && version_compare($new_version,$old_version, '<=')):
+                echo "跳过错误：与依赖包的版本号一致无需更新\r\n";
+                continue;
+            endif;
+            if(is_dir($target_moduledir)):
+                UsualToolInc\UTInc::DelDir($target_moduledir);
+            endif;
+            UsualToolInc\UTInc::CopyDir($source_moduledir,$target_moduledir);
+            echo "Composer自动化完成\r\n";
+        endforeach;
+    }
+    /**
+     * 自动化执行任务
+     * @return string
+     */
+    public static function Task(){
+        echo "\r\nUsualTool Framework 正在检索任务\r\n";
+        $task=APP_ROOT."/task/";
+        $lock=$task.".task.lock";
+        $fp=fopen($lock,'c');
+        if(!$fp):
+            echo "无法创建或打开锁文件\r\n";
+            return;
+        endif;
+        if(!flock($fp, LOCK_EX | LOCK_NB)):
+            echo "任务正在运行中，本次跳过执行\r\n";
+            fclose($fp);
+            return;
+        endif;
+        ftruncate($fp, 0);
+        fwrite($fp, getmypid());
+        $list=UsualToolInc\UTInc::GetDir($task);
+        $file = array_values($list);
+        foreach($file as $class):
+            if(substr($class,-4)!=='.php'):
+                continue;
+            endif;
+            //循环运行任务
+            $class_name=str_replace(".php","",$class);
+            require_once $task.$class;
+            call_user_func([$class_name,'Run']);
+        endforeach;
+        flock($fp,LOCK_UN);
+        fclose($fp);
+        unlink($lock);
+        echo "UsualTool Framework 检索任务结束\r\n";
+    }
+    /**
+     * 帮助
+     * @return string
+     */
+    public static function Help(){
+        echo"* --------------------------------------------------\r\n";  
+        echo"*  |              ___   ___   ___ __ ___          |\r\n";           
+        echo"*  |             /  /  /  /  /___   ___/          |\r\n";       
+        echo"*  |            /  /__/  /      /  /              |\r\n";      
+        echo"*  |           /___ ___ /      /__/               |\r\n";      
+        echo"*  |                                              |\r\n";     
+        echo"*  |      作者：黄豆   邮件：292951110@qq.com     |\r\n";    
+        echo"* --------------------------------------------------\r\n";        
+        echo"usualtool命令列表\r\n";
+        echo"1个中括号代表整1个参数，实际命令中不需要加中括号\r\n";
+        echo"参考地址:http://frame.usualtool.com/baike/function.php?do=PHP-Cli\r\n";
+        echo"命令安装成功后请注意文件夹所有者及权限，如Linux下默认所有者为root，权限便需更改为777，否则请更改所有者为www\r\n";
+        echo"php usualtool 命令帮助\r\n";
+        echo"php usualtool help 命令帮助\r\n";
+        echo"php usualtool task 执行任务\r\n";
+        echo"php usualtool key 验证UT令牌的合法性\r\n";
+        echo"php usualtool version 获取当前UT框架版本号\r\n";
+        echo"php usualtool print [param] [param] ... 打印参数\r\n";
+        echo"php usualtool [path/class::function] 自定义命令行\r\n";
+        echo"php usualtool module [name] 创建模块\r\n";
+        echo"php usualtool plugin [name] 创建插件\r\n";
+        echo"php usualtool install module [name] [1/2/3] 安装模块\r\n";
+        echo"php usualtool install plugin [name] [1/2/3] 安装插件\r\n";
+        echo"php usualtool install template [name] [1/2/3] 安装整站模板工程\r\n";
+        echo"php usualtool swoole [name] [host] [port] ... swoole协程命令\r\n";
+        echo"php usualtool kafka [host] [topic] kafka命令\r\n";
+        echo"php usualtool workerman [start/reload/stop/restart] [host] ... workerman命令\r\n";
+    }
+    /**
+     * 获取当前UT版本号
+     * @return int
+     */
+    public static function Version(){
+        echo file_get_contents(UTF_ROOT."/UTVer.ini")."\r\n";
+    }
+}

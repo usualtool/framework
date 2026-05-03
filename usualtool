@@ -1,0 +1,6 @@
+#!/usr/bin/env php
+<?php
+namespace usualtool;
+require dirname(__FILE__).'/'.'autoload.php';
+use library\UsualToolCli\UTCli;
+UTCli::Run($argv);

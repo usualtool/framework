@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+    <title><{$title}></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="UsualTool Framework"/>
+    <meta name="Description" content="UsualTool Framework"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            width: 100%;
+            height: 100vh;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .framework{
+            width: 90%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 5% 5%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .divider {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+            margin: 15px 0;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        ul li {
+            line-height: 2.3
+        }
+        a {
+            color: #20a53a
+        }
+    </style>
+</head>
+<body>
+    <div class="framework">
+        <p>Tip: UsualTool Framework successful installation.</p>
+        <hr class="divider">
+        <p><img src="/assets/logo.png" style="max-width: 100%;"></p>
+        <{if $setup==0}><h3>Visual development package not installed.</h3><{/if}>
+        <ul>
+            <li>Repository 1: <a target="_blank" href="https://gitee.com/usualtool">https://gitee.com/usualtool</a></li>
+            <li>Repository 2: <a target="_blank" href="https://github.com/usualtool">https://github.com/usualtool</a></li>
+            <li>UsualTool Framework is suitable for Apache2 protocol.</li>
+        </ul>
+    </div>
+</body>
+</html>
