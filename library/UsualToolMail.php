@@ -15,27 +15,27 @@ namespace library\UsualToolMail;
  * 实例化SMTP发送邮件
  */
 class UTMail{
-    public $port;
-    public $timeout;
+    public $relayhost;
     public $hostname;
-    public $logfile;
-    public $ssl;
-    public $host;
-    public $debug;
+    public $port;
     public $auth;
     public $user;
     public $pass;
+    public $ssl;
+    public $timeout;
+    public $debug;
+    public $logfile;
     private $sock;
     function __construct($host,$port=25,$auth=false,$user,$pass){
-        $this->ssl = 1;
-        $this->debug = FALSE;
-        $this->port = $port;
         $this->relayhost = $host;
-        $this->timeout = 30;
+        $this->hostname = "localhost";
+        $this->port = $port;
         $this->auth = $auth;
         $this->user = $user;
         $this->pass = $pass;
-        $this->hostname = "localhost";
+        $this->ssl = 1;
+        $this->timeout = 30;
+        $this->debug = FALSE;
         $this->logfile = "";
         $this->sock = FALSE;
     }

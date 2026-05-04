@@ -71,29 +71,29 @@ class UTMssql{
      * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
-        global$_lang_;
+        global $_lang_;
         $field=empty($field) ? "*" : $field;
-        if($lang!="0"):
-            if(is_numeric($lang)):
+        if($lang!="0"){
+            if(is_numeric($lang)){
                 $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where;
-            else:
+            }else{
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where;
-            endif;
-        else:
+            }
+        }else{
             $where=empty($where) ? "" : "where ".$where;
-        endif;
+        }
         $order=empty($order) ? "" : "order by ".$order;
         $limit=empty($limit) ? "" : "top ".$limit;
-        if(UTMssql::ModTable($table)):
+        $curnum=0;
+        if(UTMssql::ModTable($table)){
             $sql="select ".$limit." ".$field." from ".$table." ".$where." ".$order;
             $db=UTMssql::GetMssql();
             $array = array();
             $result = sqlsrv_query($db,$sql);
-            $curnum=0;
             while($rows=UTMssql::FetchArray($result)){
                 $curnum++;
                 if($field!="*"){
-                    $key = $r[$field];
+                    $key = $rows[$field];
                     $array[$key] = $rows;
                 }else{
                     $array[] = UTMssql::ObjectToArray($rows);
@@ -101,9 +101,9 @@ class UTMssql{
             }
             $querynum=empty($limit) ? $curnum : UTMssql::QueryNum("select ".$field." from ".$table." ".$where." ".$order);
             return array("querydata"=>$array,"curnum"=>$curnum,"querynum"=>$querynum);
-        else:
+        }else{
             return array("querydata"=>array(),"curnum"=>$curnum,"querynum"=>0);
-        endif;
+        }
     }
     /**
      * 执行SQL并返回结果集
@@ -130,19 +130,22 @@ class UTMssql{
      */
     public static function InsertData($table,$data){
         $db=UTMssql::GetMssql();
+        if(!is_array($data) || empty($data)){
+            return false;
+        }
         $sql="insert into ".$table." (".implode(',',array_keys($data)).") values ('".implode("','",array_values($data))."');SELECT SCOPE_IDENTITY();";
         $query=sqlsrv_query($db,$sql);
         sqlsrv_next_result($query);
         $result=sqlsrv_fetch_array($query);
-        if(!$query):
+        if(!$query){
             return false;
-        else:
-            if($result[0]):
+        }else{
+            if($result[0]){
                 return $result[0];
-            else:
+            }else{
                 return true;
-            endif;
-        endif;
+            }
+        }
     }
     /**
      * 更新数据
@@ -154,23 +157,23 @@ class UTMssql{
     public static function UpdateData($table,$data,$where){
         $db=UTMssql::GetMssql();
         $updatestr='';
-        if(!empty($data)):
-            foreach($data as $k=>$v):
-			    if(preg_match('/\+\d/is',$v)):
+        if(!empty($data)){
+            foreach($data as $k=>$v){
+			    if(preg_match('/\+\d/is',$v)){
 			        $updatestr.=$k."=".$v.",";
-			    else:
+			    }else{
                     $updatestr.=$k."='".$v."',";
-		        endif;
-            endforeach;
+		        }
+            }
             $updatestr=rtrim($updatestr,',');
-        endif;
+        }
         $sql="update ".$table." set ".$updatestr." where ".$where;
         $query=UTMssql::RunSql($sql);
-        if($query):
+        if($query){
             return true;
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
     /**
      * 删除数据
@@ -182,93 +185,93 @@ class UTMssql{
         $db=UTMssql::GetMssql();
         $sql="delete from ".$table." where ".$where;
         $query=UTMssql::RunSql($sql);
-        if($query):
+        if($query){
             return true;
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
-		/**
-		 * 执行预处理
-		 * @param string $sql 带 ? 占位符的 SQL 语句
-		 * @param array $param 参数值数组
-		 * @return array|bool|int
-		 */
-		public static function RunYu($sql,$param=[]){
-				 $db=UTMssql::GetMssql();
-				 $trimmed = ltrim(strtoupper($sql));
-				 $yutype = explode(' ',$trimmed)[0];
-				 if($yutype=="SELECT"):
-						 $islimit = (bool)(
-								preg_match('/\bTOP\s+\d+/i',$sql) ||
-								preg_match('/\bOFFSET\s+\d+\s+ROWS\s+FETCH\s+NEXT\s+\d+\s+ROWS\s+ONLY/i',$sql)
-						);
-						$total=0;
-						if($islimit):
-								$countSql = UTMssql::YuCountSql($sql);
-								if($countSql!=false):
-										$countStmt = sqlsrv_query($db,$countSql,$param);
-										if($countStmt == false):
-												throw new \Exception(print_r(sqlsrv_errors(),true));
-										endif;
-										$row = sqlsrv_fetch_array($countStmt,SQLSRV_FETCH_ASSOC);
-										$total = (int)($row['total'] ?? 0);
-										sqlsrv_free_stmt($countStmt);
-								endif;
-						endif;
-						$stmt = sqlsrv_query($db,$sql,$param,['Scrollable'=>SQLSRV_CURSOR_STATIC]);
-						if($stmt==false):
-								throw new \Exception(print_r(sqlsrv_errors(),true));
-						endif;
-						$querydata = [];
-						$xu = 0;
-						while($row = sqlsrv_fetch_array($stmt,SQLSRV_FETCH_ASSOC)):
-								foreach($row as $key=>$value):
-										if($value instanceof \DateTime):
-												 $row[$key]=$value->format('Y-m-d H:i:s');
-										endif;
-								endforeach;
-								$row['xu'] = ++$xu;
-								$querydata[] = $row;
-						endwhile;
-						sqlsrv_free_stmt($stmt);
-						$curnum = count($querydata);
-						if(!$islimit):
-								 $total=$curnum;
-						endif;
-						return [
-								'querydata'=>$querydata,
-								'curnum'=>$curnum,
-								'querynum'=>$total
-						];
-				else:
-						$stmt=sqlsrv_query($db,$sql,$param);
-						if($stmt==false):
-								throw new \Exception(print_r(sqlsrv_errors(),true));
-						endif;
-						if($yutype=="INSERT"):
-								$idstmt = sqlsrv_query($db,'SELECT SCOPE_IDENTITY() AS id');
-								if($idstmt):
-										$idrow = sqlsrv_fetch_array($idstmt,SQLSRV_FETCH_ASSOC);
-										$insertid = $idrow['id'];
-										sqlsrv_free_stmt($idstmt);
-										return is_numeric($insertid) ? (int) $insertid : true;
-								endif;
-								sqlsrv_free_stmt($stmt);
-								return true;
-						else:
-								sqlsrv_free_stmt($stmt);
-								return true;
-						endif;
-				endif;
-		}
-		public static function YuCountSql($sql){
-		    $sql = rtrim($sql," \t\n\r;");
+	/**
+     * 执行预处理
+	 * @param string $sql 带 ? 占位符的 SQL 语句
+	 * @param array $param 参数值数组
+	 * @return array|bool|int
+	 */
+	public static function RunYu($sql,$param=[]){
+        $db=UTMssql::GetMssql();
+        $trimmed = ltrim(strtoupper($sql));
+        $yutype = explode(' ',$trimmed)[0];
+        if($yutype=="SELECT"){
+            $islimit = (bool)(
+                preg_match('/\bTOP\s+\d+/i',$sql) ||
+                preg_match('/\bOFFSET\s+\d+\s+ROWS\s+FETCH\s+NEXT\s+\d+\s+ROWS\s+ONLY/i',$sql)
+            );
+            $total=0;
+            if($islimit){
+                $countSql = UTMssql::YuCountSql($sql);
+                if($countSql!=false){
+                    $countStmt = sqlsrv_query($db,$countSql,$param);
+                    if($countStmt == false){
+                            throw new \Exception(print_r(sqlsrv_errors(),true));
+                    }
+                    $row = sqlsrv_fetch_array($countStmt,SQLSRV_FETCH_ASSOC);
+                    $total = (int)($row['total'] ?? 0);
+                    sqlsrv_free_stmt($countStmt);
+                }
+            }
+            $stmt = sqlsrv_query($db,$sql,$param,['Scrollable'=>SQLSRV_CURSOR_STATIC]);
+            if($stmt==false){
+                throw new \Exception(print_r(sqlsrv_errors(),true));
+            }
+            $querydata = [];
+            $xu = 0;
+            while($row=sqlsrv_fetch_array($stmt,SQLSRV_FETCH_ASSOC)){
+                foreach($row as $key=>$value){
+                        if($value instanceof \DateTime){
+                                 $row[$key]=$value->format('Y-m-d H:i:s');
+                        }
+                }
+                $row['xu'] = ++$xu;
+                $querydata[] = $row;
+            }
+            sqlsrv_free_stmt($stmt);
+            $curnum = count($querydata);
+            if(!$islimit){
+                     $total=$curnum;
+            }
+            return [
+                    'querydata'=>$querydata,
+                    'curnum'=>$curnum,
+                    'querynum'=>$total
+            ];
+         }else{
+            $stmt=sqlsrv_query($db,$sql,$param);
+            if($stmt==false){
+                throw new \Exception(print_r(sqlsrv_errors(),true));
+            }
+            if($yutype=="INSERT"){
+                $idstmt = sqlsrv_query($db,'SELECT SCOPE_IDENTITY() AS id');
+                if($idstmt){
+                    $idrow = sqlsrv_fetch_array($idstmt,SQLSRV_FETCH_ASSOC);
+                    $insertid = $idrow['id'];
+                    sqlsrv_free_stmt($idstmt);
+                    return is_numeric($insertid) ? (int) $insertid : true;
+                }
+                sqlsrv_free_stmt($stmt);
+                return true;
+            }else{
+                sqlsrv_free_stmt($stmt);
+                return true;
+            }
+         }
+	}
+	public static function YuCountSql($sql){
+		$sql = rtrim($sql," \t\n\r;");
         $sql = preg_replace('/\s+OFFSET\s+\d+\s+ROWS\s+FETCH\s+NEXT\s+\d+\s+ROWS\s+ONLY\s*$/i','',$sql);
         $sql = preg_replace('/^\s*SELECT\s+TOP\s+\d+/i','SELECT',$sql);
         $sql = preg_replace('/\s+ORDER\s+BY\s+(?:(?!--|\/\*).)*(?=\s*(?:$))/i','',$sql);
-				return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
-		}
+		return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
+	}
     /**
      * 获取数据标签
      * @param string $table 表名
@@ -279,32 +282,32 @@ class UTMssql{
      * @return array 返回数组，例：array('tags'=>$taglist)
      */
     public static function TagData($table,$field='',$where='',$order='',$lang='0'){
-        global$_lang_;
+        global $_lang_;
         $db=UTMssql::GetMssql();
         $tags="";
         $field=empty($field) ? "*" : $field;
-        if($lang!="0"):
-            if(is_numeric($lang)):
+        if($lang!="0"){
+            if(is_numeric($lang)){
                 $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where."";
-            else:
+            }else{
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where."";
-            endif;
-        else:
+            }
+        }else{
             $where=empty($where) ? "" : "where ".$where."";
-        endif;
+        }
         $order=empty($order) ? "" : "order by ".$order."";
-        if(UTMssql::ModTable($table)):
+        if(UTMssql::ModTable($table)){
             $sql="select ".$field." from ".$table." ".$where." ".$order;
             $tag = sqlsrv_query($db,$sql);
-            while($rows=UTMssql::FetchArray($tag)):
+            while($rows=UTMssql::FetchArray($tag)){
                 $tags="".$tags.",".$rows[$field];
-            endwhile;
+            }
             $taglist=join(',',array_unique(array_diff(explode(",",$tags),array(""))));
             $taglists[]=array('tags'=>$taglist);
             return $taglists;
-        else:
+        }else{
             return array();
-        endif;
+        }
     }
     /**
      * 获取数据首图
@@ -317,24 +320,24 @@ class UTMssql{
         $db=UTMssql::GetMssql();
         $where=empty($where) ? "" : "where ".$where;
         $limit=empty($limit) ? "" : "top ".$limit;
-        if(UTMssql::ModTable($table)):
+        if(UTMssql::ModTable($table)){
             $sql="SELECT ".$limit." ".$field." from ".$table." ".$where;
             $query = sqlsrv_query($db,$sql);
             $figuredata=array(); 
-            while($rows=UTMssql::FetchArray($query)):
+            while($rows=UTMssql::FetchArray($query)){
                 $pattern="/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.bmp|\.png]))[\'|\"].*?[\/]?>/";
                 preg_match_all($pattern,$rows[$field],$matchcontent);
                 $rows['imageurl']=isset($matchcontent[1][0]) ? $matchcontent[1][0] : '';
                 $count=count($rows);
-                for($i=0;$i<$count;$i++):
+                for($i=0;$i<$count;$i++){
                     unset($rows[$i]);
-                endfor;
+                }
                 array_push($figuredata,$rows);
-            endwhile;
+            }
             return $figuredata;
-        else:
+        }else{
             return array();
-        endif;
+        }
     }
     /**
      * 获取结果集数组
@@ -351,11 +354,14 @@ class UTMssql{
     }
     /**
      * 对象转数组
-     * @param string $obj 对象
+     * @param array|object $obj 对象或数组
      * @return array
      */
     public static function ObjectToArray($obj){
-        $ret = array();
+        if(!is_array($obj) && !is_object($obj)){
+            return array();
+        }
+        $ret=array();
         foreach($obj as $key => $value){
             if(is_array($value)){
                 $ret[$key] = UTMssql::ObjectToArray($value);
@@ -380,9 +386,9 @@ class UTMssql{
         $num="";
         $where=empty($where) ? "" : "where ".$where;
 		$query=sqlsrv_query($db,"select sum($field) as value from $table $where");
-		while($rows=UTMssql::FetchArray($query)):
+		while($rows=UTMssql::FetchArray($query)){
 		     $num=$rows["value"];
-		endwhile;
+		}
 		return $num;
     }
     /**
@@ -406,9 +412,9 @@ class UTMssql{
         $min="";
         $where=empty($where) ? "" : "where ".$where;
 		$query=sqlsrv_query($db,"select min($field) as value from $table $where");
-		while($rows=UTMssql::FetchArray($query)):
+		while($rows=UTMssql::FetchArray($query)){
 		     $min=$rows["value"];
-		endwhile;
+		}
 		return $min;
     }
     /**
@@ -422,9 +428,9 @@ class UTMssql{
         $max="";
         $where=empty($where) ? "" : "where ".$where;
 		$query=sqlsrv_query($db,"select max($field) as value from $table $where");
-		while($rows=UTMssql::FetchArray($query)):
+		while($rows=UTMssql::FetchArray($query)){
 		     $max=$rows["value"];
-		endwhile;
+		}
 		return $max;
     }
     /**

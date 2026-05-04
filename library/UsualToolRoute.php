@@ -87,7 +87,7 @@ class UTRoute{
         }
         $param['m'] = $m;
         $param['p'] = $p;
-        if (!empty($_SERVER['QUERY_STRING'])) {
+        if(!empty($_SERVER['QUERY_STRING'])){
             $cleanQuery=str_replace('&amp;','&',$_SERVER['QUERY_STRING']); 
             parse_str($cleanQuery,$queryParams);
             $param=array_merge($param,$queryParams);

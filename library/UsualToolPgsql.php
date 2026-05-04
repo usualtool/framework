@@ -68,17 +68,17 @@ class UTPgsql{
      * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
-        global$_lang_;
+        global $_lang_;
         $field=empty($field) ? "*" : $field;
-        if($lang!="0"):
-            if(is_numeric($lang)):
+        if($lang!="0"){
+            if(is_numeric($lang)){
                 $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where;
-            else:
+            }else{
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where;
-            endif;
-        else:
+            }
+        }else{
             $where=empty($where) ? "" : "where ".$where;
-        endif;
+        }
         $order=empty($order) ? "" : "order by ".$order;
         $limit=empty($limit) ? "" : "limit ".$limit;
         $sql="select ".$field." from ".$table." ".$where." ".$order." ".$limit;
@@ -117,12 +117,15 @@ class UTPgsql{
      */
     public static function InsertData($table,$data){
         $db=UTPgsql::GetPgsql();
-        $query=@pg_insert($db,$table,$data);
-        if($query):
-            return true;
-        else:
+        if(!is_array($data) || empty($data)){
             return false;
-        endif;
+        }
+        $query=@pg_insert($db,$table,$data);
+        if($query){
+            return true;
+        }else{
+            return false;
+        }
     }
     /**
      * 更新数据
@@ -134,23 +137,23 @@ class UTPgsql{
     public static function UpdateData($table,$data,$where){
         $db=UTPgsql::GetPgsql();
         $updatestr='';
-        if(!empty($data)):
-            foreach($data as $k=>$v):
-                if(preg_match('/\+\d/is',$v)):
+        if(!empty($data)){
+            foreach($data as $k=>$v){
+                if(preg_match('/\+\d/is',$v)){
                     $updatestr.=$k."=".$v.",";
-                else:
+                }else{
                     $updatestr.=$k."='".$v."',";
-                endif;
-            endforeach;
+                }
+            }
             $updatestr=rtrim($updatestr,',');
-        endif;
+        }
         $sql="update ".$table." set ".$updatestr." where ".$where;
         $query=@pg_query($db,$sql);
-        if($query):
+        if($query){
             return true;
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
     /**
      * 删除数据
@@ -162,106 +165,106 @@ class UTPgsql{
         $db=UTPgsql::GetPgsql();
         $sql="delete from ".$table." where ".$where;
         $query=@pg_query($db,$sql);
-        if($query):
+        if($query){
             return true;
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
-		/**
-		 * 执行预处理
-		 * @param string $sql 带 ? 占位符的 SQL 语句
-		 * @param array $param 参数值数组
-		 * @return array|bool|int
-		 */
-		public static function RunYu($sql,$param=[]){
-				$db=UTPgsql::GetPgsql();
-				$trimmed = ltrim(strtoupper($sql));
-				$yutype = explode(' ',$trimmed)[0];
-				$paramcount = count($param);
-				for($i=1;$i<=$paramcount;$i++):
-						 $sql=preg_replace('/\?/','$'.$i,$sql,1);
-				endfor;
-				if($yutype=="SELECT"):
-						$islimit = (bool) preg_match('/\bLIMIT\s+\d+/i',$sql);
-						$total=0;
-						if($islimit):
-								$countsql=UTPgsql::YuCountSql($sql);
-								if($countsql!=false):
-										$stmtname='count_'.uniqid();
-										$countresult=@pg_prepare($db,$stmtname,$countsql);
-										if(!$countresult):
-												throw new \Exception(pg_last_error($db));
-										endif;
-										$countresult=@pg_execute($db,$stmtname,$param);
-										if(!$countresult):
-												throw new \Exception(pg_last_error($db));
-										endif;
-										$row = pg_fetch_assoc($countresult);
-										$total = (int) ($row['total'] ?? 0);
-										pg_free_result($countresult);
-								endif;
-						endif;
-						$stmtname='stmt_'.uniqid();
-						$result=@pg_prepare($db,$stmtname,$sql);
-						if(!$result):
-								throw new \Exception(pg_last_error($db));
-						endif;
-						$result=@pg_execute($db,$stmtname,$param);
-						if(!$result):
-								throw new \Exception(pg_last_error($db));
-						endif;
-						$querydata = [];
-						$xu = 0;
-						while($row=@pg_fetch_assoc($result)):
-								 $row['xu'] = ++ $xu;
-								 $querydata[] =  $row;
-						endwhile;
-						pg_free_result($result);
-						$curnum=count($querydata);
-						if(!$islimit):
-								 $total=$curnum;
-						endif;
-						return [
-								"querydata"=>$querydata,
-								"curnum"=>$curnum,
-								"querynum"=>$total
-						];
-				else:
-						$stmtname='stmt_'.uniqid();
-						$result=@pg_prepare($db,$stmtname,$sql);
-						if(!$result):
-								throw new \Exception(pg_last_error($db));
-						endif;
-						$result=@pg_execute($db,$stmtname,$param);
-						if(!$result):
-								throw new \Exception(pg_last_error($db));
-						endif;
-						if($yutype=="INSERT"):
-								$row=@pg_fetch_assoc($result);
-								pg_free_result($result);
-								if($row):
-										if(isset($row['id'])):
-												return (int) $row['id'];
-										else:
-												 $firstvalue = array_values($row)[0] ?? null;
-												return is_numeric($firstvalue) ? (int) $firstvalue : $firstvalue;
-										endif;
-								endif;
-								return true;
-						else:
-								$affected=@pg_affected_rows($result);
-								pg_free_result($result);
-								return true;
-						endif;
-				endif;
-		}
-		public static function YuCountSql($sql) {
-				$sql = rtrim($sql," \t\n\r;");
-				$sql = preg_replace('/\s+LIMIT\s+\d+(?:\s*,\s*\d+)?\s*$/i','',$sql);
-				$sql = preg_replace('/\s+OFFSET\s+\d+\s*$/i','',$sql);
-				return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
-		}
+    /**
+     * 执行预处理
+     * @param string $sql 带 ? 占位符的 SQL 语句
+     * @param array $param 参数值数组
+     * @return array|bool|int
+     */
+    public static function RunYu($sql,$param=[]){
+        $db=UTPgsql::GetPgsql();
+        $trimmed = ltrim(strtoupper($sql));
+        $yutype = explode(' ',$trimmed)[0];
+        $paramcount = count($param);
+        for($i=1;$i<=$paramcount;$i++){
+            $sql=preg_replace('/\?/','$'.$i,$sql,1);
+        }
+        if($yutype=="SELECT"){
+            $islimit = (bool) preg_match('/\bLIMIT\s+\d+/i',$sql);
+            $total=0;
+            if($islimit){
+                $countsql=UTPgsql::YuCountSql($sql);
+                if($countsql!=false){
+                    $stmtname='count_'.uniqid();
+                    $countresult=@pg_prepare($db,$stmtname,$countsql);
+                    if(!$countresult){
+                        throw new \Exception(pg_last_error($db));
+                    }
+                    $countresult=@pg_execute($db,$stmtname,$param);
+                    if(!$countresult){
+                        throw new \Exception(pg_last_error($db));
+                    }
+                    $row = pg_fetch_assoc($countresult);
+                    $total = (int) ($row['total'] ?? 0);
+                    pg_free_result($countresult);
+                }
+            }
+            $stmtname='stmt_'.uniqid();
+            $result=@pg_prepare($db,$stmtname,$sql);
+            if(!$result){
+                throw new \Exception(pg_last_error($db));
+            }
+            $result=@pg_execute($db,$stmtname,$param);
+            if(!$result){
+                throw new \Exception(pg_last_error($db));
+            }
+            $querydata = [];
+            $xu=0;
+            while($row=@pg_fetch_assoc($result)){
+               $row['xu'] = ++ $xu;
+               $querydata[] =  $row;
+            }
+            pg_free_result($result);
+            $curnum=count($querydata);
+            if(!$islimit){
+               $total=$curnum;
+            }
+            return [
+               "querydata"=>$querydata,
+               "curnum"=>$curnum,
+               "querynum"=>$total
+            ];
+        }else{
+            $stmtname='stmt_'.uniqid();
+            $result=@pg_prepare($db,$stmtname,$sql);
+            if(!$result){
+                throw new \Exception(pg_last_error($db));
+            }
+            $result=@pg_execute($db,$stmtname,$param);
+            if(!$result){
+                throw new \Exception(pg_last_error($db));
+            }
+            if($yutype=="INSERT"){
+                $row=@pg_fetch_assoc($result);
+                pg_free_result($result);
+                if($row){
+                    if(isset($row['id'])){
+                        return (int) $row['id'];
+                    }else{
+                        $firstvalue = array_values($row)[0] ?? null;
+                        return is_numeric($firstvalue) ? (int) $firstvalue : $firstvalue;
+                    }
+                }
+                return true;
+            }else{
+                $affected=@pg_affected_rows($result);
+                pg_free_result($result);
+                return true;
+            }
+        }
+    }
+    public static function YuCountSql($sql) {
+        $sql = rtrim($sql," \t\n\r;");
+        $sql = preg_replace('/\s+LIMIT\s+\d+(?:\s*,\s*\d+)?\s*$/i','',$sql);
+        $sql = preg_replace('/\s+OFFSET\s+\d+\s*$/i','',$sql);
+        return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
+    }
     /**
      * 获取数据标签
      * @param string $table 表名
@@ -272,33 +275,33 @@ class UTPgsql{
      * @return array 返回数组，例：array('tags'=>$taglist)
      */
     public static function TagData($table,$field='',$where='',$order='',$lang='0'){
-        global$_lang_;
+        global $_lang_;
         $db=UTPgsql::GetPgsql();
         $tags="";
         $field=empty($field) ? "*" : $field;
-        if($lang!="0"):
-            if(is_numeric($lang)):
+        if($lang!="0"){
+            if(is_numeric($lang)){
                 $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where."";
-            else:
+            }else{
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where."";
-            endif;
-        else:
+            }
+        }else{
             $where=empty($where) ? "" : "where ".$where."";
-        endif;
+        }
         $order=empty($order) ? "" : "order by ".$order."";
-        if(UTPgsql::ModTable($table)):
+        if(UTPgsql::ModTable($table)){
             $sql="select ".$field." from ".$table." ".$where." ".$order;
             $tag = @pg_query($db,$sql);
-            while($rows=@pg_fetch_object($tag)):
+            while($rows=@pg_fetch_object($tag)){
                 $rows=UTPgsql::ObjectToArray($rows);
                 $tags="".$tags.",".$rows[$field];
-            endwhile;
+            }
             $taglist=join(',',array_unique(array_diff(explode(",",$tags),array(""))));
             $taglists[]=array('tags'=>$taglist);
             return $taglists;
-        else:
+        }else{
             return array();
-        endif;
+        }
     }
     /**
      * 获取数据首图
@@ -311,25 +314,25 @@ class UTPgsql{
         $db=UTPgsql::GetPgsql();
         $where=empty($where) ? "" : "where ".$where;
         $limit=empty($limit) ? "" : "limit ".$limit;
-        if(UTPgsql::ModTable($table)):
+        if(UTPgsql::ModTable($table)){
             $sql="SELECT ".$field." from ".$table." ".$where." ".$limit;
             $query = @pg_query($db,$sql);
             $figuredata=array(); 
-            while($rows=@pg_fetch_object($query)):
+            while($rows=@pg_fetch_object($query)){
                 $rows=UTPgsql::ObjectToArray($rows);
                 $pattern="/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.bmp|\.png]))[\'|\"].*?[\/]?>/";
                 preg_match_all($pattern,$rows[$field],$matchcontent);
                 $rows['imageurl']=isset($matchcontent[1][0]) ? $matchcontent[1][0] : '';
                 $count=count($rows);
-                for($i=0;$i<$count;$i++):
+                for($i=0;$i<$count;$i++){
                     unset($rows[$i]);
-                endfor;
+                }
                 array_push($figuredata,$rows);
-            endwhile;
+            }
             return $figuredata;
-        else:
+        }else{
             return array();
-        endif;
+        }
     }
     /**
      * 对象转数组
@@ -337,6 +340,9 @@ class UTPgsql{
      * @return array
      */
     public static function ObjectToArray($obj){
+        if(!is_array($obj) && !is_object($obj)){
+            return array();
+        }
         $ret = array();
         foreach($obj as $key => $value){
             if(is_array($value) || is_object($value)){

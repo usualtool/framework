@@ -28,44 +28,44 @@ class UTWater{
     public static function MarkWater($type,$photo,$content,$waterpos,$fontcolor='#B5B5B5',$fontsize='14'){
         $fontcolor=UTWater::Hex2Rgb($fontcolor);
         $typeerroMsg = "Only support for jpg/png/gif format."; 
-        if($type=="image" && file_exists($content)): 
+        if($type=="image" && file_exists($content)){ 
             $water_info = getimagesize($content); 
             $water_w = $water_info[0];
             $water_h = $water_info[1];
-            switch ($water_info[2]):
+            switch($water_info[2]){
                 case 1:$water_im = imagecreatefromgif($content);break;
                 case 2:$water_im = imagecreatefromjpeg($content);break;
                 case 3:$water_im = imagecreatefrompng($content);break;
-                default:die($formatMsg); 
-            endswitch; 
-        endif; 
-        if(!empty($photo) && file_exists($photo)):
+                default:die("ERROR"); 
+            } 
+        } 
+        if(!empty($photo) && file_exists($photo)){
             $ground_info = getimagesize($photo); 
             $ground_w = $ground_info[0];
             $ground_h = $ground_info[1];
-            switch($ground_info[2]):
+            switch($ground_info[2]){
                 case 1:$ground_im = imagecreatefromgif($photo);$photofrom="imagecreatefromgif";break;
                 case 2:$ground_im = imagecreatefromjpeg($photo);$photofrom="imagecreatefromjpeg";break;
                 case 3:$ground_im = imagecreatefrompng($photo);$photofrom="imagecreatefrompng";break;
-                default:die($formatMsg); 
-            endswitch;
-        else:
+                default:die("ERROR"); 
+            }
+        }else{
             die("The picture does not exist.");
-        endif;
-        if($type=="image"):
+        }
+        if($type=="image"){
             $w = $water_w; 
             $h = $water_h;
-        else:
+        }else{
             $temp = imagettfbbox(14, 0, "../images/font/simhei.ttf", iconv("utf-8","utf-8",$content));
             $w = $temp[2] - $temp[6]; 
             $h = $temp[3] - $temp[7]; 
             unset($temp);
-        endif;
-        if (($ground_w < $w) || ($ground_h < $h)):
+        }
+        if(($ground_w < $w) || ($ground_h < $h)){
             echo "The length or width of the picture is smaller than the watermark area."; 
             return; 
-        endif; 
-        switch($waterpos):
+        } 
+        switch($waterpos){
             case 0:$posX = rand(0, ($ground_w - $w)); $posY = rand(0, ($ground_h - $h)); break; 
             case 1:$posX = 0; $posY = 0; break; 
             case 2:$posX = ($ground_w - $w) / 2; $posY = 0; break; 
@@ -77,14 +77,14 @@ class UTWater{
             case 8:$posX = ($ground_w - $w) / 2; $posY = $ground_h - $h; break; 
             case 9:$posX = $ground_w - $w - 10;$posY = $ground_h - $h - 10;break; 
             default: $posX = rand(0, ($ground_w - $w)); $posY = rand(0, ($ground_h - $h)); break; 
-        endswitch;
-        if($type=="text"):
+        }
+        if($type=="text"){
             $back=$ground_im;
             $color=imagecolorallocate($back,$fontcolor['r'],$fontcolor['g'],$fontcolor['b']);
             imagettftext($back,$fontsize,0,$posX,$posY,$color,"../images/font/simhei.ttf",iconv("utf-8","utf-8",$content));
             imagejpeg($back,$photo);
             imagedestroy($back);
-            elseif($type=="image"):
+        }elseif($type=="image"){
             $back=$ground_im;
             $water=$water_im;
             $w_w=imagesx($water);
@@ -93,19 +93,19 @@ class UTWater{
             imagejpeg($back,$photo);
             imagedestroy($back);
             imagedestroy($water);
-        endif;
+        }
     }
     public static function Hex2Rgb($hex){
         $hex = str_replace("#", "", $hex);
-        if(strlen($hex) == 3):
+        if(strlen($hex) == 3){
             $r = hexdec(substr($hex,0,1).substr($hex,0,1));
             $g = hexdec(substr($hex,1,1).substr($hex,1,1));
             $b = hexdec(substr($hex,2,1).substr($hex,2,1));
-        else:
+        }else{
             $r = hexdec(substr($hex,0,2));
             $g = hexdec(substr($hex,2,2));
             $b = hexdec(substr($hex,4,2));
-        endif;
+        }
         return array('r'=>$r,'g'=>$g,'b'=>$b);
     }
 }

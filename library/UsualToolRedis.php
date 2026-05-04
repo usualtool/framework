@@ -23,9 +23,9 @@ class UTRedis{
         $config=UsualToolInc\UTInc::GetConfig();
         $db=new \Redis();
         $db->connect($config["REDIS_HOST"],$config["REDIS_PORT"]);
-        if($config["REDIS_PASS"]!="UT"):
+        if($config["REDIS_PASS"]!="UT"){
             $db->auth($config["REDIS_PASS"]);
-        endif;
+        }
         return $db;
     }
     /**
@@ -50,11 +50,11 @@ class UTRedis{
      */
     public static function QueryData($key,$type='0'){
         $db=UTRedis::GetRedis();
-        if($type==0):
+        if($type==0){
             return json_decode($db->get($key),true);
-        else:
+        }else{
             return json_decode($db->mget(json_encode($key)),true);
-        endif;
+        }
     }
     /**
      * 创建数据
@@ -67,11 +67,11 @@ class UTRedis{
         $db=UTRedis::GetRedis();
         $data=is_array($data) ? json_encode($data) : $data;
         $config=UsualToolInc\UTInc::GetConfig();
-        if($time==0):
+        if($time==0){
             $db->set($key,$data);
-        else:
+        }else{
             $db->set($key,$data,$config["DBCACHE_TIME"]);
-        endif;
+        }
     }
     /**
      * 编辑数据
@@ -83,15 +83,16 @@ class UTRedis{
     public static function UpdateData($key,$data,$time='0'){
         $db=UTRedis::GetRedis();
         $data=is_array($data) ? json_encode($data) : $data;
-        if(!UTRedis::ModTable($key)):
+        $config=UsualToolInc\UTInc::GetConfig();
+        if(!UTRedis::ModTable($key)){
             return false;
-        else:
-            if($time==0):
+        }else{
+            if($time==0){
                 $db->set($key,$data);
-            else:
+            }else{
                 $db->set($key,$data,$config["DBCACHE_TIME"]);
-            endif;
-        endif;
+            }
+        }
     }
     /**
      * 删除数据
@@ -108,14 +109,14 @@ class UTRedis{
     public static function DelKeys($pix){
         $db=UTRedis::GetRedis();
         $keys=$db->keys($pix.'*');
-        if(!empty($keys)):
-            foreach($keys as $key):
+        if(!empty($keys)){
+            foreach($keys as $key){
                 $db->del($key);
-            endforeach;
+            }
             return true;
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
     /**
      * 查询所有键及键前缀模糊查询
@@ -134,11 +135,11 @@ class UTRedis{
      */
     public static function QueryHash($key,$field=''){
         $db=UTRedis::GetRedis();
-        if(!empty($field)):
+        if(!empty($field)){
             return $db->hGet($key,$field);
-        else:
+        }else{
             return $db->hGetAll($key);
-        endif;
+        }
     }
     /**
      * 创建Hash数据
@@ -180,11 +181,11 @@ class UTRedis{
     public static function RunQueue(){
         $db=UTRedis::GetRedis(); 
         $value=$db->lpop('queue');
-        if($value):
+        if($value){
             echo$value;
-        else:
+        }else{
             echo"Queue Complete";
-        endif;
+        }
     }
     /**
      * 清空当前数据库

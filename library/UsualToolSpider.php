@@ -63,9 +63,9 @@ class UTSpider{
     //用POST方式提交，支持多个URL
     public function Post($url, $vars, $timeout = 60){
         # POST模式
-        $this->SetOption( CURLOPT_HTTPHEADER, array('Accept-Language: zh-CN') );
-        $this->SetOption( CURLOPT_POST, true );
-        if (is_array($url)){
+        $this->SetOption(CURLOPT_HTTPHEADER,array('Accept-Language:zh-CN'));
+        $this->SetOption(CURLOPT_POST,true);
+        if(is_array($url)){
             $myvars = array();
             foreach ($url as $k=>$url){
                 if (isset($vars[$k])){
@@ -84,7 +84,7 @@ class UTSpider{
     }
     //GET方式获取数据，支持多个URL
     public function Get($url, $timeout = 30){
-        if ( is_array($url) ){
+        if(is_array($url)){
             $getone = false;
             $urls = $url;
         }else{
@@ -93,7 +93,7 @@ class UTSpider{
         }
         $data = $this->RequestUrls($urls, $timeout);
         $this->ClearSet();
-        if ( $getone ){
+        if($getone){
             $this->http_data = $this->http_data[$url];
             $encode = mb_detect_encoding($data[$url], array('GB2312','GBK','UTF-8'));
             if($encode=="GB2312"){$datas = iconv("GBK","UTF-8",$data[$url]);}
@@ -107,7 +107,7 @@ class UTSpider{
     }
     //创建一个CURL对象
     public function _create($url,$timeout){
-        if ( false===strpos($url, '://') ){
+        if(false===strpos($url, '://')){
             preg_match('#^(http(?:s)?\://[^/]+/)#', $_SERVER["SCRIPT_URI"] , $m);
             $the_url = $m[1].ltrim($url,'/');
         }else{
@@ -127,26 +127,26 @@ class UTSpider{
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-        if ( preg_match('#^https://#i', $the_url) ){
+        if(preg_match('#^https://#i', $the_url)){
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         }
-        if ( $this->cookies ){
+        if($this->cookies){
             curl_setopt($ch, CURLOPT_COOKIE, http_build_query($this->cookies, '', ';'));
         }
-        if ( $this->referer ){
+        if($this->referer){
             curl_setopt($ch, CURLOPT_REFERER, $this->referer);
         }
-        if ( $this->agent ){
+        if($this->agent){
             curl_setopt($ch, CURLOPT_USERAGENT, $this->agent);
         }
-        elseif ( array_key_exists('HTTP_USER_AGENT', $_SERVER) ){
+        elseif(array_key_exists('HTTP_USER_AGENT',$_SERVER)){
             curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
         }
-        foreach ( $this->_option as $k => $v ){
+        foreach($this->_option as $k=>$v){
             curl_setopt($ch, $k, $v);
         }
-        if ( $this->header ){
+        if($this->header){
             $header = array();
             foreach ($this->header as $item){
             # 防止有重复的header
@@ -157,7 +157,7 @@ class UTSpider{
         curl_setopt($ch, CURLOPT_HTTPHEADER, array_values($header));
         }
         # 设置POST数据
-        if (isset($this->_post_data[$the_url])){
+        if(isset($this->_post_data[$the_url])){
             curl_setopt($ch , CURLOPT_POSTFIELDS , $this->_post_data[$the_url]);
         }
         return $ch;
@@ -166,7 +166,7 @@ class UTSpider{
     protected function RequestUrls($urls, $timeout = 10){
         # 去重
         $urls = array_unique($urls);
-        if (!$urls)return array();
+        if(!$urls)return array();
         $mh = curl_multi_init();
         # 监听列表
         $listener_list = array();
@@ -179,7 +179,7 @@ class UTSpider{
         foreach ( $urls as $url ){
         # 创建一个curl对象
         $current = $this->_create($url, $timeout);
-        if ( $this->multi_exec_num>0 && $list_num>=$this->multi_exec_num ){
+        if($this->multi_exec_num>0 && $list_num>=$this->multi_exec_num ){
             # 加入排队列表
             $multi_list[] = $url;
         }else{
@@ -196,14 +196,14 @@ class UTSpider{
         # 已完成数
         $done_num = 0; 
         do{
-            while ( ($execrun = curl_multi_exec($mh, $running)) == CURLM_CALL_MULTI_PERFORM );
+            while(($execrun = curl_multi_exec($mh,$running)) == CURLM_CALL_MULTI_PERFORM);
             if ( $execrun != CURLM_OK ) break;
-            while ( true==($done = curl_multi_info_read($mh)) ){
-                foreach ( $listener_list as $done_url=>$listener ){
-                    if ( $listener === $done['handle'] ){
+            while(true==($done = curl_multi_info_read($mh))){
+                foreach($listener_list as $done_url=>$listener){
+                    if($listener === $done['handle']){
                         # 获取内容
                         $this->http_data[$done_url] = $this->GetData(curl_multi_getcontent($done['handle']), $done['handle']);
-                        if ( $this->http_data[$done_url]['code'] != 200 ){
+                        if($this->http_data[$done_url]['code'] != 200){
                             $result[$done_url] = false;
                         }else{
                         # 返回内容
@@ -215,7 +215,7 @@ class UTSpider{
                         unset($listener_list[$done_url],$listener);
                         $done_num++;
                         # 如果还有排队列表，则继续加入
-                        if ( $multi_list ){
+                        if($multi_list){
                             # 获取列队中的一条URL
                             $current_url = array_shift($multi_list);
                             # 创建CURL对象
@@ -241,7 +241,7 @@ class UTSpider{
     public function GetResultData(){
         return $this->http_data;
     } 
-    protected function GetData($data, $ch){
+    protected function GetData($data,$ch){
         $header_size  = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $result['code']   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $result['data']   = substr($data, $header_size);

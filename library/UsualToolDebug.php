@@ -80,13 +80,13 @@ class UTDebug{
         echo "</p>";
         echo "<p style='margin-top:2%;'>";
         echo "<strong>Error :</strong> Access denied.<br/>";
-        if($type=="module"):
+        if($type=="module"){
             echo "<strong>Message :</strong> This model or view doesn't exist under the module.<br/>";
-        elseif($type=="view"):
+        }elseif($type=="view"){
             echo "<strong>Message :</strong> This view file does not exist.<br/>";
-        else:
+        }else{
             echo "<strong>Message :</strong> Unknown error.<br/>";
-        endif;
+        }
         echo str_replace(UTF_ROOT,"",$path)."<br/>";
         echo "<span style='font-size:11px;'>This is an error report on UsualTool Framework.</span>";
         echo "</p>";

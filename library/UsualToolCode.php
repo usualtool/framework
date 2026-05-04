@@ -40,8 +40,8 @@ class UTCode{
      */    
     private function CreateCode(){
         $_len = strlen($this->charset) - 1;
-        for ($i = 0; $i < $this->codelen; $i++) {
-            $this->code .= $this->charset[mt_rand(0, $_len)];
+        for($i=0;$i<$this->codelen;$i++){
+            $this->code.=$this->charset[mt_rand(0,$_len)];
         }
     }
     /**
@@ -57,7 +57,7 @@ class UTCode{
     */ 
     private function CreateFont(){
         $_x = $this->width / $this->codelen;
-        for ($i = 0; $i < $this->codelen; $i++) {
+        for($i=0;$i<$this->codelen;$i++){
             $this->fontcolor = imagecolorallocate($this->img, mt_rand(0, 156), mt_rand(0, 156), mt_rand(0, 156));
             imagettftext($this->img, $this->fontsize, mt_rand(-30, 30), $_x * $i + mt_rand(1, 5), $this->height / 1.4, $this->fontcolor, $this->font, $this->code[$i]);
         }
@@ -66,11 +66,11 @@ class UTCode{
     * 创建干扰元素
     */ 
     private function CreateLine(){
-        for ($i = 0; $i < 6; $i++) {
+        for($i=0;$i<6;$i++){
             $color = imagecolorallocate($this->img, mt_rand(0, 156), mt_rand(0, 156), mt_rand(0, 156));
             imageline($this->img, mt_rand(0, $this->width), mt_rand(0, $this->height), mt_rand(0, $this->width), mt_rand(0, $this->height), $color);
         }
-        for ($i = 0; $i < 100; $i++) {
+        for($i=0;$i<100;$i++){
             $color = imagecolorallocate($this->img, mt_rand(200, 255), mt_rand(200, 255), mt_rand(200, 255));
             imagestring($this->img, mt_rand(1, 5), mt_rand(0, $this->width), mt_rand(0, $this->height), '*', $color);
         }

@@ -29,24 +29,24 @@ class UTMysql{
         $config=UTMysql::GetConfig();
         $host=empty($config["MYSQL_PORT"]) ? $config["MYSQL_HOST"] : $config["MYSQL_HOST"].":".$config["MYSQL_PORT"];
         $db=new \mysqli($host,$config["MYSQL_USER"],$config["MYSQL_PASS"],$config["MYSQL_DB"]);
-        if(!$db):
+        if(!$db){
             return "Mysqli connection error.";
-        else:
+        }else{
             $db->set_charset($config["MYSQL_CHARSET"]);
             return $db;
-        endif;
+        }
     }
     /**
      * 测试Mysqli
      */    
     public static function TestDataBase($DBHOST,$DBPORT,$DBUSER,$DBPASS,$DBNAME){
         $db=new \mysqli($DBHOST.":".$DBPORT,$DBUSER,$DBPASS,$DBNAME);
-        if(!$db):
+        if(!$db){
             return false;
-        else:
+        }else{
             $db->set_charset("utf8");
             return $db;
-        endif;
+        }
     }
     /**
      * 判断表是否存在
@@ -85,40 +85,40 @@ class UTMysql{
      * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
-        global$_lang_;
+        global $_lang_;
         $db=UTMysql::GetMysql();
         $field=empty($field) ? "*" : $field;
-        if($lang!="0"):
-            if(is_numeric($lang)):
+        if($lang!="0"){
+            if(is_numeric($lang)){
                 $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where;
-            else:
+            }else{
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where;
-            endif;
-        else:
+            }
+        }else{
             $where=empty($where) ? "" : "where ".$where;
-        endif;
+        }
         $order=empty($order) ? "" : "order by ".$order;
         $limit=empty($limit) ? "" : "limit ".$limit;
-        if(UTMysql::ModTable($table)):
+        if(UTMysql::ModTable($table)){
             $sql="select ".$field." from `".$table."` ".$where." ".$order." ".$limit;
             $query=$db->query($sql);
             $curnum=mysqli_num_rows($query);
             $querynum=empty($limit) ? $curnum : UTMysql::QueryNum("select ".$field." from ".$table." ".$where." ".$order);
             $querydata=array(); 
             $xu=0;
-            while($rows=mysqli_fetch_array($query,MYSQLI_ASSOC)):
+            while($rows=mysqli_fetch_array($query,MYSQLI_ASSOC)){
                 $xu=$xu+1;
                 $count=count($rows);
-                for($i=0;$i<$count;$i++):
+                for($i=0;$i<$count;$i++){
                     unset($rows[$i]);
-                endfor;
+                }
                 $rows['xu']=$xu;
                 array_push($querydata,$rows);
-            endwhile;
+            }
             return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
-        else:
+        }else{
             return array("querydata"=>array(),"curnum"=>0,"querynum"=>0);
-        endif;
+        }
     }
     /**
      * 执行SQL并返回结果集
@@ -132,15 +132,15 @@ class UTMysql{
         $querynum=UTMysql::QueryNum($sql);
         $querydata=array(); 
         $xu=0;
-        while($rows=mysqli_fetch_array($query,MYSQLI_ASSOC)):
+        while($rows=mysqli_fetch_array($query,MYSQLI_ASSOC)){
             $xu=$xu+1;
             $count=count($rows);
-            for($i=0;$i<$count;$i++):
+            for($i=0;$i<$count;$i++){
                 unset($rows[$i]);
-            endfor;
+            }
             $rows['xu']=$xu;
             array_push($querydata,$rows);
-        endwhile;
+        }
         return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
     }
     /**
@@ -153,11 +153,11 @@ class UTMysql{
         $db=UTMysql::GetMysql();
         $sql="insert into `".$table."` (".implode(',',array_keys($data)).") values ('".implode("','",array_values($data))."')";
         $query=$db->query($sql);
-        if($query):
+        if($query){
             return mysqli_insert_id($db);
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
     /**
      * 编辑数据
@@ -169,23 +169,23 @@ class UTMysql{
     public static function UpdateData($table,$data,$where){
         $db=UTMysql::GetMysql();
         $updatestr='';
-        if(!empty($data)):
-            foreach($data as $k=>$v):
-                if(preg_match('/\+\d/is',$v)):
+        if(!empty($data)){
+            foreach($data as $k=>$v){
+                if(preg_match('/\+\d/is',$v)){
                     $updatestr.=$k."=".$v.",";
-                else:
+                }else{
                     $updatestr.=$k."='".$v."',";
-                endif;
-            endforeach;
+                }
+            }
             $updatestr=rtrim($updatestr,',');
-        endif;
+        }
         $sql="update `".$table."` set ".$updatestr." where ".$where;
         $query=$db->query($sql);
-        if($query):
+        if($query){
             return true;
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
     /**
      * 删除数据
@@ -197,11 +197,11 @@ class UTMysql{
         $db=UTMysql::GetMysql();
         $sql="delete from `".$table."` where ".$where;
         $query=$db->query($sql);
-        if($query):
+        if($query){
             return true;
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
     /**
      * 复制数据
@@ -218,11 +218,11 @@ class UTMysql{
         unset($rows[$autokey]);
         $csql="insert into `".$table."` (".implode(',',array_keys($rows)).") values ('".implode("','",array_values($rows))."')";
         $cquery=$db->query($csql);
-        if($cquery):
+        if($cquery){
             return mysqli_insert_id($db);
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
 	/**
 	 * 执行预处理
@@ -234,69 +234,69 @@ class UTMysql{
         $db=UTMysql::GetMysql();
         $trimmed=ltrim(strtoupper($sql));
         $yutype=explode(' ',$trimmed)[0];
-        if($yutype=="SELECT"):
+        if($yutype=="SELECT"){
             $islimit=(bool) preg_match('/\bLIMIT\b/i',$sql);
             $total=0;
-            if($islimit):
+            if($islimit){
                 $countsql=UTMysql::YuCountSql($sql);
-                if($countsql!=false):
+                if($countsql!=false){
                     $countstmt=$db->prepare($countsql);
-                    if($countstmt):
-                        if(!empty($param)):
+                    if($countstmt){
+                        if(!empty($param)){
                             UTMysql::YuBindParam($countstmt, $param);
-                        endif;
+                        }
                         $countstmt->execute();
                         $countstmt->bind_result($total);
                         $countstmt->fetch();
                         $countstmt->close();
-                    endif;
-                endif;
-            endif;
+                    }
+                }
+            }
             $stmt=$db->prepare($sql);
-            if(!$stmt):
+            if(!$stmt){
                 return ["querydata" => [], "curnum" => 0, "querynum" => 0];
-            endif;
-            if(!empty($param)):
+            }
+            if(!empty($param)){
                 UTMysql::YuBindParam($stmt, $param);
-            endif;
+            }
             $stmt->execute();
             $result = $stmt->get_result();
-            if(!$result):
+            if(!$result){
                 $stmt->close();
                 return ["querydata" => [], "curnum" => 0, "querynum" => 0];
-            endif;
+            }
             $querydata = [];
             $xu = 0;
-            while($row = $result->fetch_assoc()):
+            while($row = $result->fetch_assoc()){
                 $row['xu'] = ++$xu;
                 $querydata[] = $row;
-            endwhile;
+            }
             $stmt->close();
             $curnum = count($querydata);
-            if(!$islimit):
+            if(!$islimit){
                 $total = $curnum;
-            endif;
+            }
             return [
                 "querydata" => $querydata,
                 "curnum"    => $curnum,
                 "querynum"  => (int)$total
             ];
-        else:
+        }else{
             $stmt = $db->prepare($sql);
-            if(!$stmt):
+            if(!$stmt){
                 return false;
-            endif;
-            if(!empty($param)):
+            }
+            if(!empty($param)){
                 UTMysql::YuBindParam($stmt, $param);
-            endif;
+            }
             $stmt->execute();
             $stmt->close();
-            if($yutype=="INSERT"):
+            if($yutype=="INSERT"){
                 return $db->insert_id ?: true;
-            else:
+            }else{
                 return true;
-            endif;
-        endif;
+            }
+        }
     }
     public static function YuCountSql($sql){
         $sql = rtrim($sql," \t\n\r;");
@@ -306,19 +306,19 @@ class UTMysql{
     public static function YuBindParam($stmt,$params){
         if(empty($params)) return;
         $types='';
-        foreach($params as $value):
-            if(is_int($value)):
+        foreach($params as $value){
+            if(is_int($value)){
                 $types .= 'i';
-            elseif(is_float($value)):
+            }elseif(is_float($value)){
                 $types .= 'd';
-            else:
+            }else{
                 $types .= 's';
-            endif;
-        endforeach;
+            }
+        }
         $refs = [];
-        foreach($params as $key => &$val):
+        foreach($params as $key => &$val){
             $refs[$key] = &$val;
-        endforeach;
+        }
         array_unshift($refs,$types);
         call_user_func_array([$stmt,'bind_param'],$refs);
     }
@@ -332,32 +332,32 @@ class UTMysql{
      * @return array 返回数组，例：array('tags'=>$taglist)
      */
     public static function TagData($table,$field='',$where='',$order='',$lang='0'){
-        global$_lang_;
+        global $_lang_;
         $db=UTMysql::GetMysql();
         $tags="";
         $field=empty($field) ? "*" : $field;
-        if($lang!="0"):
-            if(is_numeric($lang)):
+        if($lang!="0"){
+            if(is_numeric($lang)){
                 $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where."";
-            else:
+            }else{
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where."";
-            endif;
-        else:
+            }
+        }else{
             $where=empty($where) ? "" : "where ".$where."";
-        endif;
+        }
         $order=empty($order) ? "" : "order by ".$order."";
-        if(UTMysql::ModTable($table)):
+        if(UTMysql::ModTable($table)){
             $sql="select ".$field." from `".$table."` ".$where." ".$order;
             $tag=$db->query($sql);
-            while($tagrow=$tag->fetch_row()):
+            while($tagrow=$tag->fetch_row()){
                 $tags="".$tags.",".$tagrow[0];
-            endwhile;
+            }
             $taglist=join(',',array_unique(array_diff(explode(",",$tags),array(""))));
             $taglists[]=array('tags'=>$taglist);
             return $taglists;
-        else:
+        }else{
             return array();
-        endif;
+        }
     }
     /**
      * 获取数据首图
@@ -370,24 +370,24 @@ class UTMysql{
         $db=UTMysql::GetMysql();
         $where=empty($where) ? "" : "where ".$where;
         $limit=empty($limit) ? "" : "limit ".$limit;
-        if(UTMysql::ModTable($table)):
+        if(UTMysql::ModTable($table)){
             $sql="SELECT ".$field." from `".$table."` ".$where." ".$limit;
             $query=$db->query($sql);  
             $figuredata=array(); 
-            while($rows=mysqli_fetch_array($query,MYSQLI_ASSOC)):
+            while($rows=mysqli_fetch_array($query,MYSQLI_ASSOC)){
                 $pattern="/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.bmp|\.png]))[\'|\"].*?[\/]?>/";
                 preg_match_all($pattern,$rows[$field],$matchcontent);
                 $rows['imageurl']=isset($matchcontent[1][0]) ? $matchcontent[1][0] : '';
                 $count=count($rows);
-                for($i=0;$i<$count;$i++):
+                for($i=0;$i<$count;$i++){
                     unset($rows[$i]);
-                endfor;
+                }
                 array_push($figuredata,$rows);
-            endwhile;
+            }
             return $figuredata;
-        else:
+        }else{
             return array();
-        endif;
+        }
     }
     /**
      * 搜索方法
@@ -398,13 +398,13 @@ class UTMysql{
     public static function SearchData($keyword){
         $db=UTMysql::GetMysql();
         global$_lang_;
-		if(!empty($keyword)):
+		if(!empty($keyword)){
 			$sql="SELECT * FROM `cms_search` WHERE keyword ='$keyword'";
 			$sdata=mysqli_query($db,$sql);
-			if(mysqli_num_rows($sdata)>0):
+			if(mysqli_num_rows($sdata)>0){
 			    UTMysql::UpdateData("cms_search",array("hit"=>"hit+1"),"keyword ='$keyword' and lang='$_lang_'");
-			endif;
-		endif;
+			}
+		}
 		$data=array();
 		$result=$db->query("select * from `cms_search_set`");
 		while($row=mysqli_fetch_array($result)){
@@ -418,20 +418,20 @@ class UTMysql{
 		}
         $search=$db->query($table);
         $searchnum=mysqli_num_rows($search);
-        if(!empty($keyword) && $searchnum>0 && mysqli_num_rows($sdata)<=0):
+        if(!empty($keyword) && $searchnum>0 && mysqli_num_rows($sdata)<=0){
 			UTMysql::InsertData("cms_search",array("lang"=>$_lang_,"keyword"=>$keyword));
-        endif;
+        }
         $searchdata=array(); 
         $xu=0;
-        while($rows=mysqli_fetch_array($search,MYSQLI_ASSOC)):
+        while($rows=mysqli_fetch_array($search,MYSQLI_ASSOC)){
             $xu=$xu+1;
             $count=count($rows);
-            for($i=0;$i<$count;$i++):
+            for($i=0;$i<$count;$i++){
                 unset($rows[$i]);
-            endfor;
+            }
             $rows['xu']=$xu;
             array_push($searchdata,$rows);
-        endwhile;
+        }
         return array("searchdata"=>$searchdata,"searchnum"=>$searchnum);	
     }
     /**

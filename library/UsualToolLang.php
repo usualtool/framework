@@ -21,23 +21,23 @@ class UTLang{
      * @return array
      */
     public static function GetLang($path=OPEN_ROOT."/lang/"){
-        $langs = array();
-        if(!is_dir($path)):
+        $langs=array();
+        if(!is_dir($path)){
             return $langs;
-        endif;
+        }
         $current_dir = opendir($path);
-        while(($file = readdir($current_dir)) !== false):
-            if($file == '.' || $file == '..'):
+        while(($file = readdir($current_dir)) !== false){
+            if($file == '.' || $file == '..'){
                 continue;
-            endif;
+            }
             $sub_dir=$path."/".$file;
-            if(is_dir($sub_dir)):
+            if(is_dir($sub_dir)){
                 $sub_langs = self::GetLang($sub_dir);
                 $langs = array_merge($langs, $sub_langs);
-            elseif(UTInc::Contain("json", $file)):
+            }elseif(UTInc::Contain("json", $file)){
                 $langs[] = UTInc::StrSubstr("lg-", ".json", basename($file));
-            endif;
-        endwhile;
+            }
+        }
         closedir($current_dir);
         return $langs;
     } 
@@ -48,13 +48,13 @@ class UTLang{
      * @return string
      */
     public static function LangData($word,$type=''){
-        if(!empty($type)):
+        if(!empty($type)){
             $langdata=json_decode(file_get_contents(OPEN_ROOT."/lang/lg-".$type.".json"),true);
-        else:
+        }else{
             $langdata=json_decode(file_get_contents(OPEN_ROOT."/lang/lg-".self::GetActiveLang().".json"),true);
-        endif;
+        }
         if(array_key_exists($word,$langdata["l"])){
-        $langword=$langdata["l"]["".$word.""];
+            $langword=$langdata["l"]["".$word.""];
             return $langword;
         }else{
             return $word;
@@ -86,11 +86,11 @@ class UTLang{
      * @return string
      */
     public static function LangSet($word,$type=''){
-        if(!empty($type)):
+        if(!empty($type)){
             $langdata=json_decode(file_get_contents(OPEN_ROOT."/lang/lg-".$type.".json"),true);
-        else:
+        }else{
             $langdata=json_decode(file_get_contents(OPEN_ROOT."/lang/lg-".self::GetActiveLang().".json"),true);
-        endif;
+        }
         $langword=$langdata["s"]["".$word.""];
         return $langword;
     }
@@ -103,11 +103,11 @@ class UTLang{
 			  $lgfile=[];
         $current_dir = opendir($path);
         while(($file = readdir($current_dir)) !== false) {
-            if(UTInc::Contain(".json",$file)!==false):
+            if(UTInc::Contain(".json",$file)!==false){
                 $filename=explode(".json",$file);
                 $lgfilename=str_replace("lg-","",str_replace($path,"",$filename[0]));
                 $lgfile[]=array("speak"=>self::LangSet("speak",$lgfilename),"lgname"=>$lgfilename);
-            endif;
+            }
         }
         return $lgfile;
     }

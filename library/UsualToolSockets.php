@@ -42,7 +42,6 @@ class UTSockets{
         $pid = posix_getpid();
         }
         $this->Debug(array("server"=>$this->master,"pid"=>$pid));
-
         while (true) {
             try {
                 $this->DoServer();
@@ -59,7 +58,7 @@ class UTSockets{
         $write = $except = NULL;
         $sockets = array_column($this->sockets, 'resource');
         $read_num = socket_select($sockets, $write, $except, NULL);
-        if (false === $read_num) {
+        if(false === $read_num) {
             $this->Debug([
                 'error_select',
                 $err_code = socket_last_error(),
@@ -67,7 +66,7 @@ class UTSockets{
             ]);
             return;
         }
-        foreach ($sockets as $socket) {
+        foreach($sockets as $socket) {
             if ($socket == $this->master) {
                 $client = socket_accept($this->master);
                 if (false === $client) {
@@ -95,7 +94,6 @@ class UTSockets{
                 }
                 array_unshift($recv_msg, 'receive_msg');
                 $msg = self::DealMsg($socket, $recv_msg);
-
                 $this->Broadcast($msg);
             }
         }
@@ -164,7 +162,7 @@ class UTSockets{
     private function Parse($buffer) {
         $decoded = '';
         $len = ord($buffer[1]) & 127;
-        if ($len === 126) {
+        if($len === 126) {
             $masks = substr($buffer, 4, 4);
             $data = substr($buffer, 8);
         } else if ($len === 127) {
@@ -198,12 +196,12 @@ class UTSockets{
         }
         $data = '';
         $l = strlen($msg);
-        for ($i = 0; $i < $l; $i++) {
-            $data .= dechex(ord($msg[$i]));
+        for($i=0;$i<$l;$i++){
+            $data.=dechex(ord($msg[$i]));
         }
-        $frame[2] = $data;
-        $data = implode('', $frame);
-        return pack("H*", $data);
+        $frame[2]=$data;
+        $data=implode('',$frame);
+        return pack("H*",$data);
     }
     /*
      * 拼装信息
@@ -252,9 +250,9 @@ class UTSockets{
                 $response['sendtime'] = date('Y-m-d H:i:s',time());
                 if(!empty($recv_msg['item'])){
                     if(strpos($recv_msg['startuid'],'u')!==false){
-                    file_put_contents(UTF_ROOT.'/log/websocket/'.$recv_msg['item'].'/chat-'.$recv_msg['startuid'].'-'.$recv_msg['enduid'].'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
+                        file_put_contents(UTF_ROOT.'/log/websocket/'.$recv_msg['item'].'/chat-'.$recv_msg['startuid'].'-'.$recv_msg['enduid'].'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
                     }else{
-                    file_put_contents(UTF_ROOT.'/log/websocket/'.$recv_msg['item'].'/chat-'.$recv_msg['enduid'].'-'.$recv_msg['startuid'].'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
+                        file_put_contents(UTF_ROOT.'/log/websocket/'.$recv_msg['item'].'/chat-'.$recv_msg['enduid'].'-'.$recv_msg['startuid'].'.utlog', json_encode($response) . "\r\n", FILE_APPEND);
                     }
                 }
                 break;
@@ -270,7 +268,7 @@ class UTSockets{
                 continue;
             }
             $result = @socket_write($socket['resource'],$data,strlen($data));
-            if($result !== false){
+            if($result!==false){
                 echo $data."\r\n";
             }
         }

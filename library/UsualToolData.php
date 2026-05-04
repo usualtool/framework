@@ -297,40 +297,45 @@ class UTData{
     }
     /**
      * 获取及更新缓存
+     * @param string $table 表
+     * @param string $field 字段
+     * @param string $where 条件
+     * @param string $order 排序
+     * @param string $limit 数量
+     * @param string $lang 语言
      * @param string $cache 键或元素
-     * @param string $data 数据
      * @return array
      */
     public static function GetCache($table,$field,$where,$order,$limit,$lang,$cache){
         $config=UsualToolInc\UTInc::GetConfig();
         $dbcache=$config["DBCACHE"];
-        if($dbcache=="redis"):
-            if(UsualToolRedis\UTRedis::ModTable($cache)):
+        if($dbcache=="redis"){
+            if(UsualToolRedis\UTRedis::ModTable($cache)){
                 return UsualToolRedis\UTRedis::QueryData($cache);
-            else:
+            }else{
                 $data=UTData::QueryData($table,$field,$where,$order,$limit,$lang,0);
                 UsualToolRedis\UTRedis::InsertData($cache,$data,1);
                 return $data;
-            endif;
-        elseif($dbcache=="mongo"):
-            if(UsualToolMongo\UTMongo::ModTable($cache)):
+            }
+        }elseif($dbcache=="mongo"){
+            if(UsualToolMongo\UTMongo::ModTable($cache)){
                 return UsualToolMongo\UTMongo::QueryData($cache);
-            else:
+            }else{
                 $data=UTData::QueryData($table,$field,$where,$order,$limit,$lang,0);
                 UsualToolMongo\UTMongo::InsertData($cache,$data);
                 return $data;
-            endif;
-        elseif($dbcache=="memcache"):
-            if(UsualToolMemcache\UTMemcache::ModTable($cache)):
+            }
+        }elseif($dbcache=="memcache"){
+            if(UsualToolMemcache\UTMemcache::ModTable($cache)){
                 return UsualToolMemcache\UTMemcache::QueryData($cache);
-            else:
+            }else{
                 $data=UTData::QueryData($table,$field,$where,$order,$limit,$lang,0);
                 UsualToolMemcache\UTMemcache::InsertData($cache,$data,1);
                 return $data;
-            endif;
-        else:
+            }
+        }else{
             return array();
-        endif;
+        }
     }
     /**
      * 获取记录数目

@@ -15,6 +15,8 @@ namespace library\UsualToolRsa;
  * 实例化RSA加密解密
  */
 class UTRsa{
+    private $private_key;
+    private $public_key;
     function __construct($private_key,$public_key){
         $this->private_key=$private_key;
         $this->public_key=$public_key;
@@ -41,7 +43,7 @@ class UTRsa{
      * @return null|string
      */
     public function PrivEncrypt($data=''){
-        if (!is_string($data)) {
+        if(!is_string($data)){
             return null;
         }
         return openssl_private_encrypt($data,$encrypted,$this->GetPrivateKey()) ? base64_encode($encrypted) : null;
@@ -52,7 +54,7 @@ class UTRsa{
      * @return null|string
      */
     public function PublicEncrypt($data=''){
-        if (!is_string($data)) {
+        if(!is_string($data)){
             return null;
         }
         return openssl_public_encrypt($data,$encrypted,$this->GetPublicKey()) ? base64_encode($encrypted) : null;    
@@ -63,7 +65,7 @@ class UTRsa{
      * @return null
      */
     public function PrivDecrypt($encrypted=''){
-        if (!is_string($encrypted)) {
+        if(!is_string($encrypted)){
             return null;
         }
         return (openssl_private_decrypt(base64_decode($encrypted), $decrypted, $this->GetPrivateKey())) ? $decrypted : null;    
@@ -74,7 +76,7 @@ class UTRsa{
      * @return null
      */
     public function PublicDecrypt($encrypted=''){
-        if (!is_string($encrypted)) {
+        if(!is_string($encrypted)){
             return null;
         }
     return (openssl_public_decrypt(base64_decode($encrypted), $decrypted, $this->GetPublicKey())) ? $decrypted : null;    

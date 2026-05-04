@@ -54,13 +54,13 @@ class UTInc{
                 exit();
             }
         }else{
-            if(is_numeric($url) || $url===0):
+            if(is_numeric($url) || $url===0){
                 echo'<script>window.location.reload();</script>';
                 exit();
-            else:
+            }else{
                 echo'<script>window.location.href="'.$url.'"</script>';
                 exit();
-            endif;
+            }
         }
     }
     /**
@@ -69,18 +69,18 @@ class UTInc{
      * @return string|int
      */
     public static function SqlCheck($str){
-		    if(is_array($str)){
+        if(is_array($str)){
             $clean=[];
             foreach($str as $val){
                 $clean[]=UTInc::SqlCheck($val);
             }
             return $clean;
         }else{
-				    $str=trim($str);
-				    $str=str_replace(['(',')'],['（','）'],$str);
+            $str=trim($str);
+            $str=str_replace(['(',')'],['（','）'],$str);
             $str=htmlspecialchars($str,ENT_QUOTES);
             return $str;
-				}
+        }
     }
     /**
      * 反解析严格过滤
@@ -89,7 +89,7 @@ class UTInc{
      */
     public static function DeSqlCheck($str){
         $str=htmlspecialchars_decode($str);
-				$str=str_replace(['（','）'],['(',')'],$str);
+        $str=str_replace(['（','）'],['(',')'],$str);
         return $str;
     }
     /**
@@ -107,15 +107,15 @@ class UTInc{
      * @return string
      */
     public static function DeleteHtml($str){
-        global$_lang_;
+        global $_lang_;
         $str=htmlspecialchars_decode($str);
         $str = strip_tags($str,"");
         $str = str_replace(array("\r\n", "\r", "\n"), "", $str);   
         $str = str_replace("　","",$str);
         $str = str_replace("&nbsp;","",$str);
-        if($_lang_=="zh"):
+        if($_lang_=="zh"){
             $str = str_replace(" ","",$str);
-        endif;
+        }
         return ltrim(trim($str));
     }
     /**
@@ -138,7 +138,7 @@ class UTInc{
         if(strpos($lowernamespace,$zonestr)===false){
             return null;
         }
-       if(!preg_match('/class\s+([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\s*(?:extends|implements|\{)/',$content,$clmatch)){
+        if(!preg_match('/class\s+([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\s*(?:extends|implements|\{)/',$content,$clmatch)){
             return null;
         }
         $classname=trim($clmatch[1]);
@@ -611,13 +611,13 @@ class UTInc{
      * @return int|false
      */
     public static function OpenDate($date,$type){
-        if($type==1):
+        if($type==1){
             return date('y',$date);
-        elseif($type==2):
+        }elseif($type==2){
             return date('m',$date);
-        elseif($type==3):
+        }elseif($type==3){
             return date('d',$date);
-        endif;
+        }
     }
     /**
      * 截取字符串中的中文字符
@@ -627,11 +627,11 @@ class UTInc{
      */
     public static function CnSubStr($string,$length='0'){
         preg_match_all("#[\x{4e00}-\x{9fa5}]#u",$string,$match);
-        if($length==0):
+        if($length==0){
             return implode("",$match[0]);
-        else:
+        }else{
             return mb_substr(implode("",$match[0]),0,$length);
-        endif;
+        }
     }
     /**
      * preg方式截取字符串
@@ -703,9 +703,9 @@ class UTInc{
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-        if($gzip):
+        if($gzip){
             curl_setopt($curl, CURLOPT_ENCODING, "gzip" );
-        endif;
+        }
         $output = curl_exec($curl);
         curl_close($curl);
         return $output;
@@ -722,9 +722,9 @@ class UTInc{
             curl_setopt($curl, CURLOPT_TIMEOUT, 90);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curl, CURLOPT_HEADER, 0);
-            if($gzip):
+            if($gzip){
                 curl_setopt($curl, CURLOPT_ENCODING, "gzip" );
-            endif;
+            }
             $output = curl_exec($curl);
             curl_close($curl);
             return $output;
@@ -863,9 +863,9 @@ class UTInc{
                     $subFile = $dir."/".$filename;
                     if(is_dir($subFile)){
                         $list[]=$filename;
-                        if($mode!=0):
+                        if($mode!=0){
                             UTInc::DirList($subFile);
-                        endif;
+                        }
                     }
                 }
             }
@@ -971,11 +971,11 @@ class UTInc{
      * @return bool
      */
     public static function CopyDir($src, $dst){
-        if (!is_dir($dst)) {
+        if(!is_dir($dst)){
             mkdir($dst, 0755, true);
         }
         $dir = opendir($src);
-        while (($file = readdir($dir)) !== false) {
+        while(($file = readdir($dir))!==false){
             if ($file === '.' || $file === '..') continue;
             $srcPath = "$src/$file";
             $dstPath = "$dst/$file";
@@ -1045,7 +1045,7 @@ class UTInc{
         $phpver = PHP_VERSION;
         $memory=round(memory_get_peak_usage()/1024, 2).'KB';
         $SystemInfo=array("OS"=>$os,"SERVER"=>$server,"PHP"=>$phpver,"MEMORY"=>$memory);
-         return $SystemInfo;
+        return $SystemInfo;
     }
     /**
      * 检测文件编码
@@ -1054,7 +1054,7 @@ class UTInc{
     public static function DetectEncoding($file) {
         $list = array('GBK', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'ISO-8859-1');
         $str = file_get_contents($file);
-        foreach ($list as $item) {
+        foreach($list as $item){
             $tmp = mb_convert_encoding($str, $item, $item);
             if (md5($tmp) == md5($str)) {
                 return $item;
@@ -1077,10 +1077,10 @@ class UTInc{
      * @param string $path 保存路径
      */
     public static function Base64ToImg($base64,$path){
-        if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64, $result)){
+        if(preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64, $result)){
             $type = $result[2];
             $newfile = $path."/".time().".{$type}";
-            if (file_put_contents($newfile, base64_decode(str_replace($result[1], '', $base64)))){
+            if(file_put_contents($newfile, base64_decode(str_replace($result[1],'',$base64)))){
                 return str_replace("../","",$newfile);
             }else{
                 return false;

@@ -67,40 +67,40 @@ class UTSqlite{
      * @return array 返回数组，例：array("querydata"=>array(),"curnum"=>0,"querynum"=>0)
      */
     public static function QueryData($table,$field='',$where='',$order='',$limit='',$lang='0'){
-        global$_lang_;
+        global $_lang_;
         $db=UTSqlite::GetSqlite();
         $field=empty($field) ? "*" : $field;
-        if($lang!="0"):
-            if(is_numeric($lang)):
+        if($lang!="0"){
+            if(is_numeric($lang)){
                 $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where;
-            else:
+            }else{
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where;
-            endif;
-        else:
+            }
+        }else{
             $where=empty($where) ? "" : "where ".$where;
-        endif;
+        }
         $order=empty($order) ? "" : "order by ".$order;
         $limit=empty($limit) ? "" : "limit ".$limit;
-        if(UTSqlite::ModTable($table)):
+        if(UTSqlite::ModTable($table)){
             $sql="select ".$field." from ".$table." ".$where." ".$order." ".$limit;
             $query=$db->query($sql);
             $querydata=array(); 
             $xu=0;
-            while($rows=$query->fetchArray(SQLITE3_ASSOC)):
+            while($rows=$query->fetchArray(SQLITE3_ASSOC)){
                 $xu=$xu+1;
                 $count=count($rows);
-                for($i=0;$i<$count;$i++):
+                for($i=0;$i<$count;$i++){
                     unset($rows[$i]);
-                endfor;
+                }
                 $rows['xu']=$xu;
                 array_push($querydata,$rows);
-            endwhile;
+            }
             $curnum=$xu;
             $querynum=empty($limit) ? $curnum : UTSqlite::QueryNum("select count(*) from ".$table." ".$where." ".$order);
             return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
-        else:
+        }else{
             return array("querydata"=>array(),"curnum"=>0,"querynum"=>0);
-        endif;
+        }
     }
     /**
      * 执行SQL并返回结果集
@@ -112,10 +112,10 @@ class UTSqlite{
 		$query=$db->query($sql);
         $querydata=array(); 
 		$curnum=0;
-        while($rows=$query->fetchArray(SQLITE3_ASSOC)):
+        while($rows=$query->fetchArray(SQLITE3_ASSOC)){
 		    $curnum++;
             array_push($querydata,$rows);
-        endwhile;
+        }
 		$querynum=UTSqlite::QueryNum($sql);
         return array("querydata"=>$querydata,"curnum"=>$curnum,"querynum"=>$querynum);
     }
@@ -126,14 +126,17 @@ class UTSqlite{
      * @return bool 
      */
     public static function InsertData($table,$data){
+        if(!is_array($data) || empty($data)){
+            return false;
+        }
         $db=UTSqlite::GetSqlite();
         $sql="insert into ".$table." (".implode(',',array_keys($data)).") values ('".implode("','",array_values($data))."')";
         $query=UTSqlite::RunSql($sql);
-        if($query):
+        if($query){
             return $db->lastInsertRowID();
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
     /**
      * 更新数据
@@ -145,23 +148,23 @@ class UTSqlite{
     public static function UpdateData($table,$data,$where){
         $db=UTSqlite::GetSqlite();
         $updatestr='';
-        if(!empty($data)):
-            foreach($data as $k=>$v):
-			    if(preg_match('/\+\d/is',$v)):
+        if(!empty($data)){
+            foreach($data as $k=>$v){
+			    if(preg_match('/\+\d/is',$v)){
 			        $updatestr.=$k."=".$v.",";
-			    else:
+			    }else{
                     $updatestr.=$k."='".$v."',";
-		        endif;
-            endforeach;
+		        }
+            }
             $updatestr=rtrim($updatestr,',');
-        endif;
+        }
         $sql="update ".$table." set ".$updatestr." where ".$where;
         $query=UTSqlite::RunSql($sql);
-        if($query):
+        if($query){
             return true;
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
     /**
      * 删除数据
@@ -173,97 +176,97 @@ class UTSqlite{
         $db=UTSqlite::GetSqlite();
         $sql="delete from ".$table." where ".$where;
         $query=UTSqlite::RunSql($sql);
-        if($query):
+        if($query){
             return true;
-        else:
+        }else{
             return false;
-        endif;
+        }
     }
-		/**
-		 * 执行预处理
-		 * @param string $sql 带 ? 占位符的 SQL 语句
-		 * @param array $param 参数值数组
-		 * @return array|bool|int
-		 */
-		public static function RunYu($sql,$param=[]){
-				$db=UTSqlite::GetSqlite();
-				$trimmed = ltrim(strtoupper($sql));
-				$yutype = explode(' ',$trimmed)[0];
-				if($yutype=="SELECT"):
-						$islimit=(bool) preg_match('/\bLIMIT\b/i', $sql);
-						$total = 0;
-						if($islimit):
-								$countSql=UTSqlite::YuCountSql($sql);
-								if($countSql!=false):
-										$countStmt = $db->prepare($countSql);
-										if(!$countStmt):
-												throw new \Exception($db->lastErrorMsg());
-										endif;
-										foreach($param as $i => $value):
-												$countStmt->bindValue($i + 1, $value);
-										endforeach;
-										$countresult = $countStmt->execute();
-										if(!$countresult):
-												throw new \Exception($db->lastErrorMsg());
-										endif;
-										$row = $countresult->fetchArray(SQLITE3_NUM);
-										$total = (int) ($row[0] ?? 0);
-										$countresult->finalize();
-								endif;
-						endif;
-						$stmt = $db->prepare($sql);
-						if (!$stmt):
-								throw new \Exception($db->lastErrorMsg());
-						endif;
-						foreach ($param as $i => $value):
-								$stmt->bindValue($i + 1, $value);
-						endforeach;
-						$result = $stmt->execute();
-						if (!$result):
-								throw new \Exception($db->lastErrorMsg());
-						endif;
-						$querydata = [];
-						$xu = 0;
-						while($row = $result->fetchArray(SQLITE3_ASSOC)):
-								$row = array_filter($row, 'is_string', ARRAY_FILTER_USE_KEY);
-								$row['xu'] = ++$xu;
-								$querydata[] = $row;
-						endwhile;
-						$result->finalize();
-						$curnum = count($querydata);
-						if(!$islimit):
-								$total = $curnum;
-						endif;
-						return [
-								"querydata" => $querydata,
-								"curnum"    => $curnum,
-								"querynum"  => $total
-						];
-				else:
-						$stmt=$db->prepare($sql);
-						if(!$stmt):
-								throw new \Exception($db->lastErrorMsg());
-						endif;
-						foreach($param as $i => $value):
-								$stmt->bindValue($i + 1, $value);
-						endforeach;
-						$result = $stmt->execute();
-						if(!$result):
-								throw new \Exception($db->lastErrorMsg());
-						endif;
-						if($yutype=="INSERT"):
-								return $db->lastInsertRowID() ?: false;
-						else:
-								return true;
-						endif;
-				endif;
+    /**
+     * 执行预处理
+     * @param string $sql 带 ? 占位符的 SQL 语句
+     * @param array $param 参数值数组
+     * @return array|bool|int
+     */
+    public static function RunYu($sql,$param=[]){
+        $db=UTSqlite::GetSqlite();
+        $trimmed = ltrim(strtoupper($sql));
+        $yutype = explode(' ',$trimmed)[0];
+        if($yutype=="SELECT"){
+            $islimit=(bool) preg_match('/\bLIMIT\b/i', $sql);
+            $total = 0;
+            if($islimit){
+                $countSql=UTSqlite::YuCountSql($sql);
+                if($countSql!=false){
+                    $countStmt = $db->prepare($countSql);
+                    if(!$countStmt){
+                        throw new \Exception($db->lastErrorMsg());
+                    }
+                    foreach($param as $i => $value){
+                        $countStmt->bindValue($i + 1, $value);
+                    }
+                    $countresult = $countStmt->execute();
+                    if(!$countresult){
+                        throw new \Exception($db->lastErrorMsg());
+                    }
+                    $row = $countresult->fetchArray(SQLITE3_NUM);
+                    $total = (int) ($row[0] ?? 0);
+                    $countresult->finalize();
+                }
+            }
+            $stmt = $db->prepare($sql);
+            if(!$stmt){
+                throw new \Exception($db->lastErrorMsg());
+            }
+            foreach($param as $i => $value){
+                $stmt->bindValue($i + 1, $value);
+            }
+            $result = $stmt->execute();
+            if(!$result){
+                throw new \Exception($db->lastErrorMsg());
+            }
+            $querydata = [];
+            $xu = 0;
+            while($row = $result->fetchArray(SQLITE3_ASSOC)){
+                $row = array_filter($row, 'is_string', ARRAY_FILTER_USE_KEY);
+                $row['xu'] = ++$xu;
+                $querydata[] = $row;
+            }
+            $result->finalize();
+            $curnum = count($querydata);
+            if(!$islimit){
+                $total = $curnum;
+            }
+            return [
+                    "querydata" => $querydata,
+                    "curnum"    => $curnum,
+                    "querynum"  => $total
+            ];
+        }else{
+            $stmt=$db->prepare($sql);
+            if(!$stmt){
+                throw new \Exception($db->lastErrorMsg());
+            }
+            foreach($param as $i => $value){
+                $stmt->bindValue($i + 1, $value);
+            }
+            $result = $stmt->execute();
+            if(!$result){
+                throw new \Exception($db->lastErrorMsg());
+            }
+            if($yutype=="INSERT"){
+                return $db->lastInsertRowID() ?: false;
+            }else{
+                return true;
+            }
+        }
     }
-		public static function YuCountSql($sql){
-				$sql = rtrim($sql," \t\n\r;");
-				$sql = preg_replace('/\s+ORDER\s+BY\s+(?:(?!--).)*(?=\s*(?:LIMIT|$))/i','',$sql);
+    public static function YuCountSql($sql){
+        $sql = rtrim($sql," \t\n\r;");
+        $sql = preg_replace('/\s+ORDER\s+BY\s+(?:(?!--).)*(?=\s*(?:LIMIT|$))/i','',$sql);
         $sql = preg_replace('/\s+LIMIT\s+\d+(?:\s*,\s*\d+)?\s*$/i','',$sql);
-				return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
-		}
+        return "SELECT COUNT(*) AS total FROM ($sql) AS __count_wrapper";
+    }
     /**
      * 获取数据标签
      * @param string $table 表名
@@ -274,32 +277,32 @@ class UTSqlite{
      * @return array 返回数组，例：array('tags'=>$taglist)
      */
     public static function TagData($table,$field='',$where='',$order='',$lang='0'){
-        global$_lang_;
+        global $_lang_;
         $db=UTSqlite::GetSqlite();
         $tags="";
         $field=empty($field) ? "*" : $field;
-        if($lang!="0"):
-            if(is_numeric($lang)):
+        if($lang!="0"){
+            if(is_numeric($lang)){
                 $where=empty($where) ? "where lang='$_lang_'" : "where lang='$_lang_' and ".$where;
-            else:
+            }else{
                 $where=empty($where) ? "where lang='$lang'" : "where lang='$lang' and ".$where;
-            endif;
-        else:
+            }
+        }else{
             $where=empty($where) ? "" : "where ".$where;
-        endif;
+        }
         $order=empty($order) ? "" : "order by ".$order;
-        if(UTSqlite::ModTable($table)):
+        if(UTSqlite::ModTable($table)){
             $sql="select ".$field." from ".$table." ".$where." ".$order;
             $tag=$db->query($sql);
-            while($rows=$tag->fetchArray(SQLITE3_ASSOC)):
+            while($rows=$tag->fetchArray(SQLITE3_ASSOC)){
                 $tags=$tags.",".$rows[$field];
-            endwhile;
+            }
             $taglist=join(',',array_unique(array_diff(explode(",",$tags),array(""))));
             $taglists[]=array('tags'=>$taglist);
             return $taglists;
-        else:
+        }else{
             return array();
-        endif;
+        }
     }
     /**
      * 获取数据首图
@@ -312,24 +315,24 @@ class UTSqlite{
         $db=UTSqlite::GetSqlite();
         $where=empty($where) ? "" : "where ".$where;
         $limit=empty($limit) ? "" : "limit ".$limit;
-        if(UTMysql::ModTable($table)):
+        if(UTSqlite::ModTable($table)){
             $sql="SELECT ".$field." from ".$table." ".$where." ".$limit;
             $query=$db->query($sql);  
             $figuredata=array(); 
-            while($rows=$query->fetchArray(SQLITE3_ASSOC)):
+            while($rows=$query->fetchArray(SQLITE3_ASSOC)){
                 $pattern="/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.bmp|\.png]))[\'|\"].*?[\/]?>/";
                 preg_match_all($pattern,$rows[$field],$matchcontent);
                 $rows['imageurl']=isset($matchcontent[1][0]) ? $matchcontent[1][0] : '';
                 $count=count($rows);
-                for($i=0;$i<$count;$i++):
+                for($i=0;$i<$count;$i++){
                     unset($rows[$i]);
-                endfor;
+                }
                 array_push($figuredata,$rows);
-            endwhile;
+            }
             return $figuredata;
-        else:
+        }else{
             return array();
-        endif;
+        }
     }
     /**
      * 统计记录数目
@@ -346,9 +349,8 @@ class UTSqlite{
      * @param string $data 数据库
      */
     public static function Open($data){
-        $sqlite=new \SQLite3();
-        $db=$sqlite->open($data);
-        return $db;
+        $db=UTSqlite::GetSqlite();
+        return $db->open($data);
     }
     /**
      * 返回最近的出错记录
