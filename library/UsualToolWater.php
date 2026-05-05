@@ -61,7 +61,7 @@ class UTWater{
             $w = $water_w; 
             $h = $water_h;
         }else{
-            $temp = imagettfbbox(14, 0, OPEN_ROOT."/assets/fonts/alibaba.ttf", iconv("utf-8","utf-8",$content));
+            $temp = imagettfbbox(14, 0, OPEN_ROOT."/assets/fonts/web-font.ttf", iconv("utf-8","utf-8",$content));
             $w = $temp[2] - $temp[6]; 
             $h = $temp[3] - $temp[7]; 
             unset($temp);
@@ -86,7 +86,7 @@ class UTWater{
         if($type=="text"){
             $back=$ground_im;
             $color=imagecolorallocate($back,$fontcolor['r'],$fontcolor['g'],$fontcolor['b']);
-            imagettftext($back,$fontsize,0,$posX,$posY,$color,OPEN_ROOT."/assets/fonts/alibaba.ttf",iconv("utf-8","utf-8",$content));
+            imagettftext($back,$fontsize,0,$posX,$posY,$color,OPEN_ROOT."/assets/fonts/web-font.ttf",iconv("utf-8","utf-8",$content));
             imagejpeg($back,$photo);
             imagedestroy($back);
         }elseif($type=="image"){
