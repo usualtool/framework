@@ -775,7 +775,7 @@ class UTInc{
             $pageURL .= "s";
         }
         $pageURL .= "://";
-        $pageURL .= $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+        $pageURL .= ($_SERVER["HTTP_HOST"] ?? 'localhost') . ($_SERVER["REQUEST_URI"] ?? '/');
         return $pageURL;
     }
     /**
@@ -1041,7 +1041,7 @@ class UTInc{
      */
     public static function GetSystemInfo(){
         $os=PHP_OS;
-        $server = $_SERVER["SERVER_SOFTWARE"];
+        $server = $_SERVER["SERVER_SOFTWARE"] ?? 'Unknown';
         $phpver = PHP_VERSION;
         $memory=round(memory_get_peak_usage()/1024, 2).'KB';
         $SystemInfo=array("OS"=>$os,"SERVER"=>$server,"PHP"=>$phpver,"MEMORY"=>$memory);
@@ -1129,7 +1129,7 @@ class UTInc{
      * 获取客户端操作系统
      */    
     public static function GetOs(){
-        $os=$_SERVER['HTTP_USER_AGENT'];
+        $os=$_SERVER['HTTP_USER_AGENT'] ?? '';
         if(preg_match('/win/i',$os)){
             $os='Windows';
         }elseif(preg_match('/mac/i',$os)){
@@ -1155,7 +1155,7 @@ class UTInc{
      * 获取客户端浏览器
      */   
     public static function GetBrowser(){
-        $browser=$_SERVER['HTTP_USER_AGENT'];
+        $browser=$_SERVER['HTTP_USER_AGENT'] ?? '';
         if(preg_match('/MSIE/i',$browser)){
             $browser='MSIE';
         }elseif(preg_match('/Firefox/i',$browser)){

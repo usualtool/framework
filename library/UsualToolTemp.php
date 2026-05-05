@@ -23,6 +23,7 @@ class UTTemp{
     var $mode;
     var $tempdir;
     var $cachedir;
+    var $tplvars;
     function __construct($mode,$tempdir,$cachedir){
         $this->tempdir=rtrim($tempdir,'/').'/';
         $this->cachedir=rtrim($cachedir,'/').'/';
@@ -200,7 +201,7 @@ class UTTemp{
     function GetTempFile($path=APP_ROOT.'/modules/'){
         $file_arr=UTInc::GetDir($path);
         $admin=array();
-        $fornt=array();
+        $front=array();
         foreach($file_arr as $file){
 		      if($file!="index.html"){
             if(is_dir(APP_ROOT."/modules/".$file."/skin/front/")){

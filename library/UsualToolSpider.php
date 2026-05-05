@@ -108,7 +108,7 @@ class UTSpider{
     //创建一个CURL对象
     public function _create($url,$timeout){
         if(false===strpos($url, '://')){
-            preg_match('#^(http(?:s)?\://[^/]+/)#', $_SERVER["SCRIPT_URI"] , $m);
+            preg_match('#^(http(?:s)?\://[^/]+/)#',($_SERVER["SCRIPT_URI"] ?? ''),$m);
             $the_url = $m[1].ltrim($url,'/');
         }else{
             $the_url = $url;
@@ -139,8 +139,7 @@ class UTSpider{
         }
         if($this->agent){
             curl_setopt($ch, CURLOPT_USERAGENT, $this->agent);
-        }
-        elseif(array_key_exists('HTTP_USER_AGENT',$_SERVER)){
+        }elseif(isset($_SERVER['HTTP_USER_AGENT'])){
             curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
         }
         foreach($this->_option as $k=>$v){

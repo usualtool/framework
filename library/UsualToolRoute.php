@@ -19,7 +19,7 @@ class UTRoute{
     /**
      * URL易错特殊参数转义
      * @param string $url
-     * @return array
+     * @return string
      */
     public static function ConverUrl($url){
         $o=array(
@@ -42,13 +42,13 @@ class UTRoute{
      * @param string $url
      * @return array
      */
-    public static function Analy($url = ''){
+    public static function Analy($url=''){
         $config = UTInc::GetConfig();
         $param = array();
         if(empty($url)){
             $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
             $path = parse_url($requestUri, PHP_URL_PATH);
-            $scriptName = basename($_SERVER['SCRIPT_NAME']);
+            $scriptName = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
             $path = str_replace("/".$scriptName,"",$path);
         }else{
             $url = self::ConverUrl($url);
@@ -106,6 +106,7 @@ class UTRoute{
         $config = UTInc::GetConfig();
         $m = empty($module) ? $config["DEFAULT_MOD"] : $module;
         $p = empty($page) ? $config["DEFAULT_PAGE"] : $page;
+        $link='';
         if($config["REWRITE"]==0){
             $params = ['m'=>$m,'p'=>$p];
             if(!empty($param)){

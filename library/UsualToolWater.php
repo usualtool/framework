@@ -26,6 +26,11 @@ class UTWater{
      * @param int $fontsize 文字大小,图片水印忽略
     */
     public static function MarkWater($type,$photo,$content,$waterpos,$fontcolor='#B5B5B5',$fontsize='14'){
+        $water_im = null;
+        $water_w = 0;
+        $water_h = 0;
+        $ground_im = null;
+        $photofrom = '';
         $fontcolor=UTWater::Hex2Rgb($fontcolor);
         $typeerroMsg = "Only support for jpg/png/gif format."; 
         if($type=="image" && file_exists($content)){ 
@@ -56,7 +61,7 @@ class UTWater{
             $w = $water_w; 
             $h = $water_h;
         }else{
-            $temp = imagettfbbox(14, 0, "../images/font/simhei.ttf", iconv("utf-8","utf-8",$content));
+            $temp = imagettfbbox(14, 0, OPEN_ROOT."/assets/fonts/simhei.ttf", iconv("utf-8","utf-8",$content));
             $w = $temp[2] - $temp[6]; 
             $h = $temp[3] - $temp[7]; 
             unset($temp);
@@ -81,7 +86,7 @@ class UTWater{
         if($type=="text"){
             $back=$ground_im;
             $color=imagecolorallocate($back,$fontcolor['r'],$fontcolor['g'],$fontcolor['b']);
-            imagettftext($back,$fontsize,0,$posX,$posY,$color,"../images/font/simhei.ttf",iconv("utf-8","utf-8",$content));
+            imagettftext($back,$fontsize,0,$posX,$posY,$color,OPEN_ROOT."/assets/fonts/simhei.ttf",iconv("utf-8","utf-8",$content));
             imagejpeg($back,$photo);
             imagedestroy($back);
         }elseif($type=="image"){

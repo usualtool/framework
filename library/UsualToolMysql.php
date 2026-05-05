@@ -398,6 +398,7 @@ class UTMysql{
     public static function SearchData($keyword){
         $db=UTMysql::GetMysql();
         global $_lang_;
+        $sdata=null;
 		if(!empty($keyword)){
 			$sql="SELECT * FROM `cms_search` WHERE keyword ='$keyword'";
 			$sdata=mysqli_query($db,$sql);

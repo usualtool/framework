@@ -115,7 +115,7 @@ class UTMssql{
         $array = array();
         $result = sqlsrv_query($db,$sql);
 		$curnum=0;
-		while($rows=sqlsrv_fetch_array($result,SQLSRV_FETCH_ASSOC)){
+		while($rows=sqlsrv_fetch_array($result,\SQLSRV_FETCH_ASSOC)){
 			$curnum++;
 			$array[] = UTMssql::ObjectToArray($rows);
 		}
@@ -214,18 +214,18 @@ class UTMssql{
                     if($countStmt == false){
                             throw new \Exception(print_r(sqlsrv_errors(),true));
                     }
-                    $row = sqlsrv_fetch_array($countStmt,SQLSRV_FETCH_ASSOC);
+                    $row = sqlsrv_fetch_array($countStmt,\SQLSRV_FETCH_ASSOC);
                     $total = (int)($row['total'] ?? 0);
                     sqlsrv_free_stmt($countStmt);
                 }
             }
-            $stmt = sqlsrv_query($db,$sql,$param,['Scrollable'=>SQLSRV_CURSOR_STATIC]);
+            $stmt = sqlsrv_query($db,$sql,$param,['Scrollable'=>\SQLSRV_CURSOR_STATIC]);
             if($stmt==false){
                 throw new \Exception(print_r(sqlsrv_errors(),true));
             }
             $querydata = [];
             $xu = 0;
-            while($row=sqlsrv_fetch_array($stmt,SQLSRV_FETCH_ASSOC)){
+            while($row=sqlsrv_fetch_array($stmt,\SQLSRV_FETCH_ASSOC)){
                 foreach($row as $key=>$value){
                         if($value instanceof \DateTime){
                                  $row[$key]=$value->format('Y-m-d H:i:s');
@@ -252,7 +252,7 @@ class UTMssql{
             if($yutype=="INSERT"){
                 $idstmt = sqlsrv_query($db,'SELECT SCOPE_IDENTITY() AS id');
                 if($idstmt){
-                    $idrow = sqlsrv_fetch_array($idstmt,SQLSRV_FETCH_ASSOC);
+                    $idrow = sqlsrv_fetch_array($idstmt,\SQLSRV_FETCH_ASSOC);
                     $insertid = $idrow['id'];
                     sqlsrv_free_stmt($idstmt);
                     return is_numeric($insertid) ? (int) $insertid : true;
@@ -344,7 +344,7 @@ class UTMssql{
      * @param string $obj 对象
      * @return array
      */
-    public static function FetchArray($query,$type=SQLSRV_FETCH_ASSOC){
+    public static function FetchArray($query,$type=\SQLSRV_FETCH_ASSOC){
         $cursor=0;
         if(is_resource($query)) return sqlsrv_fetch_array($query,$type);
             if($cursor<count($query)){

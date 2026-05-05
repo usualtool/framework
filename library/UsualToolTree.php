@@ -20,6 +20,7 @@ class UTTree{
     public $icon = array('&nbsp;&nbsp;<span style="color:#A9A9A9;">┊</span> ','&nbsp;&nbsp;┣┈┈ ','&nbsp;&nbsp;┗┈┈ ','&nbsp;&nbsp;┞┈┈ ');
     public $nbsp = " ";
     public $ret = '';
+    public $str = '';
     /**
      * 初始化传入数组
      * 固定结构：array('id'=>'1','bid'=>'2','name'=>'3','lang'=>'zh')
@@ -216,7 +217,7 @@ class UTTree{
             $floder_status = isset($folder) ? ' class="'.$folder.'"' : '';
             $this->str .= $recursion ? '<ul><li'.$floder_status.' id=\''.$tid.'\'>' : '<li'.$floder_status.' id=\''.$tid.'\'>';
             $recursion = FALSE;
-            if($this->get_child($tid)){
+            if($this->GetChild($tid)){
                 eval("\$nstr = \"$str2\";");
                 $this->str .= $nstr;
                 if($showlevel == 0 || ($showlevel > 0 && $showlevel > $currentlevel)) {

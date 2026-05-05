@@ -63,7 +63,7 @@ class UTPage{
                 }
             } 
         } 
-        $this->subpage_link=$subpage_link ? $subpage_link : $_SERVER['PHP_SELF'] . '?page='; 
+        $this->subpage_link=$subpage_link ? $subpage_link : ($_SERVER['PHP_SELF'] ?? '/') . '?page=';
         $this->subpage_type = $subpage_type; 
         $this->each_num=5;
     }
