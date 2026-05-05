@@ -33,7 +33,7 @@ class UTCode{
     private $fontcolor;
     public function __construct(){
         session_start();
-        $this->font = OPEN_ROOT. '/assets/fonts/captcha.ttf';
+        $this->font = OPEN_ROOT. '/assets/fonts/alibaba.ttf';
     }
     /**
      * 创建验证码
