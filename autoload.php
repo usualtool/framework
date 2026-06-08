@@ -10,14 +10,16 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
-ini_set("display_errors","Off");
-error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
+ini_set('display_errors','Off');
+ini_set('log_errors','On');
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 /**
  * 系统级全局路径
  */
 defined('UTF_ROOT') or define('UTF_ROOT',__DIR__);
 defined('APP_ROOT') or define('APP_ROOT',__DIR__.'/app');
 defined('OPEN_ROOT') or define('OPEN_ROOT',__DIR__.'/open');
+ini_set('error_log',UTF_ROOT.'/log/php_errors.log');
 /**
  * 加载类库
  */

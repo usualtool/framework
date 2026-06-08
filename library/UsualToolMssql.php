@@ -346,10 +346,12 @@ class UTMssql{
      */
     public static function FetchArray($query,$type=\SQLSRV_FETCH_ASSOC){
         $cursor=0;
-        if(is_resource($query)) return sqlsrv_fetch_array($query,$type);
-            if($cursor<count($query)){
-                return $query[$cursor++];
-            }
+        if(is_resource($query)){
+            return sqlsrv_fetch_array($query,$type);
+        }
+        if(is_array($query) && $cursor < count($query)){ 
+            return $query[$cursor++];
+        }
         return false;
     }
     /**
@@ -398,7 +400,10 @@ class UTMssql{
      */
     public static function QueryNum($sql){
         $db=UTMssql::GetMssql();
-        $query=sqlsrv_query($db,$sql,array(),array("Scrollable"=>'static'));
+        $query=sqlsrv_query($db, $sql, array(), array("Scrollable" => 'static'));
+        if($query===false){
+            return 0; 
+        }
         return sqlsrv_num_rows($query);
     }
     /**
