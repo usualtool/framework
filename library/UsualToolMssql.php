@@ -159,7 +159,11 @@ class UTMssql{
         $updatestr='';
         if(!empty($data)){
             foreach($data as $k=>$v){
-			    if(preg_match('/\+\d/is',$v)){
+                if(is_null($v)){
+                    $updatestr.=$k."=NULL,";
+                }elseif(is_bool($v)){
+                    $updatestr.=$k."=".($v ? 1 : 0).",";
+			    }elseif(preg_match('/\+\d/is',$v)){
 			        $updatestr.=$k."=".$v.",";
 			    }else{
                     $updatestr.=$k."='".$v."',";
