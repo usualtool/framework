@@ -106,7 +106,8 @@ class UTRoute{
         $config = UTInc::GetConfig();
         $m = empty($module) ? $config["DEFAULT_MOD"] : $module;
         $p = empty($page) ? $config["DEFAULT_PAGE"] : $page;
-        $link='';
+        $dev = (strpos($_SERVER["REQUEST_URI"],$config["DEVELOP"])===0);
+        $place = $dev ? $config["DEVELOP"] : "";
         if($config["REWRITE"]==0){
             $params = ['m'=>$m,'p'=>$p];
             if(!empty($param)){
@@ -115,9 +116,9 @@ class UTRoute{
                     $params=array_merge($params, $extraParams);
                 }
             }
-            $link="?".http_build_query($params);
+            $link=$place."?".http_build_query($params);
         }elseif($config["REWRITE"]==1){
-            $link="/{$m}/{$p}";
+            $link=$place."/{$m}/{$p}";
             if(!empty($param)){
                 $link.="?".$param;
             }
