@@ -105,7 +105,7 @@ class UTRoute{
     public static function Link($module="", $page="", $param=""){
         $config = UTInc::GetConfig();
         $m = empty($module) ? $config["DEFAULT_MOD"] : $module;
-        $p = empty($page) ? $config["DEFAULT_PAGE"] : $page;
+        $p = empty($page) ? $config["DEFAULT_PAGE"] : str_replace(".php","",$page);
         $dev = (strpos($_SERVER["REQUEST_URI"],$config["DEVELOP"])===0);
         $place = $dev ? $config["DEVELOP"] : "";
         if($config["REWRITE"]==0){

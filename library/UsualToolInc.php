@@ -939,17 +939,17 @@ class UTInc{
      */
     public static function GetDir($path){
         if(!is_dir($path)){
-              return false;
+            return false;
         }
         $arr = array();
         $data = scandir($path);
-        foreach ($data as $value){
+        foreach($data as $value){
             if($value != '.' && $value != '..'){
-                $filetime = date('Y-m-d H:i:s',filemtime($path."/".$value));
-                $arr[$filetime] = $value;
+                $arr[$value] = filemtime($path . "/" . $value);
             }
         }
-        return $arr;
+        arsort($arr);
+        return array_keys($arr);
     }
     /**
      * 删除文件
