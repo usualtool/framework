@@ -1225,4 +1225,13 @@ class UTInc{
         }
         return false;
     }
+    /**
+     * 官方机器人
+     * @param string
+     */
+    public static function Robot(){
+        $config=UTInc::GetConfig();
+        $robot=UTInc::HttpGet($config["UTFURL"]."?AuthCode=".$config["UTCODE"]."&FromUrl=".UTInc::CurPageUrl()."&Type=robot");
+        echo UTInc::StrSubstr("<robot-code>","</robot-code>",$robot);
+    }
 }
