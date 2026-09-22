@@ -1040,11 +1040,35 @@ class UTInc{
      * @return array
      */
     public static function GetSystemInfo(){
-        $os=PHP_OS;
-        $server = $_SERVER["SERVER_SOFTWARE"] ?? 'Unknown';
-        $phpver = PHP_VERSION;
-        $memory=round(memory_get_peak_usage()/1024, 2).'KB';
-        $SystemInfo=array("OS"=>$os,"SERVER"=>$server,"PHP"=>$phpver,"MEMORY"=>$memory);
+        $docroot   = $_SERVER["DOCUMENT_ROOT"] ?? '';
+        $diskpath  = $docroot ?: '/';
+        $disktotal = (float)@disk_total_space($diskpath);
+        $diskfree  = (float)@disk_free_space($diskpath);
+        $diskused = 'Unknown';
+        if($disktotal > 0){
+            $diskused = round((1 - $diskfree / $disktotal) * 100, 1) . '%';
+        }
+        $SystemInfo = array(
+            "OS"         => PHP_OS,
+            "OS_FAMILY"  => defined('PHP_OS_FAMILY') ? PHP_OS_FAMILY : PHP_OS,
+            "HOSTNAME"   => gethostname() ?: 'Unknown',
+            "SERVER"     => $_SERVER["SERVER_SOFTWARE"] ?? 'Unknown',
+            "SAPI"       => php_sapi_name(),
+            "SERVER_IP"  => $_SERVER["SERVER_ADDR"] ?? @gethostbyname(gethostname()),
+            "DOC_ROOT"   => $docroot,
+            "PHP"        => PHP_VERSION,
+            "ZEND"       => zend_version(),
+            "EXTENSIONS" => count(get_loaded_extensions()),
+            "MEM_LIMIT"  => ini_get('memory_limit') ?: 'Unknown',
+            "MEM_USED"   => round(memory_get_usage(true) / 1048576, 2) . ' MB',
+            "MEM_PEAK"   => round(memory_get_peak_usage(true) / 1048576, 2) . ' MB',
+            "MAX_EXEC"   => (ini_get('max_execution_time') ?: '0') . 's',
+            "UPLOAD_MAX" => ini_get('upload_max_filesize') ?: 'Unknown',
+            "POST_MAX"   => ini_get('post_max_size') ?: 'Unknown',
+            "DISK_TOTAL" => round($disktotal / 1073741824, 2) . ' GB',
+            "DISK_FREE"  => round($diskfree / 1073741824, 2) . ' GB',
+            "DISK_USED"  => $diskused,
+        );
         return $SystemInfo;
     }
     /**
