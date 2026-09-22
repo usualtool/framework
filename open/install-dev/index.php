@@ -140,7 +140,7 @@ if($do=="db-save"){
                ?>
                <p>你即将部署可视包源码，请保持网络通畅。</p>
                <p>通讯状态：<?php echo $httpcode;?> <?php echo $httpcode=="200" ? "" : "， 因通讯障碍，在线安装可视化包将有极大几率失败。";?></p>
-               <p>请将app目录及update目录开启可写权限。权限校验：
+               <p>请将/app、/log、/update、/open/assets权限设置为可写（755）。权限校验：
                   app: <?php 
                   if(UTInc::FileMode(UTF_ROOT."/app")):
                       $a=0;
