@@ -12,6 +12,7 @@
 */
 ini_set('display_errors','Off');
 ini_set('log_errors','On');
+ini_set('error_log',__DIR__.'/log/php_errors.log');
 error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 /**
  * 系统级全局路径
@@ -19,7 +20,6 @@ error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 defined('UTF_ROOT') or define('UTF_ROOT',__DIR__);
 defined('APP_ROOT') or define('APP_ROOT',__DIR__.'/app');
 defined('OPEN_ROOT') or define('OPEN_ROOT',__DIR__.'/open');
-ini_set('error_log',UTF_ROOT.'/log/php_errors.log');
 /**
  * 加载类库
  */
