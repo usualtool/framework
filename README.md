@@ -8,7 +8,7 @@ UsualTool Framework (UT) is a multi terminal development framework based on PHP,
 Difference from traditional MVC  
 ![schematic](http://frame.usualtool.com/image/utyl-en.jpg) 
 #### Environment
-Install the necessary components in the root directory of the framework: composer require usualtool/ut-lib.
+Install the necessary components in the root directory of the framework: composer require usualtool/ut-lib.  
 Support Nginx/Apache/IIS.  
 Support PHP7+ and other known upward distributions.
 #### Security
