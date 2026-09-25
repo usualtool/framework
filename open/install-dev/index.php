@@ -11,18 +11,18 @@
        * --------------------------------------------------------       
 */
 require dirname(__DIR__).'/'.'config.php';
-use library\UsualToolInc\UTInc;
-use library\UsualToolMysql\UTMysql;
-if(UTInc::SearchFile(OPEN_ROOT."/install-dev/usualtool.lock")):
+use usualtool\Lib\Inc;
+use usualtool\Lib\Mysql;
+if(Inc::SearchFile(OPEN_ROOT."/install-dev/usualtool.lock")):
    header("location:../");
    exit();
 endif;
-$httpcode=UTInc::HttpCode($config["UTFURL"]);
-$sysinfo=UTInc::GetSystemInfo();
-$do=UTInc::SqlCheck($_GET["do"]);
+$httpcode=Inc::HttpCode($config["UTFURL"]);
+$sysinfo=Inc::GetSystemInfo();
+$do=Inc::SqlCheck($_GET["do"]);
 if($do=="db-test"){
    $data=array();
-   $db=UTMysql::TestDataBase($_POST["DBHOST"],$_POST["DBPORT"],$_POST["DBUSER"],$_POST["DBPASS"],$_POST["DBNAME"]);
+   $db=Mysql::TestDataBase($_POST["DBHOST"],$_POST["DBPORT"],$_POST["DBUSER"],$_POST["DBPASS"],$_POST["DBNAME"]);
    if(!$db){
       echo "UT-NO";
    }else{
@@ -119,7 +119,7 @@ if($do=="db-save"){
                      $c=0;
                      for($i=0;$i<$total;$i++){
                         $k=$i+1;
-                        $result=UTMysql::RunSql($arr[$i]);
+                        $result=Mysql::RunSql($arr[$i]);
                         if($result){
                            echo "<p class='fontsmall'>第".$k."条SQL执行成功!</p>";
                         }else{
@@ -142,7 +142,7 @@ if($do=="db-save"){
                <p>通讯状态：<?php echo $httpcode;?> <?php echo $httpcode=="200" ? "" : "， 因通讯障碍，在线安装可视化包将有极大几率失败。";?></p>
                <p>请将/app、/log、/update、/open/assets权限设置为可写（755）。权限校验：
                   app: <?php 
-                  if(UTInc::FileMode(UTF_ROOT."/app")):
+                  if(Inc::FileMode(UTF_ROOT."/app")):
                       $a=0;
                       echo "<font color=green>可写</font>";
                   else:
@@ -151,7 +151,7 @@ if($do=="db-save"){
                   endif;
                   ?> ，
                   update: <?php
-                  if(UTInc::FileMode(UTF_ROOT."/update")):
+                  if(Inc::FileMode(UTF_ROOT."/update")):
                       $b=0;
                       echo "<font color=green>可写</font>";
                   else:
@@ -167,14 +167,14 @@ if($do=="db-save"){
                   echo "<p>请再次检查文件夹权限!</p>";
                }else{
                   if($_GET["t"]=="db-dev"){
-                     $res=UTInc::SaveFile($config["DOWNURL"]."/develop.zip",UTF_ROOT."/update","develop.zip",1);
+                     $res=Inc::SaveFile($config["DOWNURL"]."/develop.zip",UTF_ROOT."/update","develop.zip",1);
                      if(!empty($res)){
                         $zip=new ZipArchive;
                         if($zip->open(UTF_ROOT."/update/develop.zip")===TRUE){ 
                             $zip->extractTo(UTF_ROOT."/update/");
                             $zip->close();
-                            UTInc::MoveDir(UTF_ROOT."/update/develop/",UTF_ROOT);
-                            UTInc::DelDir(UTF_ROOT."/update/develop/");
+                            Inc::MoveDir(UTF_ROOT."/update/develop/",UTF_ROOT);
+                            Inc::DelDir(UTF_ROOT."/update/develop/");
                             unlink(UTF_ROOT."/update/develop.zip");
                             file_put_contents("./usualtool.lock","lock");
                             $info=file_get_contents(UTF_ROOT."/.ut.config"); 

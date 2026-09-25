@@ -20,20 +20,20 @@
  * @var string $_modpath_ 模块路径
 */
 require_once __DIR__.'/config.php';
-use library\UsualToolInc\UTInc;
-use library\UsualToolPower\UTPower;
-use library\UsualToolDebug\UTDebug;
+use usualtool\Lib\Inc;
+use usualtool\Lib\Power;
+use usualtool\Lib\Debug;
 /**
  * 全局权限中间件
  */
-$_gate_=new UTPower($_deve_,MODULE_PATH);
+$_gate_=new Power($_deve_,MODULE_PATH);
 $_gate_->SetPage($m."/".$_form_."/".$p)->Check();
 /**
  * 路由分发控制
  */
 $_map_=$_modpath_."/route.php";
 $_file_=$p;
-if(UTInc::SearchFile($_map_)){
+if(Inc::SearchFile($_map_)){
     $_route=include $_map_;
     $_file_=$_route[$p] ?? $p;
 }
@@ -41,9 +41,9 @@ $_file_path_=$_modpath_."/".$_form_."/".$_file_.".php";
 /**
  * 判断文件真实性
  */
-if(UTInc::SearchFile($_file_path_)){
+if(Inc::SearchFile($_file_path_)){
     require_once $_file_path_;
-    $_class_=UTInc::GetClassName($_file_path_);
+    $_class_=Inc::GetClassName($_file_path_);
     /**
      * 分层模式
      */
@@ -59,6 +59,6 @@ if(UTInc::SearchFile($_file_path_)){
         }
     }
 }else{
-    UTDebug::Error("module",str_replace(APP_ROOT."/modules","",$_file_path_));
+    Debug::Error("module",str_replace(APP_ROOT."/modules","",$_file_path_));
 }
-$config["DEBUG"] && UTDebug::Debug($config["DEBUG_BAR"]);
+$config["DEBUG"] && Debug::Debug($config["DEBUG_BAR"]);

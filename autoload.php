@@ -10,83 +10,99 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
-ini_set('display_errors','Off');
-ini_set('log_errors','On');
-ini_set('error_log',__DIR__.'/log/php_errors.log');
-error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
-/**
- * 系统级全局路径
- */
-defined('UTF_ROOT') or define('UTF_ROOT',__DIR__);
-defined('APP_ROOT') or define('APP_ROOT',__DIR__.'/app');
-defined('OPEN_ROOT') or define('OPEN_ROOT',__DIR__.'/open');
-/**
- * 加载类库
- */
-session_start();
-require UTF_ROOT.'/library/UsualToolLoad.php';
-use library\UsualToolInc\UTInc;
-use library\UsualToolTemp\UTTemp;
-use library\UsualToolRoute\UTRoute;
-/**
- * 读取配置
- */
-$config=UTInc::GetConfig();
-/**
- * 公共模块/模板配置
- */
-define('PUB_PATH', APP_ROOT.'/modules/'.$config["DEFAULT_MOD"]);
-define('PUB_TEMP', PUB_PATH.'/skin');
-/**
- * 识别入口/路由
- */
-if(pathinfo($_SERVER['SCRIPT_NAME'] ?? '',PATHINFO_FILENAME)=='plugin') return;
-foreach(UTRoute::Analy(UTInc::CurPageUrl()) as $k=>$v) $_GET[$k]=$v;
-/**
- * 模块/控制/依赖
- */
-$m=UTInc::SqlCheck($_GET["m"] ?? $config["DEFAULT_MOD"]);
-$p=UTInc::SqlCheck(str_replace(".php","",$_GET["p"] ?? $config["DEFAULT_PAGE"]));
-$_modpath_=APP_ROOT."/modules/".$m;
-UTInc::HasComposer($_modpath_);
-/**
- * 入口节点/模板预设
- */
-$_deve_=UTInc::Contain($config["DEVELOP"],UTInc::CurPageUrl()) || (isset($_GET["_control_"]) && $_GET["_control_"]=="admin");
-$_form_=$_deve_ ? "admin" : "front";
-$_work_=APP_ROOT."/template/".($_deve_ ? $config["TEMPADMIN"] : $config["TEMPFRONT"]);
-$_node_=(($_deve_ && $config["TEMPADMIN"]!="0") || (!$_deve_ && $config["TEMPFRONT"]!="0")) ? $_work_ : $_modpath_;
-$_skin_=$_node_.($_node_===$_work_ ? "/skin/".$m : "/skin");
-$_cache_=$_node_."/cache";
-/**
- * 本地化语言
- */
-$_lang_=!empty($_COOKIE["lang"]) ? UTInc::SqlCheck($_COOKIE["lang"]) : $config["LANG"];
-if(!isset($_COOKIE["lang"])){
-    setcookie("lang",$_lang_);
-    $_COOKIE["lang"]=$_lang_;
+class Loader{
+    //共享映射
+    private static $mapping=[
+        'share'=>APP_ROOT.'/share'
+    ];
+    public static function Register(){
+        //核心依赖
+        if(!class_exists('usualtool\Lib') && !file_exists(UTF_ROOT.'/vendor/usualtool/ut-lib')){
+            http_response_code(503);
+            header('Content-Type: text/html; charset=utf-8');
+            die('<!doctype html><html><head><meta charset="utf-8"><title>ERROR</title></head>'
+            . '<body style="text-align:center;padding-top:10%;font-family:sans-serif">'
+            . '<p>框架缺少 usualtool/ut-lib 依赖，请联系管理员。</p>'
+            . '<p>UsualTool Framework is missing usualtool/ut-lib dependencies, please contact the administrator.</p>'
+            . '<p>https://github.com/usualtool/ut-lib</p>'
+            . '</body></html>');
+        }
+        //第三方依赖
+        $vendor=UTF_ROOT.'/vendor/autoload.php';
+        if(file_exists($vendor)){
+            require_once $vendor;
+        }
+        spl_autoload_register(['Loader','AutoLoad']);
+    }
+    public static function AutoLoad($class){
+        $parts=explode('\\',$class);
+        $count=count($parts);
+        if($count<2) return false;
+        $place=strtolower($parts[0]);
+        //兼容旧版类库
+        if($place==='library'){
+            $path_part=array_slice($parts,1,-1); 
+            $filename_path=implode('/',$path_part);
+            $file_path=UTF_ROOT.'/library/'.$filename_path.'.php';
+            if(file_exists($file_path)){
+                require_once $file_path;
+                return true;
+            }
+            return false;
+        }
+        //模型
+        if($place==='model' && $count>=3){
+            $module=str_replace('_','-',strtolower($parts[1]));
+            $sub_part=array_slice($parts,2);
+            $sub_path=implode('/',$sub_part).'.php';
+            $model=APP_ROOT.'/modules/'.$module.'/model/'.$sub_path;
+            if(file_exists($model)){
+                require_once $model;
+                return true;
+            }
+            return false;
+        }
+        //控制
+        if($place==='controller' && $count>=3){
+            $module=str_replace('_','-',strtolower($parts[1]));
+            $item=strtolower($parts[2]);
+            $lowercase=($item=='front' || $item=='admin');
+            if($item=='front' || $item=='admin'){
+                $sub_part=array_slice($parts,3);
+                $middle=$item;
+            }else{
+                $sub_part=array_slice($parts,2);
+                $middle='controller';
+            }
+            $sub_path=implode('/',$sub_part).'.php';
+            $file_path=APP_ROOT.'/modules/'.$module.'/'.$middle.'/'.$sub_path;
+            if(file_exists($file_path)){
+                require_once $file_path;
+                return true;
+            }
+            if($lowercase){
+                $dir_path=dirname($sub_path);
+                $lower_sub_path=($dir_path==='.' ? '' : $dir_path.'/').strtolower(basename($sub_path,'.php')).'.php';
+                $lower_file_path=APP_ROOT.'/modules/'.$module.'/'.$middle.'/'.$lower_sub_path;
+                if(file_exists($lower_file_path)){
+                    require_once $lower_file_path;
+                    return true;
+                }
+            }
+            return false;
+        }
+        //通用PSR-4
+        if(isset(Loader::$mapping[$place])){
+            $basedir=Loader::$mapping[$place];
+            $relative=implode('/',array_slice($parts,1));
+            $file_path=$basedir.'/'.str_replace('_','-',$relative).'.php';
+            if(file_exists($file_path)){
+                require_once $file_path;
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
 }
-/**
- * 启动引擎/全局预设
- */
-$app=new UTTemp($config["TEMPCACHE"],$_skin_."/".$_form_,$_cache_."/".$_form_);
-$app->Runin(
-    array(
-        "appname",//应用名称
-        "appurl",//应用地址
-        "module",//当前模块
-        "page",//当前页/方法
-        "lang",//本地化语言列表
-        "thelang",//当前语言
-        "pubtemp",//模块化公共模板路径
-        "template"//工程化模板路径
-    ),array(
-        $config["APPNAME"],
-        $config["APPURL"],
-        $m,
-        $p,
-        explode(",",$config["LANG_OPTION"]),
-        $config["LANG"],
-        PUB_TEMP."/".$_form_,
-        $_work_."/skin/".$config["DEFAULT_MOD"]."/".$_form_
-));
+Loader::Register();

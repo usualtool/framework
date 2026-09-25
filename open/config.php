@@ -10,7 +10,7 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
-require dirname(__DIR__).'/'.'autoload.php';
+require dirname(__DIR__).'/'.'bootstrap.php';
 /**
  * 业务级全局路径
  */

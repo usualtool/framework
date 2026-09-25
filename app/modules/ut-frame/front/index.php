@@ -1,6 +1,6 @@
 <?php
 namespace Controller\Ut_frame;
-use library\UsualToolInc\UTInc;
+use usualtool\Lib\Inc;
 use Model\Ut_frame\Index as UtIndex; 
 class Index{
     private $app;
