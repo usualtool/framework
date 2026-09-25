@@ -9,7 +9,7 @@
         "email":        "usualtool@qq.com"
     }],
     "require": {
-        "usualtool/ut-lib": "dev-main"
+        "usualtool/ut-lib": "^1.0"
     },
     "scripts": {
         "post-install-cmd": "php usualtool composer",
