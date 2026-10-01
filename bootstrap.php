@@ -57,7 +57,7 @@ $_form_=$_deve_ ? "admin" : "front";
 $_work_=APP_ROOT."/template/".($_deve_ ? $config["TEMPADMIN"] : $config["TEMPFRONT"]);
 $_node_=(($_deve_ && $config["TEMPADMIN"]!="0") || (!$_deve_ && $config["TEMPFRONT"]!="0")) ? $_work_ : $_modpath_;
 $_skin_=$_node_.($_node_===$_work_ ? "/skin/".$m : "/skin");
-$_cache_=$_node_."/cache";
+$_cache_=($_node_===$_work_ ? $_skin_ : $_node_)."/cache";
 /**
  * 本地化语言
  */
