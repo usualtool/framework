@@ -20,12 +20,11 @@ class Loader{
         if(!class_exists('usualtool\Lib') && !file_exists(UTF_ROOT.'/vendor/usualtool/ut-lib')){
             http_response_code(503);
             header('Content-Type: text/html; charset=utf-8');
-            die('<!doctype html><html><head><meta charset="utf-8"><title>ERROR</title></head>'
-            . '<body style="text-align:center;padding-top:10%;font-family:sans-serif">'
-            . '<p>框架缺少 usualtool/ut-lib 依赖，请联系管理员。</p>'
-            . '<p>UsualTool Framework is missing usualtool/ut-lib dependencies, please contact the administrator.</p>'
-            . '<p>https://github.com/usualtool/ut-lib</p>'
-            . '</body></html>');
+            echo'<pre style="padding:24px;font:14px/1.8 monospace">';
+            echo'框架缺少 usualtool/ut-lib 依赖<br/>';
+            echo'https://github.com/usualtool/ut-lib';
+            echo'</pre>';
+            exit;
         }
         //第三方依赖
         $vendor=UTF_ROOT.'/vendor/autoload.php';
@@ -33,6 +32,8 @@ class Loader{
             require_once $vendor;
         }
         spl_autoload_register(['Loader','AutoLoad']);
+        //权限
+        self::Permission();
     }
     public static function AutoLoad($class){
         $parts=explode('\\',$class);
@@ -103,6 +104,33 @@ class Loader{
             return false;
         }
         return false;
+    }
+    private static function Permission(){
+        $root=defined('UTF_ROOT') ? UTF_ROOT : __DIR__;
+        $checks=[];
+        foreach(['log'=>'日志','update'=>'升级'] as $rel=>$desc){
+            $checks[$root.'/'.$rel]=$desc;
+        }
+        foreach(glob($root.'/app/modules/*/cache',GLOB_ONLYDIR) ?: [] as $p){
+            $checks[$p]='模板编译缓存';
+        }
+        foreach(glob($root.'/app/template/*/skin/*/*/cache',GLOB_ONLYDIR) ?: [] as $p){
+            $checks[$p]='模板工程缓存';
+        }
+        $bad=[];
+        foreach ($checks as $p => $desc){
+            if(is_dir($p) && !is_writable($p)){
+                $bad[]=str_replace($root,'',$p).' ('.$desc.')';
+            }
+        }
+        if(!$bad) return;
+        http_response_code(500);
+        header('Content-Type: text/html; charset=utf-8');
+        echo'<pre style="padding:24px;font:14px/1.8 monospace">';
+        echo'框架部分目录无写入权限<br/>';
+        foreach($bad as $b) echo' - '.htmlspecialchars($b,ENT_QUOTES,'UTF-8')."\r\n";
+        echo'</pre>';
+        exit;
     }
 }
 Loader::Register();
