@@ -21,7 +21,7 @@ DROP TABLE IF EXISTS `cms_admin_role`;
 CREATE TABLE `cms_admin_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `role` varchar(50) NOT NULL,
-  `module` varchar(250) NOT NULL,
+  `module` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS `cms_api_set`;
