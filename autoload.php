@@ -11,9 +11,12 @@
        * --------------------------------------------------------       
 */
 class Loader{
-    //共享映射
+    //通用映射
     private static $mapping=[
-        'share'=>APP_ROOT.'/share'
+        'task'=>APP_ROOT.'/task',
+        'share'=>APP_ROOT.'/share',
+        'module'=>APP_ROOT.'/modules',
+        'plugin'=>APP_ROOT.'/plugins'
     ];
     public static function Register(){
         //核心依赖
@@ -44,24 +47,14 @@ class Loader{
         if($place==='library'){
             $path_part=array_slice($parts,1,-1); 
             $filename_path=implode('/',$path_part);
-            $file_path=UTF_ROOT.'/library/'.$filename_path.'.php';
-            if(file_exists($file_path)){
-                require_once $file_path;
-                return true;
-            }
-            return false;
+            return self::Load(UTF_ROOT.'/library',$filename_path.'.php');
         }
         //模型
         if($place==='model' && $count>=3){
             $module=str_replace('_','-',strtolower($parts[1]));
             $sub_part=array_slice($parts,2);
             $sub_path=implode('/',$sub_part).'.php';
-            $model=APP_ROOT.'/modules/'.$module.'/model/'.$sub_path;
-            if(file_exists($model)){
-                require_once $model;
-                return true;
-            }
-            return false;
+            return self::Load(APP_ROOT.'/modules',$module.'/model/'.$sub_path);
         }
         //控制
         if($place==='controller' && $count>=3){
@@ -76,19 +69,11 @@ class Loader{
                 $middle='controller';
             }
             $sub_path=implode('/',$sub_part).'.php';
-            $file_path=APP_ROOT.'/modules/'.$module.'/'.$middle.'/'.$sub_path;
-            if(file_exists($file_path)){
-                require_once $file_path;
-                return true;
-            }
+            if(self::Load(APP_ROOT.'/modules',$module.'/'.$middle.'/'.$sub_path)) return true;
             if($lowercase){
                 $dir_path=dirname($sub_path);
                 $lower_sub_path=($dir_path==='.' ? '' : $dir_path.'/').strtolower(basename($sub_path,'.php')).'.php';
-                $lower_file_path=APP_ROOT.'/modules/'.$module.'/'.$middle.'/'.$lower_sub_path;
-                if(file_exists($lower_file_path)){
-                    require_once $lower_file_path;
-                    return true;
-                }
+                return self::Load(APP_ROOT.'/modules',$module.'/'.$middle.'/'.$lower_sub_path);
             }
             return false;
         }
@@ -96,14 +81,48 @@ class Loader{
         if(isset(Loader::$mapping[$place])){
             $basedir=Loader::$mapping[$place];
             $relative=implode('/',array_slice($parts,1));
-            $file_path=$basedir.'/'.str_replace('_','-',$relative).'.php';
-            if(file_exists($file_path)){
-                require_once $file_path;
-                return true;
-            }
-            return false;
+            return self::Load($basedir,str_replace('_','-',$relative).'.php');
         }
         return false;
+    }
+    private static function Load($base,$relative){
+        $file_path=$base.'/'.$relative;
+        if(file_exists($file_path)){
+            require_once $file_path;
+            return true;
+        }
+        $ci_path=self::ResolvePath($base,$relative);
+        if($ci_path!==false){
+            require_once $ci_path;
+            return true;
+        }
+        return false;
+    }
+    private static function ResolvePath($base,$relative){
+        $path=rtrim($base,'/\\');
+        $segments=explode('/',str_replace('\\','/',$relative));
+        foreach($segments as $segment){
+            if($segment==='') continue;
+            $next=$path.'/'.$segment;
+            if(@file_exists($next)){
+                $path=$next;
+                continue;
+            }
+            $matched=false;
+            $items=@scandir($path);
+            if($items!==false){
+                foreach($items as $item){
+                    if($item==='.' || $item==='..') continue;
+                    if(strcasecmp($item,$segment)===0){
+                        $path=$path.'/'.$item;
+                        $matched=true;
+                        break;
+                    }
+                }
+            }
+            if(!$matched) return false;
+        }
+        return @is_file($path) ? $path : false;
     }
     private static function Permission(){
         $root=defined('UTF_ROOT') ? UTF_ROOT : __DIR__;
