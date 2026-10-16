@@ -52,7 +52,7 @@ Inc::HasComposer($_modpath_);
 /**
  * 入口节点/模板预设
  */
-$_deve_=Inc::Contain($config["DEVELOP"],Inc::CurPageUrl()) || (isset($_GET["_control_"]) && $_GET["_control_"]=="admin");
+$_deve_=(($_GET["_control_"] ?? "")=="admin");
 $_form_=$_deve_ ? "admin" : "front";
 $_work_=APP_ROOT."/template/".($_deve_ ? $config["TEMPADMIN"] : $config["TEMPFRONT"]);
 $_node_=(($_deve_ && $config["TEMPADMIN"]!="0") || (!$_deve_ && $config["TEMPFRONT"]!="0")) ? $_work_ : $_modpath_;
