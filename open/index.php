@@ -16,28 +16,23 @@
  * @var string $p 页面名
  * @var array $config 配置数组
  * @var bool $_deve_ 路由节点
- * @var string $_form_ 表单类型
+ * @var string $_form_ 控制端
  * @var string $_modpath_ 模块路径
 */
 require_once __DIR__.'/config.php';
 use usualtool\Lib\Inc;
+use usualtool\Lib\Route;
 use usualtool\Lib\Power;
 use usualtool\Lib\Debug;
+/**
+ * 路由分发控制
+ */
+$_file_path_=Route::Page($_modpath_,$_form_,$p);
 /**
  * 全局权限中间件
  */
 $_gate_=new Power($_deve_,MODULE_PATH);
-$_gate_->SetPage($m."/".$_form_."/".$p)->Check();
-/**
- * 路由分发控制
- */
-$_map_=$_modpath_."/route.php";
-$_file_=$p;
-if(Inc::SearchFile($_map_)){
-    $_route=include $_map_;
-    $_file_=$_route[$p] ?? $p;
-}
-$_file_path_=$_modpath_."/".$_form_."/".$_file_.".php";
+$_gate_->SetPage($m."/".$_form_."/".basename($_file_path_,".php"))->Check();
 /**
  * 判断文件真实性
  */
