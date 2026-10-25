@@ -1,6 +1,5 @@
 <?php
 namespace Controller\Ut_frame;
-use usualtool\Lib\Inc;
 use Model\Ut_frame\Index as UtIndex; 
 class Index{
     private $app;
@@ -17,7 +16,7 @@ class Index{
         // 2. 获取数据
         $data = $model->getStatus();
         // 3. 注入数据
-        $this->app->Runin(array("setup", "title"), array($data['setup'], $data['title']));
+        $this->app->Runin(array("title"), array($data['title']));
         // 4. 渲染模板
         $this->app->Open("index.cms");
     }

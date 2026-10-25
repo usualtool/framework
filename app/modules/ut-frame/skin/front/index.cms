@@ -50,7 +50,6 @@
         <p>Tip: UsualTool Framework successful installation.</p>
         <hr class="divider">
         <p><img src="/assets/logo.png" style="max-width: 100%;"></p>
-        <{if $setup==0}><h3>Visual development package not installed.</h3><{/if}>
         <ul>
             <li>Repository 1: <a target="_blank" href="https://gitee.com/usualtool">https://gitee.com/usualtool</a></li>
             <li>Repository 2: <a target="_blank" href="https://github.com/usualtool">https://github.com/usualtool</a></li>

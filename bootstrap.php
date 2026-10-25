@@ -23,6 +23,8 @@ defined('OPEN_ROOT') or define('OPEN_ROOT',__DIR__.'/open');
 /**
  * 加载类库
  */
+ini_set('session.cookie_httponly','1');
+ini_set('session.cookie_samesite','Lax');
 session_start();
 require UTF_ROOT.'/autoload.php';
 use usualtool\Lib\Inc;
