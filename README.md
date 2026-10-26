@@ -11,8 +11,6 @@ Difference from traditional MVC
 Install the necessary components in the root directory of the framework: composer require usualtool/ut-lib.  
 Support Nginx/Apache/IIS.  
 Support PHP7+ and other known upward distributions.
-#### Security
-install-dev is the installation directory of visual package on the development side. If visualization is not required, please delete this directory after deploying UT.
 #### system architecture
 ```
 ┌─── 📁app 应用开发目录 core
