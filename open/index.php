@@ -19,11 +19,12 @@
  * @var string $_form_ 控制端
  * @var string $_modpath_ 模块路径
 */
-require_once __DIR__.'/config.php';
 use usualtool\Lib\Inc;
+use usualtool\Lib\App;
 use usualtool\Lib\Route;
 use usualtool\Lib\Power;
 use usualtool\Lib\Debug;
+require_once __DIR__.'/config.php';
 /**
  * 路由分发控制
  */
@@ -44,13 +45,19 @@ if(Inc::SearchFile($_file_path_)){
      */
     if($_class_){
         $action=$_GET["action"] ?? "";
-        $action=preg_match('/^[a-zA-Z0-9_]+$/',$action) ? $action : "index";
-        $controller=new $_class_();
+        $action=is_string($action) && preg_match('/^[a-zA-Z0-9_]+$/',$action) ? $action : "index";
+        try{
+            $controller=App::Make($_class_);
+        }catch(\Throwable $e){
+            $controller=new $_class_();
+        }
         /**
          * 执行动作
          */
-        if(method_exists($controller,$action) || method_exists($controller,'__call')){
+        if(is_callable(array($controller,$action))){
             $controller->$action();
+        }else{
+            Debug::Error("action",$_class_."/".$action);
         }
     }
 }else{

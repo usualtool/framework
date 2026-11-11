@@ -153,3 +153,5 @@ class Loader{
     }
 }
 Loader::Register();
+$_helper_=UTF_ROOT.'/vendor/usualtool/ut-lib/src/Helper.php';
+if(is_file($_helper_)){require_once $_helper_;}
