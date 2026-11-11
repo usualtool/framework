@@ -72,7 +72,6 @@ if(!isset($_COOKIE["lang"])){
  * 启动引擎/全局预设
  */
 $app=new Temp($config["TEMPCACHE"],$_skin_."/".$_form_,$_cache_."/".$_form_);
-\usualtool\Lib\App::Set($app);
 $app->Runin(
     array(
         "appname",//应用名称
@@ -92,4 +91,9 @@ $app->Runin(
         $config["LANG"],
         PUB_TEMP."/".$_form_,
         $_work_."/skin/".$config["DEFAULT_MOD"]."/".$_form_
-));
+    )
+);
+/**
+ * 登记引擎/绑定服务
+ */
+\usualtool\Lib\App::Boot($app);

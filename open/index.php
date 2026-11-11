@@ -20,7 +20,6 @@
  * @var string $_modpath_ 模块路径
 */
 use usualtool\Lib\Inc;
-use usualtool\Lib\App;
 use usualtool\Lib\Route;
 use usualtool\Lib\Power;
 use usualtool\Lib\Debug;
@@ -47,7 +46,7 @@ if(Inc::SearchFile($_file_path_)){
         $action=$_GET["action"] ?? "";
         $action=is_string($action) && preg_match('/^[a-zA-Z0-9_]+$/',$action) ? $action : "index";
         try{
-            $controller=App::Make($_class_);
+            $controller=\usualtool\Lib\App::Make($_class_);
         }catch(\Throwable $e){
             $controller=new $_class_();
         }
