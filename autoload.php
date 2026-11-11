@@ -10,6 +10,13 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
+/**
+ * 全局路径
+ */
+defined('UTF_ROOT')  or define('UTF_ROOT',__DIR__);
+defined('APP_ROOT')  or define('APP_ROOT',UTF_ROOT.'/app');
+defined('OPEN_ROOT') or define('OPEN_ROOT',UTF_ROOT.'/open');
+defined('UNIT_ROOT') or define('UNIT_ROOT',UTF_ROOT.'/vendor/usualtool');
 class Loader{
     //通用映射
     private static $mapping=[
@@ -19,18 +26,18 @@ class Loader{
         'plugin'=>APP_ROOT.'/plugins'
     ];
     public static function Register(){
+        $vendor=UTF_ROOT.'/vendor/autoload.php';
         //核心依赖
-        if(!class_exists('usualtool\Lib') && !file_exists(UTF_ROOT.'/vendor/usualtool/ut-lib')){
+        if(!class_exists('usualtool\Lib') && (!file_exists(UTF_ROOT.'/vendor/usualtool/ut-lib') || !is_file($vendor))){
             http_response_code(503);
             header('Content-Type: text/html; charset=utf-8');
             echo'<pre style="padding:24px;font:14px/1.8 monospace">';
-            echo'框架缺少 usualtool/ut-lib 依赖<br/>';
-            echo'https://github.com/usualtool/ut-lib';
+                echo'框架缺少 usualtool/ut-lib 依赖<br/>';
+                echo'https://github.com/usualtool/ut-lib';
             echo'</pre>';
-            exit;
+            exit(1);
         }
         //第三方依赖
-        $vendor=UTF_ROOT.'/vendor/autoload.php';
         if(file_exists($vendor)){
             require_once $vendor;
         }
@@ -125,34 +132,30 @@ class Loader{
         return @is_file($path) ? $path : false;
     }
     private static function Permission(){
-        $root=defined('UTF_ROOT') ? UTF_ROOT : __DIR__;
         $checks=[];
         foreach(['log'=>'日志','update'=>'升级'] as $rel=>$desc){
-            $checks[$root.'/'.$rel]=$desc;
+            $checks[UTF_ROOT.'/'.$rel]=$desc;
         }
-        foreach(glob($root.'/app/modules/*/cache',GLOB_ONLYDIR) ?: [] as $p){
+        foreach(glob(UTF_ROOT.'/app/modules/*/cache',GLOB_ONLYDIR) ?: [] as $p){
             $checks[$p]='模板编译缓存';
         }
-        foreach(glob($root.'/app/template/*/skin/*/*/cache',GLOB_ONLYDIR) ?: [] as $p){
+        foreach(glob(UTF_ROOT.'/app/template/*/skin/*/*/cache',GLOB_ONLYDIR) ?: [] as $p){
             $checks[$p]='模板工程缓存';
         }
         $bad=[];
         foreach ($checks as $p => $desc){
             if(is_dir($p) && !is_writable($p)){
-                $bad[]=str_replace($root,'',$p).' ('.$desc.')';
+                $bad[]=str_replace(UTF_ROOT,'',$p).' ('.$desc.')';
             }
         }
         if(!$bad) return;
         http_response_code(500);
         header('Content-Type: text/html; charset=utf-8');
         echo'<pre style="padding:24px;font:14px/1.8 monospace">';
-        echo'框架部分目录无写入权限<br/>';
-        foreach($bad as $b) echo' - '.htmlspecialchars($b,ENT_QUOTES,'UTF-8')."\r\n";
+            echo'框架部分目录无写入权限<br/>';
+            foreach($bad as $b) echo' - '.htmlspecialchars($b,ENT_QUOTES,'UTF-8')."\r\n";
         echo'</pre>';
-        exit;
+        exit(1);
     }
 }
 Loader::Register();
-//框架助手
-$_helper_=UTF_ROOT.'/vendor/usualtool/ut-lib/src/Helper.php';
-if(is_file($_helper_)){require_once $_helper_;}

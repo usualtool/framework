@@ -13,20 +13,14 @@
 ini_set('display_errors','Off');
 ini_set('log_errors','On');
 ini_set('error_log',__DIR__.'/log/php_errors.log');
-error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
-/**
- * 系统级全局路径
- */
-defined('UTF_ROOT') or define('UTF_ROOT',__DIR__);
-defined('APP_ROOT') or define('APP_ROOT',__DIR__.'/app');
-defined('OPEN_ROOT') or define('OPEN_ROOT',__DIR__.'/open');
-/**
- * 加载类库
- */
 ini_set('session.cookie_httponly','1');
 ini_set('session.cookie_samesite','Lax');
+error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
 session_start();
-require UTF_ROOT.'/autoload.php';
+/**
+ * 加载依赖
+ */
+require __DIR__.'/autoload.php';
 use usualtool\Lib\Inc;
 use usualtool\Lib\Temp;
 use usualtool\Lib\Route;
