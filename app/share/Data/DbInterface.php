@@ -38,10 +38,47 @@ interface DbInterface{
     public function Count($table,$where,$param);
 
     /**
+     * 查询单行，无数据返回 null
+     * @return array|null
+     */
+    public function First($table,$field='*',$where='',$param=array(),$order='');
+
+    /**
+     * 取单行单列的值，$field 只允许单个字段名
+     * @return mixed|null
+     */
+    public function Value($table,$field,$where='',$param=array(),$order='');
+
+    /**
+     * 取单列的一维数组
+     * @return array
+     */
+    public function Column($table,$field,$where='',$param=array(),$order='',$limit='');
+
+    /**
+     * 是否存在符合条件的记录
+     * @return bool
+     */
+    public function Exists($table,$where='',$param=array());
+
+    /**
+     * 分页查询，$page 从 1 开始，$size 超出 1-1000 会夹到边界
+     * @return array rows/total/page/size/pages
+     */
+    public function page($table,$where='',$param=array(),$page=1,$size=20,$field='*',$order='');
+
+    /**
      * 写入一行
      * @return int|bool 自增 ID（驱动不支持时为 true），失败 false
      */
     public function Insert($table,array $data);
+
+    /**
+     * 批量写入：单条 SQL 多值，整体走事务
+     * @param array $rows 二维数组，列名以首行为准，后续行缺列按 NULL
+     * @return int|bool 写入条数，失败 false
+     */
+    public function BatchInsert($table,array $rows);
 
     /**
      * 更新
@@ -60,6 +97,12 @@ interface DbInterface{
      * @return bool
      */
     public function Increment($table,$field,$step,$where,$param);
+
+    /**
+     * 字段自减
+     * @return bool
+     */
+    public function Decrement($table,$field,$step=1,$where='',$param=array());
 
     /**
      * 查询类语句直通（JOIN、聚合、information_schema）
