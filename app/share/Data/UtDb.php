@@ -13,6 +13,8 @@ use usualtool\Lib\Data;
 
 class UtDb extends Adapter{
 
+    private $txDb=null;
+
     /**
      * 适配器标识
      * @return string
@@ -58,6 +60,7 @@ class UtDb extends Adapter{
 
     protected function begin(){
         $db=Data::GetDatabase();
+        $this->txDb=$db;
         if($db instanceof \PDO){
             $db->beginTransaction();
             return true;
@@ -71,7 +74,8 @@ class UtDb extends Adapter{
     }
 
     protected function commit(){
-        $db=Data::GetDatabase();
+        $db=$this->txDb ? $this->txDb : Data::GetDatabase();
+        $this->txDb=null;
         if($db instanceof \PDO){
             $db->commit();
             return true;
@@ -85,7 +89,8 @@ class UtDb extends Adapter{
     }
 
     protected function rollback(){
-        $db=Data::GetDatabase();
+        $db=$this->txDb ? $this->txDb : Data::GetDatabase();
+        $this->txDb=null;
         if($db instanceof \PDO){
             $db->rollBack();
             return true;

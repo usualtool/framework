@@ -17,6 +17,7 @@
 namespace Share\Data;
 
 use usualtool\Lib\App;
+use usualtool\Lib\Data;
 
 class Db{
 
@@ -85,6 +86,38 @@ class Db{
      */
     public static function Driver(){
         return (string)self::Instance()->Name();
+    }
+
+    /**
+     * 适配器来源：use=显式注入，container=容器绑定，default=兜底 UtDb
+     * @return string
+     */
+    public static function Source(){
+        if(self::$db!==null){
+            return "use";
+        }
+        if(class_exists("usualtool\\Lib\\App") && App::Has(DbInterface::class)){
+            return "container";
+        }
+        return "default";
+    }
+
+    /**
+     * 切换底层驱动，同时解除显式注入，确保切换真正生效
+     * @param string $driver
+     * @return string|null 生效的驱动名，容器已被非 UtDb 实现占用时返回 null
+     */
+    public static function SwitchTo($driver){
+        self::$db=null;
+        self::$default=null;
+        if(class_exists("usualtool\\Lib\\App") && App::Has(DbInterface::class)){
+            $bound=App::Make(DbInterface::class);
+            if(!($bound instanceof UtDb)){
+                error_log("[UT-DB] 容器已绑定 ".get_class($bound)."，SwitchTo 无法改变实际驱动");
+                return null;
+            }
+        }
+        return Data::GetDb($driver);
     }
 
     /**

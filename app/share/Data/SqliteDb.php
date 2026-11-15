@@ -46,7 +46,7 @@ class SqliteDb extends Adapter{
      * @return string
      */
     public function Name(){
-        return "sqlite";
+        return "sqlite-local";
     }
 
     /**
