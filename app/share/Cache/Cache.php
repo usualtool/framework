@@ -72,7 +72,7 @@ class Cache{
         if(self::$store!==null){
             return self::$store;
         }
-        if(class_exists("usaltool\\Lib\\App") && App::Has(CacheInterface::class)){
+        if(class_exists("usualtool\\Lib\\App") && App::Has(CacheInterface::class)){
             return App::Make(CacheInterface::class);
         }
         if(self::$default===null){
