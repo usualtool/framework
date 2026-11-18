@@ -34,6 +34,9 @@ Support PHP7+ and other known upward distributions.
 ├────├─────────├─plugin.php 插件模型
 ├────├─────────└─usualtool.config 插件配置 Configure
 ├────├─── 📁share 共享命名空间 Namespace
+├────├─────├─Cache 缓存抽象层
+├────├─────├─Data 数据抽象层
+├────├─────└───Init.php 组合根
 ├────├─── 📁task 计划任务 Crontab
 ├────└─── 📁template 模板工程 Formwork
 ├─────────└───模板名称
