@@ -18,5 +18,6 @@ $origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_REFERER'] ?? '';
 $origin && ($oh = parse_url($origin, PHP_URL_HOST)) && ($ah = parse_url($config["APPURL"], PHP_URL_HOST)) && ($oh === $ah || substr($oh, -strlen('.' . $ah)) === '.' . $ah) || (http_response_code(403) && exit);
 $c = $_GET["c"] ?? "";
 $f = $_GET["f"] ?? "index";
+$f = preg_match('/^[a-zA-Z][a-zA-Z0-9_]{0,31}$/',$f) ? $f : "index";
 ($c === '' || preg_match("/^[a-z0-9\-_]+$/i", $c)) || (http_response_code(400) && exit);
 $c && Inc::Plugin($c,$f);
