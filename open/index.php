@@ -10,56 +10,14 @@
        *  |    Applicable to Apache 2.0 protocol.           |           
        * --------------------------------------------------------       
 */
-/**
- * 参数引用说明
- * @var string $m 模块名
- * @var string $p 页面名
- * @var array $config 配置数组
- * @var bool $_deve_ 路由节点
- * @var string $_form_ 控制端
- * @var string $_modpath_ 模块路径
-*/
-use usualtool\Lib\Inc;
-use usualtool\Lib\Route;
-use usualtool\Lib\Power;
-use usualtool\Lib\Debug;
+use usualtool\Lib\Kernel;
+use usualtool\Lib\Request;
 require_once __DIR__.'/config.php';
 /**
- * 路由分发控制
+ * 路由分发
  */
-$_file_path_=Route::Page($_modpath_,$_form_,$p);
-/**
- * 全局权限中间件
- */
-$_gate_=new Power($_deve_,MODULE_PATH);
-$_gate_->SetPage($m."/".$_form_."/".basename($_file_path_,".php"))->Check();
-/**
- * 判断文件真实性
- */
-if(Inc::SearchFile($_file_path_)){
-    require_once $_file_path_;
-    $_class_=Inc::GetClassName($_file_path_);
-    /**
-     * 分层模式
-     */
-    if($_class_){
-        $action=$_GET["action"] ?? "";
-        $action=is_string($action) && preg_match('/^[a-zA-Z0-9_]+$/',$action) ? $action : "index";
-        try{
-            $controller=\usualtool\Lib\App::Make($_class_);
-        }catch(\Throwable $e){
-            $controller=new $_class_();
-        }
-        /**
-         * 执行动作
-         */
-        if(is_callable(array($controller,$action))){
-            $controller->$action();
-        }else{
-            Debug::Error("action",$_class_."/".$action);
-        }
-    }
-}else{
-    Debug::Error("module",str_replace(APP_ROOT."/modules","",$_file_path_));
+try{
+    Kernel::Dispatch();
+}catch(Request $e){
+    Kernel::Terminate($e);
 }
-$config["DEBUG"] && Debug::Debug($config["DEBUG_BAR"]);
